@@ -4,14 +4,9 @@ import { prisma } from "@/lib/db";
 import { requireUserId } from "@/lib/api/auth";
 import { handleApiError, NotFoundError } from "@/lib/api/response";
 import { logHabitSchema } from "@/lib/validation/habit";
+import { toDateOnly } from "@/lib/date";
 
 type Params = { params: Promise<{ id: string }> };
-
-function toDateOnly(date: Date) {
-  return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-  );
-}
 
 export async function POST(request: NextRequest, { params }: Params) {
   try {

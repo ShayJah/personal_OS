@@ -27,11 +27,11 @@
 - [x] Add validation and basic error handling.
 
 ## 5. Phase 4 — Dashboard and Daily Planning
-- [ ] Build the dashboard page.
-- [ ] Implement the top 3 priorities experience.
-- [ ] Add a daily summary card with upcoming items and progress.
-- [ ] Add a quick actions area for capture and planning.
-- [ ] Connect the dashboard to real data from tasks, calendar, and habits.
+- [x] Build the dashboard page.
+- [x] Implement the top 3 priorities experience.
+- [x] Add a daily summary card with upcoming items and progress.
+- [x] Add a quick actions area for capture and planning.
+- [x] Connect the dashboard to real data from tasks and habits (calendar deferred — no Calendar model exists yet, that's Phase 6).
 
 ## 6. Phase 5 — Tasks and Projects
 - [ ] Build the tasks list page.

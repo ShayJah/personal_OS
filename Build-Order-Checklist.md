@@ -34,12 +34,12 @@
 - [x] Connect the dashboard to real data from tasks and habits (calendar deferred — no Calendar model exists yet, that's Phase 6).
 
 ## 6. Phase 5 — Tasks and Projects
-- [ ] Build the tasks list page.
-- [ ] Implement create, edit, complete, and delete flows.
-- [ ] Add filters for today, upcoming, and completed.
-- [ ] Add task priority, due date, project association, and tags.
-- [ ] Build the projects page and project detail experience.
-- [ ] Link tasks to projects and show project-level summary progress.
+- [x] Build the tasks list page.
+- [x] Implement create, edit, complete, and delete flows.
+- [x] Add filters for today, upcoming, and completed.
+- [x] Add task priority, due date, project association, and tags.
+- [x] Build the projects page and project detail experience.
+- [x] Link tasks to projects and show project-level summary progress.
 
 ## 7. Phase 6 — Calendar and Habits
 - [ ] Build the calendar view.

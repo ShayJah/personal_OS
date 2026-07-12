@@ -1,10 +1,67 @@
-import { ComingSoon } from "@/components/layout/coming-soon";
+import Link from "next/link";
+import { requireSession } from "@/lib/auth/dal";
+import { listProjectsWithProgress } from "@/lib/projects";
+import { Card } from "@/components/ui/card";
+import { NewProjectForm } from "./new-project-form";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const session = await requireSession();
+  const projects = await listProjectsWithProgress(session.user.id);
+
   return (
-    <ComingSoon
-      title="Projects"
-      description="Project detail pages and progress rollups land in a later build phase."
-    />
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold">Projects</h1>
+          <p className="text-sm text-foreground/60">
+            Group related tasks together.
+          </p>
+        </div>
+        <NewProjectForm />
+      </div>
+
+      {projects.length === 0 ? (
+        <Card className="py-10 text-center text-sm text-foreground/40">
+          No projects yet — create one to start grouping tasks.
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project) => {
+            const pct =
+              project.taskCount === 0
+                ? 0
+                : Math.round(
+                    (project.completedCount / project.taskCount) * 100
+                  );
+            return (
+              <Link key={project.id} href={`/projects/${project.id}`}>
+                <Card className="h-full transition hover:border-foreground/30">
+                  <h2 className="truncate font-medium">{project.name}</h2>
+                  {project.description && (
+                    <p className="mt-1 line-clamp-2 text-sm text-foreground/50">
+                      {project.description}
+                    </p>
+                  )}
+                  <div className="mt-4 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs text-foreground/50">
+                      <span>
+                        {project.completedCount}/{project.taskCount} tasks
+                      </span>
+                      <span>{pct}%</span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
+                      <div
+                        className="h-full rounded-full bg-foreground"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

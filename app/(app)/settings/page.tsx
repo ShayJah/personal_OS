@@ -5,7 +5,7 @@ import { SettingsForm } from "./settings-form";
 
 export default async function SettingsPage() {
   const session = await requireSession();
-  const preferences = await getUserPreferences();
+  const preferences = await getUserPreferences(session.user.id);
 
   return (
     <div className="max-w-lg space-y-6">

@@ -1,36 +1,48 @@
 import "server-only";
-import { cookies } from "next/headers";
-import type { UserPreferences } from "@/types/user";
+import { cache } from "react";
+import { prisma } from "@/lib/db";
+import type { Theme, UserPreferences } from "@/types/user";
 
-const PREFS_COOKIE = "personalos_prefs";
-
-export const DEFAULT_PREFERENCES: UserPreferences = {
+const DEFAULT_PREFERENCES: UserPreferences = {
   timezone: "UTC",
   theme: "system",
   onboardingComplete: false,
 };
 
-export async function getUserPreferences(): Promise<UserPreferences> {
-  const raw = (await cookies()).get(PREFS_COOKIE)?.value;
-  if (!raw) return DEFAULT_PREFERENCES;
-  try {
-    return { ...DEFAULT_PREFERENCES, ...JSON.parse(raw) };
-  } catch {
-    return DEFAULT_PREFERENCES;
+export const getUserPreferences = cache(
+  async (userId: string): Promise<UserPreferences> => {
+    const profile = await prisma.profile.findUnique({ where: { userId } });
+    if (!profile) return DEFAULT_PREFERENCES;
+
+    return {
+      timezone: profile.timezone,
+      theme: profile.theme as Theme,
+      onboardingComplete: profile.onboardingDone,
+    };
   }
-}
+);
 
 export async function setUserPreferences(
+  userId: string,
   update: Partial<UserPreferences>
 ): Promise<UserPreferences> {
-  const current = await getUserPreferences();
-  const next = { ...current, ...update };
-  (await cookies()).set(PREFS_COOKIE, JSON.stringify(next), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
+  const data = {
+    ...(update.timezone !== undefined && { timezone: update.timezone }),
+    ...(update.theme !== undefined && { theme: update.theme }),
+    ...(update.onboardingComplete !== undefined && {
+      onboardingDone: update.onboardingComplete,
+    }),
+  };
+
+  const profile = await prisma.profile.upsert({
+    where: { userId },
+    update: data,
+    create: { userId, ...data },
   });
-  return next;
+
+  return {
+    timezone: profile.timezone,
+    theme: profile.theme as Theme,
+    onboardingComplete: profile.onboardingDone,
+  };
 }

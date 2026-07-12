@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 
 export default async function DashboardPage() {
   const session = await requireSession();
-  const prefs = await getUserPreferences();
+  const prefs = await getUserPreferences(session.user.id);
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,4 @@
-import { requireSession } from "@/lib/auth/dal";
+import { requireOnboardedSession } from "@/lib/auth/dal";
 import { signOut } from "@/lib/auth/auth";
 import { TopNav } from "@/components/layout/top-nav";
 
@@ -7,7 +7,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await requireSession();
+  const { session } = await requireOnboardedSession();
 
   async function signOutAction() {
     "use server";

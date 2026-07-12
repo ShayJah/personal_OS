@@ -12,25 +12,16 @@ const PROTECTED_PREFIXES = [
   "/coach",
   "/reports",
   "/settings",
+  "/onboarding",
 ];
 const AUTH_ROUTES = ["/login"];
-
-function isOnboardingComplete(request: NextRequest): boolean {
-  const raw = request.cookies.get("personalos_prefs")?.value;
-  if (!raw) return false;
-  try {
-    return Boolean(JSON.parse(raw).onboardingComplete);
-  } catch {
-    return false;
-  }
-}
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
   const isAuthRoute = AUTH_ROUTES.includes(pathname);
 
-  if (!isProtected && !isAuthRoute && pathname !== "/onboarding") {
+  if (!isProtected && !isAuthRoute) {
     return NextResponse.next();
   }
 
@@ -44,14 +35,6 @@ export default async function proxy(request: NextRequest) {
 
   if (isAuthRoute && session?.user) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  if (isProtected && session?.user && !isOnboardingComplete(request)) {
-    return NextResponse.redirect(new URL("/onboarding", request.url));
-  }
-
-  if (pathname === "/onboarding" && !session?.user) {
-    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();

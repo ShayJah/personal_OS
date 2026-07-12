@@ -7,24 +7,24 @@
 - [ ] Define the exact success criteria for v1.
 
 ## 2. Phase 1 — Project Foundation
-- [ ] Create the Next.js app with TypeScript.
-- [ ] Set up Tailwind CSS and a basic component system.
-- [ ] Enable PWA support.
-- [ ] Create the initial app shell with top navigation and mobile-friendly layout.
-- [ ] Set up environment variables and deployment configuration for Vercel.
+- [x] Create the Next.js app with TypeScript.
+- [x] Set up Tailwind CSS and a basic component system.
+- [x] Enable PWA support.
+- [x] Create the initial app shell with top navigation and mobile-friendly layout.
+- [x] Set up environment variables and deployment configuration for Vercel.
 
 ## 3. Phase 2 — Authentication and User Setup
-- [ ] Add authentication.
-- [ ] Create the user profile model and onboarding state.
-- [ ] Add protected routes.
-- [ ] Set up basic user settings such as timezone and theme.
+- [x] Add authentication.
+- [x] Create the user profile model and onboarding state.
+- [x] Add protected routes.
+- [x] Set up basic user settings such as timezone and theme.
 
 ## 4. Phase 3 — Database and Core Backend
-- [ ] Set up PostgreSQL and Prisma.
-- [ ] Create the initial schema for users, profiles, projects, tasks, priorities, and habits.
-- [ ] Add migrations.
-- [ ] Create CRUD APIs for core resources.
-- [ ] Add validation and basic error handling.
+- [x] Set up PostgreSQL and Prisma.
+- [x] Create the initial schema for users, profiles, projects, tasks, priorities, and habits.
+- [x] Add migrations.
+- [x] Create CRUD APIs for core resources.
+- [x] Add validation and basic error handling.
 
 ## 5. Phase 4 — Dashboard and Daily Planning
 - [ ] Build the dashboard page.

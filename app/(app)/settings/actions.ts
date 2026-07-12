@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/dal";
 import { setUserPreferences } from "@/lib/user/preferences";
+import { recoverFromOrphanedSession } from "@/lib/auth/session-guard";
 import type { Theme } from "@/types/user";
 
 export async function updatePreferences(formData: FormData) {
@@ -10,7 +11,13 @@ export async function updatePreferences(formData: FormData) {
   const timezone = String(formData.get("timezone") || "UTC");
   const theme = String(formData.get("theme") || "system") as Theme;
 
-  await setUserPreferences(session.user.id, { timezone, theme });
+  try {
+    await setUserPreferences(session.user.id, { timezone, theme });
+  } catch (error) {
+    await recoverFromOrphanedSession(error);
+    return;
+  }
+
   revalidatePath("/settings");
   revalidatePath("/dashboard");
 }

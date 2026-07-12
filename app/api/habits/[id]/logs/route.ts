@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireUserId } from "@/lib/api/auth";
-import { handleApiError, NotFoundError } from "@/lib/api/response";
+import { handleApiError } from "@/lib/api/response";
 import { logHabitSchema } from "@/lib/validation/habit";
 import { toDateOnly } from "@/lib/date";
+import { getOwnedHabit } from "@/lib/habits";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -13,8 +14,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     const userId = await requireUserId();
     const { id } = await params;
 
-    const habit = await prisma.habit.findFirst({ where: { id, userId } });
-    if (!habit) throw new NotFoundError();
+    await getOwnedHabit(userId, id);
 
     const body = logHabitSchema.parse(await request.json());
     const date = toDateOnly(body.date);

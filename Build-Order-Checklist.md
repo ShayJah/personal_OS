@@ -42,19 +42,19 @@
 - [x] Link tasks to projects and show project-level summary progress.
 
 ## 7. Phase 6 — Calendar and Habits
-- [ ] Build the calendar view.
-- [ ] Add event creation and editing.
-- [ ] Connect calendar events to tasks and priorities where useful.
-- [ ] Build the habits page.
-- [ ] Add habit creation and completion tracking.
-- [ ] Show streaks and habit progress.
+- [x] Build the calendar view.
+- [x] Add event creation and editing.
+- [x] Connect calendar events to tasks (priorities skipped — no stable ID to link against; see note below).
+- [x] Build the habits page.
+- [x] Add habit creation and completion tracking.
+- [x] Show streaks and habit progress.
 
 ## 8. Phase 7 — Quick Capture
-- [ ] Build the quick capture entry point.
-- [ ] Support text capture.
-- [ ] Support voice capture and transcription.
-- [ ] Classify captures into tasks, ideas, or notes.
-- [ ] Add an inbox-style capture stream.
+- [x] Build the quick capture entry point.
+- [x] Support text capture.
+- [x] Support voice capture and transcription (browser Web Speech API — no new API key needed; Chrome/Edge only, degrades gracefully elsewhere).
+- [x] Classify captures into tasks, ideas, or notes (manual classification; choosing "Task" also creates a real Task row).
+- [x] Add an inbox-style capture stream.
 
 ## 9. Phase 8 — AI Coach and Reports
 - [ ] Add a simple AI coach conversation experience.

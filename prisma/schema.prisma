@@ -22,6 +22,8 @@ model User {
   captures      Capture[]
   priorities    Priority[]
   calendarEvents CalendarEvent[]
+  coachThreads  CoachThread[]
+  reports       Report[]
 }
 
 model Profile {
@@ -144,5 +146,44 @@ model Capture {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+}
+
+model CoachThread {
+  id        String   @id @default(cuid())
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages CoachMessage[]
+
+  @@index([userId])
+}
+
+model CoachMessage {
+  id        String   @id @default(cuid())
+  threadId  String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  thread CoachThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  periodStart DateTime @db.Date
+  periodEnd   DateTime @db.Date
+  content     String
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, periodStart])
   @@index([userId])
 }

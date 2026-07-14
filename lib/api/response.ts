@@ -2,6 +2,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { UnauthorizedError } from "@/lib/api/auth";
+import { AiNotConfiguredError } from "@/lib/ai";
 
 export function handleApiError(error: unknown) {
   if (error instanceof UnauthorizedError) {
@@ -15,6 +16,9 @@ export function handleApiError(error: unknown) {
   }
   if (error instanceof NotFoundError) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+  if (error instanceof AiNotConfiguredError) {
+    return NextResponse.json({ error: error.message }, { status: 503 });
   }
 
   console.error(error);

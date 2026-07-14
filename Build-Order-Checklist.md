@@ -57,11 +57,11 @@
 - [x] Add an inbox-style capture stream.
 
 ## 9. Phase 8 — AI Coach and Reports
-- [ ] Add a simple AI coach conversation experience.
-- [ ] Connect the coach to user context from tasks, projects, and priorities.
-- [ ] Create daily accountability report generation.
-- [ ] Create weekly accountability report generation.
-- [ ] Make reports readable and easy to share.
+- [x] Add a simple AI coach conversation experience.
+- [x] Connect the coach to user context from tasks, projects, and priorities.
+- [x] Create daily accountability report generation.
+- [x] Create weekly accountability report generation.
+- [x] Make reports readable (markdown rendering) — sharing/export is Phase 9, not yet built.
 
 ## 10. Phase 9 — Sharing and Export
 - [ ] Add shareable progress pages.

@@ -1,10 +1,42 @@
-import { ComingSoon } from "@/components/layout/coming-soon";
+import { requireSession } from "@/lib/auth/dal";
+import { isAiEnabled } from "@/lib/ai";
+import { listThreadMessages } from "@/lib/coach";
+import { Card } from "@/components/ui/card";
+import { Chat } from "./chat";
 
-export default function CoachPage() {
+export default async function CoachPage() {
+  const session = await requireSession();
+
+  if (!isAiEnabled()) {
+    return (
+      <Card className="py-10 text-center">
+        <h1 className="text-lg font-semibold">AI Coach</h1>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-foreground/60">
+          Add an <code className="rounded bg-foreground/10 px-1">ANTHROPIC_API_KEY</code> to{" "}
+          <code className="rounded bg-foreground/10 px-1">.env.local</code> to
+          enable the AI coach.
+        </p>
+      </Card>
+    );
+  }
+
+  const messages = await listThreadMessages(session.user.id);
+
   return (
-    <ComingSoon
-      title="AI Coach"
-      description="Coaching conversations land in a later build phase."
-    />
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-xl font-semibold">AI Coach</h1>
+        <p className="text-sm text-foreground/60">
+          Grounded in your actual tasks, projects, and priorities.
+        </p>
+      </div>
+      <Chat
+        messages={messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+        }))}
+      />
+    </div>
   );
 }

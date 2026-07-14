@@ -35,13 +35,13 @@ export function CaptureRow({ capture }: { capture: CaptureRowData }) {
               startTransition(() => deleteCaptureAction(capture.id));
             }
           }}
-          className="shrink-0 rounded-md px-2 py-1 text-xs text-foreground/40 hover:bg-red-500/10 hover:text-red-500"
+          className="shrink-0 rounded-md px-2 py-1 text-xs text-muted-soft hover:bg-danger-soft hover:text-danger"
         >
           Delete
         </button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 text-xs text-foreground/40">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-soft">
         <span>{capture.type === "voice" ? "🎙 voice" : "text"}</span>
         <span>
           {createdAt.toLocaleDateString(undefined, {
@@ -55,7 +55,7 @@ export function CaptureRow({ capture }: { capture: CaptureRowData }) {
             className={cn(
               "rounded px-1.5 py-0.5",
               capture.classified === "task"
-                ? "bg-green-500/10 text-green-600"
+                ? "bg-success-soft text-success"
                 : "bg-foreground/5"
             )}
           >

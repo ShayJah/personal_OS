@@ -57,10 +57,10 @@ export function ReportView({ report }: { report: ReportData }) {
     <Card>
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <span className="rounded bg-foreground/5 px-2 py-0.5 text-xs font-medium capitalize text-foreground/60">
+          <span className="rounded bg-foreground/5 px-2 py-0.5 text-xs font-medium capitalize text-muted">
             {report.type}
           </span>
-          <span className="text-xs text-foreground/40">
+          <span className="text-xs text-muted-soft">
             {formatRange(report.periodStart, report.periodEnd)}
           </span>
         </div>
@@ -75,6 +75,8 @@ export function ReportView({ report }: { report: ReportData }) {
           />
           <Button
             onClick={() => setIsSharingOpen(!isSharingOpen)}
+            aria-expanded={isSharingOpen}
+            aria-controls="report-share-panel"
             variant="outline"
             size="sm"
             className="text-xs"
@@ -85,15 +87,16 @@ export function ReportView({ report }: { report: ReportData }) {
       </div>
 
       {isSharingOpen && (
-        <div className="mb-4 rounded-lg border border-foreground/10 bg-foreground/5 p-4">
+        <div id="report-share-panel" className="mb-4 rounded-lg border border-foreground/10 bg-foreground/5 p-4">
           {shareLink ? (
             <div className="space-y-2">
-              <p className="text-xs text-foreground/60">Share this report:</p>
+              <p className="text-xs text-muted">Share this report:</p>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={shareLink}
                   readOnly
+                  aria-label="Share link URL"
                   className="flex-1 rounded bg-background px-3 py-1 text-xs"
                 />
                 <Button

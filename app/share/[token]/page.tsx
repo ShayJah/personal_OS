@@ -54,13 +54,13 @@ function ReportDisplay({ data }: { data: ReportShareData }) {
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-12">
         <div className="text-center">
           <h1 className="text-3xl font-bold">{data.userName}'s Report</h1>
-          <p className="mt-2 text-sm text-foreground/60">
+          <p className="mt-2 text-sm text-muted">
             {formatRange(data.report.periodStart, data.report.periodEnd)}
           </p>
         </div>
 
         <Card className="p-6">
-          <span className="rounded bg-foreground/5 px-2 py-0.5 text-xs font-medium capitalize text-foreground/60">
+          <span className="rounded bg-foreground/5 px-2 py-0.5 text-xs font-medium capitalize text-muted">
             {data.report.type}
           </span>
           <div className="prose prose-sm dark:prose-invert mt-4 max-w-none prose-headings:font-medium prose-p:my-1.5 prose-ul:my-1.5">
@@ -68,7 +68,7 @@ function ReportDisplay({ data }: { data: ReportShareData }) {
           </div>
         </Card>
 
-        <div className="text-center text-xs text-foreground/40">
+        <div className="text-center text-xs text-muted-soft">
           <p>
             Shared via <span className="font-semibold">PersonalOS</span>
           </p>
@@ -85,7 +85,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold">{data.userName}'s Progress</h1>
-          <p className="mt-2 text-sm text-foreground/60">
+          <p className="mt-2 text-sm text-muted">
             Shared progress summary
           </p>
         </div>
@@ -94,7 +94,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
         <Card className="space-y-4 p-6">
           <div>
             <h2 className="text-lg font-semibold">Today</h2>
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted">
               {new Date().toLocaleDateString()}
             </p>
           </div>
@@ -104,13 +104,13 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
               <p className="text-2xl font-bold">
                 {data.shareData.today.completionRate}%
               </p>
-              <p className="text-xs text-foreground/60">Completion Rate</p>
+              <p className="text-xs text-muted">Completion Rate</p>
             </div>
             <div className="rounded-lg bg-foreground/5 p-4">
               <p className="text-2xl font-bold">
                 {data.shareData.today.tasksCompleted}
               </p>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-muted">
                 Tasks Completed ({data.shareData.today.tasksTotal})
               </p>
             </div>
@@ -118,7 +118,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
               <p className="text-2xl font-bold">
                 {data.shareData.habits.filter((h) => h.completedToday).length}
               </p>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-muted">
                 Habits ({data.shareData.habits.length})
               </p>
             </div>
@@ -129,8 +129,8 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
               <p className="mb-2 text-sm font-medium">Top Priorities</p>
               <ul className="space-y-1">
                 {data.shareData.today.priorities.map((priority, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-foreground/70">
-                    <span className="text-foreground/40">{i + 1}.</span>
+                  <li key={i} className="flex gap-2 text-sm text-muted">
+                    <span className="text-muted-soft">{i + 1}.</span>
                     <span>{priority}</span>
                   </li>
                 ))}
@@ -143,7 +143,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
         <Card className="space-y-4 p-6">
           <div>
             <h2 className="text-lg font-semibold">This Week</h2>
-            <p className="text-sm text-foreground/60">Weekly overview</p>
+            <p className="text-sm text-muted">Weekly overview</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -151,13 +151,13 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
               <p className="text-2xl font-bold">
                 {data.shareData.week.completionRate}%
               </p>
-              <p className="text-xs text-foreground/60">Completion Rate</p>
+              <p className="text-xs text-muted">Completion Rate</p>
             </div>
             <div className="rounded-lg bg-foreground/5 p-4">
               <p className="text-2xl font-bold">
                 {data.shareData.week.tasksCompleted}
               </p>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-muted">
                 Tasks Done ({data.shareData.week.tasksTotal})
               </p>
             </div>
@@ -165,13 +165,13 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
               <p className="text-2xl font-bold">
                 {data.shareData.week.habitStreak}
               </p>
-              <p className="text-xs text-foreground/60">Habits Active</p>
+              <p className="text-xs text-muted">Habits Active</p>
             </div>
             <div className="rounded-lg bg-foreground/5 p-4">
               <p className="text-2xl font-bold">
                 {data.shareData.week.habitLogsCompleted}
               </p>
-              <p className="text-xs text-foreground/60">Habit Logs</p>
+              <p className="text-xs text-muted">Habit Logs</p>
             </div>
           </div>
         </Card>
@@ -190,8 +190,8 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
                   <span
                     className={`text-xs font-semibold ${
                       habit.completedToday
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-foreground/40"
+                        ? "text-success"
+                        : "text-muted-soft"
                     }`}
                   >
                     {habit.completedToday ? "✓" : "○"}
@@ -203,7 +203,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
         )}
 
         {/* Footer */}
-        <div className="text-center text-xs text-foreground/40">
+        <div className="text-center text-xs text-muted-soft">
           <p>
             Shared via{" "}
             <span className="font-semibold">PersonalOS</span>
@@ -248,7 +248,7 @@ export default function PublicSharePage({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="p-8 text-center">
-          <p className="text-foreground/60">Loading shared progress...</p>
+          <p className="text-muted">Loading shared progress...</p>
         </Card>
       </div>
     );
@@ -258,7 +258,7 @@ export default function PublicSharePage({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="p-8 text-center">
-          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-sm text-danger">{error}</p>
         </Card>
       </div>
     );
@@ -268,7 +268,7 @@ export default function PublicSharePage({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="p-8 text-center">
-          <p className="text-foreground/60">No data available</p>
+          <p className="text-muted">No data available</p>
         </Card>
       </div>
     );

@@ -12,9 +12,7 @@ export function QuickActionsCard() {
 
   return (
     <Card>
-      <h2 className="text-sm font-medium text-foreground/60">
-        Quick actions
-      </h2>
+      <p className="eyebrow">Quick actions</p>
 
       <form
         ref={formRef}
@@ -31,7 +29,7 @@ export function QuickActionsCard() {
           placeholder="Add a task..."
           required
           maxLength={300}
-          className="min-w-0 flex-1 rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+          className="min-w-0 flex-1 px-3 py-2 text-sm"
         />
         <Button type="submit" disabled={adding}>
           {adding ? "Adding..." : "Add"}
@@ -41,13 +39,13 @@ export function QuickActionsCard() {
       <div className="mt-4 flex flex-wrap gap-2">
         <Link
           href="/tasks"
-          className="rounded-md px-2.5 py-1.5 text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
+          className="rounded-md px-2.5 py-1.5 text-sm text-muted hover:bg-foreground/5 hover:text-foreground"
         >
           View all tasks →
         </Link>
         <Link
           href="/projects"
-          className="rounded-md px-2.5 py-1.5 text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
+          className="rounded-md px-2.5 py-1.5 text-sm text-muted hover:bg-foreground/5 hover:text-foreground"
         >
           View projects →
         </Link>

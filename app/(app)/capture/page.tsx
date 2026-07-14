@@ -1,6 +1,7 @@
 import { requireSession } from "@/lib/auth/dal";
 import { listCaptures } from "@/lib/captures";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { CaptureForm } from "./capture-form";
 import { CaptureRow } from "./capture-row";
 
@@ -11,8 +12,9 @@ export default async function CapturePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Quick Capture</h1>
-        <p className="text-sm text-foreground/60">
+        <p className="eyebrow">Capture</p>
+        <h1 className="mt-1 font-serif text-3xl">Quick capture</h1>
+        <p className="mt-1 text-sm text-muted">
           Get it out of your head. Classify it later.
         </p>
       </div>
@@ -22,9 +24,7 @@ export default async function CapturePage() {
       </Card>
 
       {captures.length === 0 ? (
-        <Card className="py-10 text-center text-sm text-foreground/40">
-          Nothing captured yet.
-        </Card>
+        <EmptyState title="Nothing captured yet" />
       ) : (
         <div className="space-y-2">
           {captures.map((capture) => (

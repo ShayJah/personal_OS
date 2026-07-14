@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "A calm, minimal personal operating system for priorities, tasks, and habits.",
     start_url: "/dashboard",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#4f46e5",
+    background_color: "#f6ece1",
+    theme_color: "#f6ece1",
     icons: [
       {
         src: "/icons/icon-192.png",

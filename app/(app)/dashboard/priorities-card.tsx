@@ -11,9 +11,7 @@ export function PrioritiesCard({ initial }: { initial: string[] }) {
 
   return (
     <Card>
-      <h2 className="text-sm font-medium text-foreground/60">
-        Top 3 priorities today
-      </h2>
+      <p className="eyebrow">Top 3 for today</p>
       <form
         action={async (formData) => {
           setSaving(true);
@@ -29,7 +27,7 @@ export function PrioritiesCard({ initial }: { initial: string[] }) {
             defaultValue={initial[i] ?? ""}
             placeholder={`Priority ${i + 1}`}
             maxLength={300}
-            className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+            className="w-full px-3 py-2 text-sm"
           />
         ))}
         <Button type="submit" disabled={saving} className="w-full">

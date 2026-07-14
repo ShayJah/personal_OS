@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { TaskRow, type TaskRowData } from "./task-row";
 import type { ProjectOption } from "./task-form";
 
@@ -12,11 +12,7 @@ export function TaskList({
   emptyMessage?: string;
 }) {
   if (tasks.length === 0) {
-    return (
-      <Card className="py-10 text-center text-sm text-foreground/40">
-        {emptyMessage}
-      </Card>
-    );
+    return <EmptyState title={emptyMessage} />;
   }
 
   return (

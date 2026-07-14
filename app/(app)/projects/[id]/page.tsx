@@ -35,7 +35,7 @@ export default async function ProjectDetailPage({
       <ProjectHeader project={project} />
 
       <Card>
-        <div className="flex items-center justify-between text-sm text-foreground/60">
+        <div className="flex items-center justify-between text-sm text-muted">
           <span>
             {completedCount}/{project.tasks.length} tasks complete
           </span>
@@ -43,7 +43,7 @@ export default async function ProjectDetailPage({
         </div>
         <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
           <div
-            className="h-full rounded-full bg-foreground"
+            className="h-full rounded-full bg-accent"
             style={{ width: `${pct}%` }}
           />
         </div>

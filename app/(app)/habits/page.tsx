@@ -1,6 +1,6 @@
 import { requireSession } from "@/lib/auth/dal";
 import { listHabitsWithHistory } from "@/lib/habits";
-import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { HabitRow } from "./habit-row";
 import { NewHabitForm } from "./new-habit-form";
 
@@ -12,8 +12,9 @@ export default async function HabitsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">Habits</h1>
-          <p className="text-sm text-foreground/60">
+          <p className="eyebrow">Build</p>
+          <h1 className="mt-1 font-serif text-3xl">Habits</h1>
+          <p className="mt-1 text-sm text-muted">
             Build streaks, one day at a time.
           </p>
         </div>
@@ -21,9 +22,10 @@ export default async function HabitsPage() {
       </div>
 
       {habits.length === 0 ? (
-        <Card className="py-10 text-center text-sm text-foreground/40">
-          No habits yet — create one to start tracking.
-        </Card>
+        <EmptyState
+          title="No habits yet"
+          description="Create one to start tracking your streaks."
+        />
       ) : (
         <div className="space-y-2">
           {habits.map((habit) => (

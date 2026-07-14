@@ -17,7 +17,12 @@ export function NewTaskForm({
 
   if (!open) {
     return (
-      <Button variant="ghost" onClick={() => setOpen(true)} className="w-fit">
+      <Button
+        variant="ghost"
+        onClick={() => setOpen(true)}
+        aria-expanded={false}
+        className="w-fit"
+      >
         + New task
       </Button>
     );

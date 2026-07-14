@@ -87,7 +87,7 @@ export function SharingSettingsForm({
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold">Sharing & Privacy</h2>
-        <p className="mt-1 text-sm text-foreground/60">
+        <p className="mt-1 text-sm text-muted">
           Control what others can see when you share your progress
         </p>
       </div>
@@ -97,14 +97,15 @@ export function SharingSettingsForm({
           <Card key={key} className="p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <label className="cursor-pointer font-medium text-sm">
+                <label htmlFor={`share-${key}`} className="cursor-pointer font-medium text-sm">
                   {label}
                 </label>
-                <p className="mt-1 text-xs text-foreground/60">
+                <p className="mt-1 text-xs text-muted">
                   {description}
                 </p>
               </div>
               <input
+                id={`share-${key}`}
                 type="checkbox"
                 checked={settings[key]}
                 onChange={() => handleToggle(key)}
@@ -117,7 +118,7 @@ export function SharingSettingsForm({
 
       <div className="border-t pt-6">
         <div className="space-y-3">
-          <p className="text-xs text-foreground/50">
+          <p className="text-xs text-muted">
             💡 Tip: Use share links to securely share specific reports or your
             progress with friends, family, or your coach. Each link can be
             revoked independently.
@@ -134,7 +135,7 @@ export function SharingSettingsForm({
           {isLoading ? "Saving..." : "Save settings"}
         </Button>
         {saved && (
-          <span className="text-sm text-foreground/60">✓ Saved</span>
+          <span className="text-sm text-muted">✓ Saved</span>
         )}
       </div>
     </div>

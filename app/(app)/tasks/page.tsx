@@ -32,14 +32,15 @@ export default async function TasksPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Tasks</h1>
-        <p className="text-sm text-foreground/60">
+        <p className="eyebrow">Plan</p>
+        <h1 className="mt-1 font-serif text-3xl">Tasks</h1>
+        <p className="mt-1 text-sm text-muted">
           Everything you need to get done.
         </p>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <nav className="flex gap-1 rounded-lg border border-black/10 p-1 dark:border-white/10">
+        <nav className="flex gap-1 rounded-lg border border-border-strong p-1">
           {FILTERS.map((f) => (
             <Link
               key={f.value}
@@ -48,7 +49,7 @@ export default async function TasksPage({
                 "rounded-md px-3 py-1.5 text-sm",
                 filter === f.value
                   ? "bg-foreground text-background"
-                  : "text-foreground/60 hover:text-foreground"
+                  : "text-muted hover:text-foreground"
               )}
             >
               {f.label}

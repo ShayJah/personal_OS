@@ -35,7 +35,7 @@ export function EventRow({
 
   if (editing) {
     return (
-      <div className="rounded-lg border border-black/10 p-3 dark:border-white/10">
+      <div className="rounded-lg border border-border-strong p-3">
         <EventForm
           action={updateEventAction.bind(null, event.id)}
           tasks={tasks}
@@ -48,10 +48,10 @@ export function EventRow({
   }
 
   return (
-    <div className="flex items-start justify-between gap-2 rounded-lg border border-black/10 px-3 py-2 text-sm dark:border-white/10">
+    <div className="flex items-start justify-between gap-2 rounded-lg border border-border-strong px-3 py-2 text-sm">
       <div className="min-w-0">
         <p className="truncate font-medium">{event.title}</p>
-        <p className="text-xs text-foreground/50">
+        <p className="text-xs text-muted">
           {formatTime(event.startAt)} &ndash; {formatTime(event.endAt)}
           {event.location && <> &middot; {event.location}</>}
           {event.task && <> &middot; linked to {event.task.title}</>}
@@ -61,7 +61,8 @@ export function EventRow({
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="rounded-md px-2 py-1 text-xs text-foreground/50 hover:bg-foreground/5 hover:text-foreground"
+          aria-expanded={editing}
+          className="rounded-md px-2 py-1 text-xs text-muted hover:bg-foreground/5 hover:text-foreground"
         >
           Edit
         </button>
@@ -73,7 +74,7 @@ export function EventRow({
               startTransition(() => deleteEventAction(event.id));
             }
           }}
-          className="rounded-md px-2 py-1 text-xs text-foreground/50 hover:bg-red-500/10 hover:text-red-500"
+          className="rounded-md px-2 py-1 text-xs text-muted hover:bg-danger-soft hover:text-danger"
         >
           Delete
         </button>

@@ -81,7 +81,7 @@ export function ShareLinksManager({
       {/* Create New Share */}
       <div className="space-y-3">
         <h3 className="font-medium">Create New Share Link</h3>
-        <p className="text-xs text-foreground/60">
+        <p className="text-xs text-muted">
           Creates a link to your live progress page. To share a specific
           report, use the Share button on that report instead.
         </p>
@@ -99,7 +99,7 @@ export function ShareLinksManager({
         <h3 className="mb-3 font-medium">Active Share Links</h3>
 
         {links.length === 0 ? (
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted">
             No share links yet. Create one above to start sharing.
           </p>
         ) : (
@@ -116,12 +116,12 @@ export function ShareLinksManager({
                         {link.type}
                       </span>
                       {isExpired(link.expiresAt) && (
-                        <span className="rounded bg-red-500/20 px-2 py-0.5 text-xs text-red-600 dark:text-red-400">
+                        <span className="rounded bg-danger-soft px-2 py-0.5 text-xs text-danger">
                           Expired
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-xs text-foreground/50">
+                    <p className="mt-1 text-xs text-muted">
                       Created: {formatDate(link.createdAt)}
                       {link.expiresAt && ` • Expires: ${formatDate(link.expiresAt)}`}
                     </p>
@@ -141,6 +141,7 @@ export function ShareLinksManager({
                     type="text"
                     value={getShareUrl(link.token)}
                     readOnly
+                    aria-label="Share link URL"
                     className="flex-1 rounded bg-background px-3 py-2 text-xs font-mono"
                   />
                   <Button

@@ -60,6 +60,7 @@ export function TaskRow({
           const completed = e.target.checked;
           startTransition(() => toggleTaskAction(task.id, completed));
         }}
+        aria-label={`Mark "${task.title}" as ${task.completed ? "not completed" : "completed"}`}
         className="mt-1 h-4 w-4 shrink-0"
       />
 
@@ -67,13 +68,13 @@ export function TaskRow({
         <p
           className={cn(
             "truncate text-sm",
-            task.completed && "text-foreground/40 line-through"
+            task.completed && "text-muted-soft line-through"
           )}
         >
           {task.title}
         </p>
 
-        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground/50">
+        <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           {dueDate && (
             <span>
               Due {dueDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
@@ -93,7 +94,8 @@ export function TaskRow({
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="rounded-md px-2 py-1 text-xs text-foreground/50 hover:bg-foreground/5 hover:text-foreground"
+          aria-expanded={editing}
+          className="rounded-md px-2 py-1 text-xs text-muted hover:bg-foreground/5 hover:text-foreground"
         >
           Edit
         </button>
@@ -106,7 +108,7 @@ export function TaskRow({
               );
             }
           }}
-          className="rounded-md px-2 py-1 text-xs text-foreground/50 hover:bg-red-500/10 hover:text-red-500"
+          className="rounded-md px-2 py-1 text-xs text-muted hover:bg-danger-soft hover:text-danger"
         >
           Delete
         </button>

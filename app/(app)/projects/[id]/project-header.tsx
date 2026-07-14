@@ -29,14 +29,14 @@ export function ProjectHeader({
           defaultValue={project.name}
           required
           maxLength={200}
-          className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-lg font-semibold dark:border-white/10"
+          className="w-full rounded-lg border border-border-strong px-3 py-2 text-lg font-semibold"
         />
         <textarea
           name="description"
           defaultValue={project.description ?? ""}
           maxLength={2000}
           rows={2}
-          className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+          className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
         />
         <div className="flex items-center gap-2">
           <Button type="submit" disabled={saving}>
@@ -53,15 +53,16 @@ export function ProjectHeader({
   return (
     <div className="flex items-start justify-between gap-3">
       <div>
-        <h1 className="text-xl font-semibold">{project.name}</h1>
+        <p className="eyebrow">Project</p>
+        <h1 className="mt-1 font-serif text-3xl">{project.name}</h1>
         {project.description && (
-          <p className="mt-1 text-sm text-foreground/60">
+          <p className="mt-1 text-sm text-muted">
             {project.description}
           </p>
         )}
       </div>
       <div className="flex shrink-0 items-center gap-1">
-        <Button variant="ghost" onClick={() => setEditing(true)}>
+        <Button variant="ghost" onClick={() => setEditing(true)} aria-expanded={editing}>
           Edit
         </Button>
         <Button
@@ -72,7 +73,7 @@ export function ProjectHeader({
               startTransition(() => deleteProjectAction(project.id));
             }
           }}
-          className="text-red-500 hover:bg-red-500/10"
+          className="text-danger hover:bg-danger-soft"
         >
           Delete
         </Button>

@@ -3,12 +3,6 @@
 import { useEffect, useState } from "react";
 import { completeOnboarding } from "./actions";
 
-const THEMES = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-] as const;
-
 export function OnboardingForm({ name }: { name: string }) {
   const [timezone, setTimezone] = useState("UTC");
 
@@ -21,10 +15,11 @@ export function OnboardingForm({ name }: { name: string }) {
 
   return (
     <form action={completeOnboarding} className="space-y-6">
+      <input type="hidden" name="theme" value="system" />
       <div className="space-y-1 text-center">
-        <h1 className="text-xl font-semibold">Welcome, {name}</h1>
-        <p className="text-sm text-foreground/60">
-          A couple of quick preferences before we get started.
+        <h1 className="font-serif text-2xl">Welcome, {name}</h1>
+        <p className="text-sm text-muted">
+          One quick preference before we get started.
         </p>
       </div>
 
@@ -37,29 +32,8 @@ export function OnboardingForm({ name }: { name: string }) {
           name="timezone"
           value={timezone}
           onChange={(e) => setTimezone(e.target.value)}
-          className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+          className="w-full px-3 py-2 text-sm"
         />
-      </div>
-
-      <div className="space-y-2">
-        <span className="text-sm font-medium">Theme</span>
-        <div className="grid grid-cols-3 gap-2">
-          {THEMES.map((t) => (
-            <label
-              key={t.value}
-              className="flex cursor-pointer items-center justify-center rounded-lg border border-black/10 px-3 py-2 text-sm has-[:checked]:border-foreground dark:border-white/10"
-            >
-              <input
-                type="radio"
-                name="theme"
-                value={t.value}
-                defaultChecked={t.value === "system"}
-                className="sr-only"
-              />
-              {t.label}
-            </label>
-          ))}
-        </div>
       </div>
 
       <button

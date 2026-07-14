@@ -24,7 +24,7 @@ export function Chat({ messages }: { messages: CoachMessageData[] }) {
     <div className="flex h-[calc(100vh-14rem)] flex-col">
       <div className="flex-1 space-y-3 overflow-y-auto pb-4">
         {messages.length === 0 && (
-          <p className="py-10 text-center text-sm text-foreground/40">
+          <p className="py-10 text-center text-sm text-muted-soft">
             Ask your coach anything about your priorities, tasks, or how the
             week is going.
           </p>
@@ -53,7 +53,7 @@ export function Chat({ messages }: { messages: CoachMessageData[] }) {
           formRef.current?.reset();
           setSending(false);
         }}
-        className="flex gap-2 border-t border-black/10 pt-3 dark:border-white/10"
+        className="flex gap-2 border-t border-border-strong pt-3"
       >
         <input
           name="content"
@@ -61,7 +61,7 @@ export function Chat({ messages }: { messages: CoachMessageData[] }) {
           required
           maxLength={4000}
           disabled={sending}
-          className="min-w-0 flex-1 rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+          className="min-w-0 flex-1 rounded-lg border border-border-strong px-3 py-2 text-sm"
         />
         <Button type="submit" disabled={sending}>
           {sending ? "Thinking..." : "Send"}

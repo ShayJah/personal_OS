@@ -15,15 +15,15 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition disabled:opacity-50",
-        size === "md" && "px-3.5 py-2 text-sm",
-        size === "sm" && "px-2.5 py-1.5 text-xs",
+        "inline-flex items-center justify-center rounded-lg font-medium tracking-tight transition disabled:opacity-40 active:scale-[0.98]",
+        size === "md" && "min-h-11 px-4 py-2 text-sm",
+        size === "sm" && "min-h-9 px-3 py-1.5 text-xs",
         variant === "primary" &&
-          "bg-foreground text-background hover:opacity-90",
+          "bg-foreground text-background shadow-[0_1px_0_rgba(0,0,0,0.05)] hover:bg-foreground/85",
         variant === "ghost" &&
-          "text-foreground/70 hover:bg-foreground/5 hover:text-foreground",
+          "text-muted hover:bg-foreground/5 hover:text-foreground",
         variant === "outline" &&
-          "border border-foreground/20 text-foreground hover:bg-foreground/5",
+          "border border-border-strong text-foreground hover:bg-foreground/5",
         className
       )}
       {...props}

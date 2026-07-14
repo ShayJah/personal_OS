@@ -57,7 +57,7 @@ export function TaskForm({
         required
         maxLength={300}
         defaultValue={initial?.title}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
 
       <textarea
@@ -66,21 +66,23 @@ export function TaskForm({
         maxLength={5000}
         defaultValue={initial?.description ?? ""}
         rows={2}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <input
           type="date"
           name="dueDate"
+          aria-label="Due date"
           defaultValue={toDateInputValue(initial?.dueDate)}
-          className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+          className="rounded-lg border border-border-strong px-2 py-2 text-sm"
         />
 
         <select
           name="priority"
+          aria-label="Priority"
           defaultValue={initial?.priority ? String(initial.priority) : ""}
-          className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+          className="rounded-lg border border-border-strong px-2 py-2 text-sm"
         >
           <option value="">No priority</option>
           <option value="1">High</option>
@@ -90,9 +92,10 @@ export function TaskForm({
 
         <select
           name="projectId"
+          aria-label="Project"
           defaultValue={initial?.projectId ?? defaultProjectId ?? ""}
           disabled={Boolean(defaultProjectId)}
-          className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10 disabled:opacity-60"
+          className="rounded-lg border border-border-strong px-2 py-2 text-sm disabled:opacity-60"
         >
           <option value="">No project</option>
           {projects.map((p) => (
@@ -106,7 +109,7 @@ export function TaskForm({
           name="tags"
           placeholder="tags, comma sep"
           defaultValue={initial?.tags?.join(", ") ?? ""}
-          className="rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+          className="rounded-lg border border-border-strong px-2 py-2 text-sm"
         />
       </div>
 

@@ -48,26 +48,27 @@ export default async function CalendarPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">Calendar</h1>
-          <p className="text-sm text-foreground/60">{rangeLabel}</p>
+          <p className="eyebrow">Schedule</p>
+          <h1 className="mt-1 font-serif text-3xl">Calendar</h1>
+          <p className="mt-1 text-sm text-muted">{rangeLabel}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <Link
             href={`/calendar?week=${prevWeek.toISOString()}`}
-            className="rounded-md px-2.5 py-1.5 text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
+            className="rounded-md px-2.5 py-1.5 text-sm text-muted hover:bg-foreground/5 hover:text-foreground"
           >
             ← Prev
           </Link>
           <Link
             href="/calendar"
-            className="rounded-md px-2.5 py-1.5 text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
+            className="rounded-md px-2.5 py-1.5 text-sm text-muted hover:bg-foreground/5 hover:text-foreground"
           >
             Today
           </Link>
           <Link
             href={`/calendar?week=${nextWeek.toISOString()}`}
-            className="rounded-md px-2.5 py-1.5 text-sm text-foreground/60 hover:bg-foreground/5 hover:text-foreground"
+            className="rounded-md px-2.5 py-1.5 text-sm text-muted hover:bg-foreground/5 hover:text-foreground"
           >
             Next →
           </Link>
@@ -79,12 +80,12 @@ export default async function CalendarPage({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
         {days.map((day, i) => (
           <Card key={day.toISOString()} className="space-y-2">
-            <p className="text-xs font-medium text-foreground/50">
+            <p className="eyebrow">
               {DAY_LABELS[i]}{" "}
               {day.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
             </p>
             {eventsByDay[i].length === 0 ? (
-              <p className="text-xs text-foreground/30">No events</p>
+              <p className="text-xs text-muted-soft">No events</p>
             ) : (
               <div className="space-y-1.5">
                 {eventsByDay[i].map((event) => (

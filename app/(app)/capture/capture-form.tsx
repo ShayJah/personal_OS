@@ -104,7 +104,7 @@ export function CaptureForm() {
         required
         maxLength={5000}
         rows={3}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
       <input type="hidden" name="type" value={type} />
 
@@ -117,7 +117,8 @@ export function CaptureForm() {
             type="button"
             variant="ghost"
             onClick={toggleListening}
-            className={listening ? "text-red-500" : undefined}
+            aria-pressed={listening}
+            className={listening ? "text-danger" : undefined}
           >
             {listening ? "● Stop recording" : "🎙 Record"}
           </Button>

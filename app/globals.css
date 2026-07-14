@@ -1,27 +1,139 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Single committed light theme — no OS dark-mode auto-switch. Existing
+   `dark:` utility classes across the app are intentionally inert. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6ece1;
+  --surface: #fbf6f0;
+  --surface-sunken: #efe2d3;
+  --foreground: #211a13;
+  --muted: #8a7c6c;
+  --muted-soft: #b8ab99;
+  --border: #21181008;
+  --border-strong: #21181017;
+  --accent: #bf5730;
+  --accent-soft: #f0dcc9;
+  --danger: #af3626;
+  --danger-soft: #f4dcd7;
+  --success: #5f7052;
+  --success-soft: #e2e6d8;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-soft: var(--muted-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-fraunces);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 0.3rem;
+  background: var(--surface);
+  display: inline-grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+input[type="checkbox"]:hover {
+  border-color: var(--muted);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--foreground);
+  border-color: var(--foreground);
+}
+
+input[type="checkbox"]:checked::after {
+  content: "";
+  width: 0.3rem;
+  height: 0.55rem;
+  border: solid var(--surface);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input:not([type="checkbox"]):not([type="hidden"]),
+textarea,
+select {
+  border-color: var(--border-strong) !important;
+  background-color: var(--surface) !important;
+  border-radius: 0.6rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+input:not([type="checkbox"]):not([type="hidden"]):focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

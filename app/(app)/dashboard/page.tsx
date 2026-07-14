@@ -1,5 +1,4 @@
 import { requireSession } from "@/lib/auth/dal";
-import { getUserPreferences } from "@/lib/user/preferences";
 import { getPrioritiesForDate } from "@/lib/priorities";
 import { prisma } from "@/lib/db";
 import { toDateOnly } from "@/lib/date";
@@ -14,9 +13,8 @@ export default async function DashboardPage() {
   const tomorrow = new Date(today);
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-  const [prefs, priorities, tasksDueToday, overdueCount, openTaskCount, habits] =
+  const [priorities, tasksDueToday, overdueCount, openTaskCount, habits] =
     await Promise.all([
-      getUserPreferences(userId),
       getPrioritiesForDate(userId, today),
       prisma.task.findMany({
         where: {
@@ -41,14 +39,22 @@ export default async function DashboardPage() {
     h.logs.some((log) => log.completed)
   ).length;
 
+  const now = new Date();
+  const weekday = now.toLocaleDateString(undefined, { weekday: "long" });
+  const monthDay = now.toLocaleDateString(undefined, {
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold">
+    <div className="space-y-8">
+      <div className="flex items-baseline justify-between gap-3">
+        <div>
+          <p className="eyebrow">{weekday}</p>
+          <h1 className="mt-1 font-serif text-4xl sm:text-5xl">{monthDay}</h1>
+        </div>
+        <p className="hidden text-sm text-muted sm:block">
           Welcome back, {session.user.name?.split(" ")[0] ?? "there"}
-        </h1>
-        <p className="text-sm text-foreground/60">
-          {prefs.timezone} &middot; {prefs.theme} theme
         </p>
       </div>
 
@@ -56,36 +62,32 @@ export default async function DashboardPage() {
         <PrioritiesCard initial={priorities.map((p) => p.content)} />
 
         <Card>
-          <h2 className="text-sm font-medium text-foreground/60">
-            Today&apos;s summary
-          </h2>
+          <p className="eyebrow">Today&apos;s summary</p>
           <div className="mt-3 space-y-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-foreground/60">Open tasks</span>
+              <span className="text-muted">Open tasks</span>
               <span className="font-medium">{openTaskCount}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-foreground/60">Overdue</span>
+              <span className="text-muted">Overdue</span>
               <span
                 className={
-                  overdueCount > 0
-                    ? "font-medium text-red-500"
-                    : "font-medium"
+                  overdueCount > 0 ? "font-medium text-danger" : "font-medium"
                 }
               >
                 {overdueCount}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-foreground/60">Habits checked in</span>
+              <span className="text-muted">Habits checked in</span>
               <span className="font-medium">
                 {habitsCheckedIn}/{habits.length}
               </span>
             </div>
 
             {tasksDueToday.length > 0 && (
-              <div className="border-t border-black/10 pt-3 dark:border-white/10">
-                <p className="text-foreground/60">Due today</p>
+              <div className="border-t border-border pt-3">
+                <p className="text-muted">Due today</p>
                 <ul className="mt-1.5 space-y-1">
                   {tasksDueToday.map((task) => (
                     <li key={task.id} className="truncate">

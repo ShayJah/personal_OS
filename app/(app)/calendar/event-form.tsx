@@ -64,11 +64,11 @@ export function EventForm({
         required
         maxLength={300}
         defaultValue={initial?.title}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <label className="space-y-1 text-xs text-foreground/50">
+        <label className="space-y-1 text-xs text-muted">
           Starts
           <input
             type="datetime-local"
@@ -77,17 +77,17 @@ export function EventForm({
             defaultValue={
               initial ? toDateTimeInputValue(initial.startAt) : defaultStart ? toDateTimeInputValue(defaultStart) : ""
             }
-            className="w-full rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+            className="w-full rounded-lg border border-border-strong px-2 py-2 text-sm"
           />
         </label>
-        <label className="space-y-1 text-xs text-foreground/50">
+        <label className="space-y-1 text-xs text-muted">
           Ends
           <input
             type="datetime-local"
             name="endAt"
             required
             defaultValue={initial ? toDateTimeInputValue(initial.endAt) : ""}
-            className="w-full rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+            className="w-full rounded-lg border border-border-strong px-2 py-2 text-sm"
           />
         </label>
       </div>
@@ -97,7 +97,7 @@ export function EventForm({
         placeholder="Location (optional)"
         maxLength={300}
         defaultValue={initial?.location ?? ""}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
 
       <textarea
@@ -106,13 +106,14 @@ export function EventForm({
         maxLength={5000}
         rows={2}
         defaultValue={initial?.description ?? ""}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-3 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-3 py-2 text-sm"
       />
 
       <select
         name="taskId"
+        aria-label="Linked task"
         defaultValue={initial?.taskId ?? ""}
-        className="w-full rounded-lg border border-black/10 bg-transparent px-2 py-2 text-sm dark:border-white/10"
+        className="w-full rounded-lg border border-border-strong px-2 py-2 text-sm"
       >
         <option value="">Not linked to a task</option>
         {tasks.map((t) => (
@@ -122,7 +123,7 @@ export function EventForm({
         ))}
       </select>
 
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
 
       <div className="flex items-center gap-2">
         <Button type="submit" disabled={saving}>

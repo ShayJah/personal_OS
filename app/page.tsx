@@ -7,8 +7,8 @@ export default async function LandingPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
       <div className="max-w-md space-y-6">
-        <h1 className="text-3xl font-semibold tracking-tight">PersonalOS</h1>
-        <p className="text-foreground/60">
+        <h1 className="font-serif text-4xl">PersonalOS</h1>
+        <p className="text-muted">
           A calm, minimal operating system for your priorities, tasks,
           projects, calendar, and habits.
         </p>

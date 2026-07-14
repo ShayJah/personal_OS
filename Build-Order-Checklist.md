@@ -70,11 +70,11 @@
 - [x] Add attractive shareable UI states.
 
 ## 11. Phase 10 — Polish and PWA Readiness
-- [ ] Improve mobile navigation and touch interactions.
-- [ ] Ensure the app works smoothly on iPhone and desktop.
-- [ ] Add installability and offline-friendly behavior where practical.
-- [ ] Improve loading states, empty states, and accessibility.
-- [ ] Add analytics, error tracking, and observability.
+- [x] Improve mobile navigation and touch interactions.
+- [x] Ensure the app works smoothly on iPhone and desktop.
+- [x] Add installability and offline-friendly behavior where practical.
+- [x] Improve loading states, empty states, and accessibility.
+- [x] Add analytics, error tracking, and observability (Vercel Analytics/Speed Insights + error boundaries; no Sentry — see note below).
 
 ## 12. Phase 11 — Launch Hardening
 - [ ] Run QA across desktop and iPhone.

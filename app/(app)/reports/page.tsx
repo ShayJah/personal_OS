@@ -2,6 +2,7 @@ import { requireSession } from "@/lib/auth/dal";
 import { isAiEnabled } from "@/lib/ai";
 import { listReports } from "@/lib/reports";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { GenerateButtons } from "./generate-buttons";
 import { ReportView } from "./report-view";
 
@@ -11,8 +12,8 @@ export default async function ReportsPage() {
   if (!isAiEnabled()) {
     return (
       <Card className="py-10 text-center">
-        <h1 className="text-lg font-semibold">Reports</h1>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-foreground/60">
+        <h1 className="font-serif text-2xl">Reports</h1>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
           Add an <code className="rounded bg-foreground/10 px-1">ANTHROPIC_API_KEY</code> to{" "}
           <code className="rounded bg-foreground/10 px-1">.env.local</code> to
           enable report generation.
@@ -27,8 +28,9 @@ export default async function ReportsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">Reports</h1>
-          <p className="text-sm text-foreground/60">
+          <p className="eyebrow">Review</p>
+          <h1 className="mt-1 font-serif text-3xl">Reports</h1>
+          <p className="mt-1 text-sm text-muted">
             Daily and weekly accountability summaries.
           </p>
         </div>
@@ -36,9 +38,10 @@ export default async function ReportsPage() {
       </div>
 
       {reports.length === 0 ? (
-        <Card className="py-10 text-center text-sm text-foreground/40">
-          No reports yet — generate one above.
-        </Card>
+        <EmptyState
+          title="No reports yet"
+          description="Generate a daily or weekly report above."
+        />
       ) : (
         <div className="space-y-4">
           {reports.map((report) => (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/dal";
-import { listEventsForRange, startOfWeek, addDays } from "@/lib/calendar";
+import { listEventsForRange, startOfWeek, addDays, syncFromGoogle } from "@/lib/calendar";
+import { isConnected as isGoogleCalendarConnected } from "@/lib/google-calendar";
 import { prisma } from "@/lib/db";
 import { Card } from "@/components/ui/card";
 import { EventRow } from "./event-row";
@@ -23,6 +24,11 @@ export default async function CalendarPage({
   const weekEnd = addDays(weekStart, 7);
   const prevWeek = addDays(weekStart, -7);
   const nextWeek = weekEnd;
+
+  const connected = await isGoogleCalendarConnected(session.user.id);
+  if (connected) {
+    await syncFromGoogle(session.user.id, weekStart, weekEnd);
+  }
 
   const [events, tasks] = await Promise.all([
     listEventsForRange(session.user.id, weekStart, weekEnd),
@@ -50,7 +56,20 @@ export default async function CalendarPage({
         <div>
           <p className="eyebrow">Schedule</p>
           <h1 className="mt-1 font-serif text-3xl">Calendar</h1>
-          <p className="mt-1 text-sm text-muted">{rangeLabel}</p>
+          <p className="mt-1 text-sm text-muted">
+            {rangeLabel}
+            {connected ? (
+              <span className="ml-2 text-success">· Synced with Google</span>
+            ) : (
+              <>
+                {" "}
+                ·{" "}
+                <Link href="/settings" className="underline underline-offset-2">
+                  Connect Google Calendar
+                </Link>
+              </>
+            )}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">

@@ -1,14 +1,33 @@
 import { requireSession } from "@/lib/auth/dal";
 import { getUserPreferences } from "@/lib/user/preferences";
 import { getShareSettings } from "@/lib/sharing";
+import { isConnected as isGoogleCalendarConnected } from "@/lib/google-calendar";
 import { Card } from "@/components/ui/card";
 import { SettingsForm } from "./settings-form";
 import { SharingSettingsForm } from "@/components/sharing-settings-form";
+import { GoogleCalendarSettings } from "@/components/google-calendar-settings";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    google_calendar_connected?: string;
+    google_calendar_error?: string;
+  }>;
+}) {
   const session = await requireSession();
-  const preferences = await getUserPreferences(session.user.id);
-  const shareSettings = await getShareSettings(session.user.id);
+  const { google_calendar_connected, google_calendar_error } = await searchParams;
+  const [preferences, shareSettings, googleConnected] = await Promise.all([
+    getUserPreferences(session.user.id),
+    getShareSettings(session.user.id),
+    isGoogleCalendarConnected(session.user.id),
+  ]);
+
+  const notice = google_calendar_connected
+    ? ({ type: "connected" } as const)
+    : google_calendar_error
+      ? ({ type: "error", message: google_calendar_error } as const)
+      : undefined;
 
   return (
     <div className="max-w-lg space-y-6">
@@ -22,6 +41,7 @@ export default async function SettingsPage() {
       <Card>
         <SettingsForm preferences={preferences} />
       </Card>
+      <GoogleCalendarSettings connected={googleConnected} notice={notice} />
       <Card>
         <SharingSettingsForm initialSettings={shareSettings || undefined} />
       </Card>

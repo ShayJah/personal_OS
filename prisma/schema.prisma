@@ -15,15 +15,16 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  profile       Profile?
-  projects      Project[]
-  tasks         Task[]
-  habits        Habit[]
-  captures      Capture[]
-  priorities    Priority[]
+  profile        Profile?
+  projects       Project[]
+  tasks          Task[]
+  habits         Habit[]
+  captures       Capture[]
+  priorities     Priority[]
   calendarEvents CalendarEvent[]
-  coachThreads  CoachThread[]
-  reports       Report[]
+  coachThreads   CoachThread[]
+  reports        Report[]
+  sharedLinks    SharedLink[]
 }
 
 model Profile {
@@ -35,7 +36,8 @@ model Profile {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shareSettings ShareSettings?
 }
 
 model Project {
@@ -186,4 +188,36 @@ model Report {
 
   @@unique([userId, type, periodStart])
   @@index([userId])
+}
+
+model ShareSettings {
+  id                 String   @id @default(cuid())
+  profileId          String   @unique
+  shareProgressPage  Boolean  @default(false)
+  shareReports       Boolean  @default(false)
+  shareTasks         Boolean  @default(false)
+  shareHabits        Boolean  @default(false)
+  shareHighlights    Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model SharedLink {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  type      String   // "progress", "report", "summary"
+  target    String?  // For specific report IDs, etc.
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
 }

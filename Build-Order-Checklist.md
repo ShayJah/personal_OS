@@ -64,10 +64,10 @@
 - [x] Make reports readable (markdown rendering) — sharing/export is Phase 9, not yet built.
 
 ## 10. Phase 9 — Sharing and Export
-- [ ] Add shareable progress pages.
-- [ ] Add PDF export for reports and summaries.
-- [ ] Add privacy controls for what is shared.
-- [ ] Add attractive shareable UI states.
+- [x] Add shareable progress pages.
+- [x] Add PDF export for reports and summaries.
+- [x] Add privacy controls for what is shared.
+- [x] Add attractive shareable UI states.
 
 ## 11. Phase 10 — Polish and PWA Readiness
 - [ ] Improve mobile navigation and touch interactions.

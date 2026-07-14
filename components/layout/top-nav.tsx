@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/capture", label: "Capture" },
   { href: "/coach", label: "Coach" },
   { href: "/reports", label: "Reports" },
+  { href: "/share-links", label: "Share" },
 ];
 
 export function TopNav({

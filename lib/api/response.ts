@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { UnauthorizedError } from "@/lib/api/auth";
 import { AiNotConfiguredError } from "@/lib/ai";
+import { TranscriptionNotConfiguredError } from "@/lib/transcription";
 
 export function handleApiError(error: unknown) {
   if (error instanceof UnauthorizedError) {
@@ -18,6 +19,9 @@ export function handleApiError(error: unknown) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   if (error instanceof AiNotConfiguredError) {
+    return NextResponse.json({ error: error.message }, { status: 503 });
+  }
+  if (error instanceof TranscriptionNotConfiguredError) {
     return NextResponse.json({ error: error.message }, { status: 503 });
   }
 

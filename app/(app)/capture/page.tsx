@@ -2,7 +2,7 @@ import { requireSession } from "@/lib/auth/dal";
 import { listCaptures } from "@/lib/captures";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { CaptureForm } from "./capture-form";
+import { QuickCaptureComposer } from "@/components/capture/quick-capture-composer";
 import { CaptureRow } from "./capture-row";
 
 export default async function CapturePage() {
@@ -20,7 +20,7 @@ export default async function CapturePage() {
       </div>
 
       <Card>
-        <CaptureForm />
+        <QuickCaptureComposer />
       </Card>
 
       {captures.length === 0 ? (

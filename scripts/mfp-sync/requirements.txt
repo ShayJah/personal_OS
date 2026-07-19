@@ -1,2 +1,2 @@
-myfitnesspal
+myfitnesspal<2.0
 requests

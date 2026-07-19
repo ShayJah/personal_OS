@@ -26,10 +26,13 @@ export function DraftCard({
 }) {
   const [isPending, startTransition] = useTransition();
 
-  const mailtoHref = recipientEmail
-    ? `mailto:${encodeURIComponent(recipientEmail)}?subject=${encodeURIComponent(
-        draft.subject
-      )}&body=${encodeURIComponent(draft.body)}`
+  // Gmail's own compose URL, not `mailto:` — mailto opens whatever the OS's
+  // default mail app is (Outlook, Mail.app, etc.), which ignores that Gmail
+  // is a webmail account. This opens Gmail's compose window directly.
+  const gmailHref = recipientEmail
+    ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+        recipientEmail
+      )}&su=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`
     : undefined;
 
   return (
@@ -76,12 +79,14 @@ export function DraftCard({
             </Button>
           </>
         )}
-        {draft.status === "approved" && mailtoHref && (
+        {draft.status === "approved" && gmailHref && (
           <a
-            href={mailtoHref}
+            href={gmailHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/5"
           >
-            Open in email
+            Open in Gmail
           </a>
         )}
         {draft.status === "approved" && !recipientEmail && (

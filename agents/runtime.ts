@@ -98,7 +98,7 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
         status: "done",
         output: { text: finalText },
         toolTrace: toolTrace as unknown as Prisma.InputJsonValue,
-        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests),
+        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests, model),
         finishedAt: new Date(),
       },
     });
@@ -110,7 +110,7 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
       data: {
         status: "error",
         toolTrace: toolTrace as unknown as Prisma.InputJsonValue,
-        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests),
+        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests, model),
         finishedAt: new Date(),
       },
     });

@@ -2,10 +2,13 @@ import { requireSession } from "@/lib/auth/dal";
 import { getUserPreferences } from "@/lib/user/preferences";
 import { getShareSettings } from "@/lib/sharing";
 import { isConnected as isGoogleCalendarConnected } from "@/lib/google-calendar";
+import { isConnected as isHevyConnected } from "@/lib/hevy";
+import { getLastSyncDate } from "@/lib/metrics";
 import { Card } from "@/components/ui/card";
 import { SettingsForm } from "./settings-form";
 import { SharingSettingsForm } from "@/components/sharing-settings-form";
 import { GoogleCalendarSettings } from "@/components/google-calendar-settings";
+import { HevySettings } from "@/components/hevy-settings";
 
 export default async function SettingsPage({
   searchParams,
@@ -17,10 +20,12 @@ export default async function SettingsPage({
 }) {
   const session = await requireSession();
   const { google_calendar_connected, google_calendar_error } = await searchParams;
-  const [preferences, shareSettings, googleConnected] = await Promise.all([
+  const [preferences, shareSettings, googleConnected, hevyConnected, mfpLastSync] = await Promise.all([
     getUserPreferences(session.user.id),
     getShareSettings(session.user.id),
     isGoogleCalendarConnected(session.user.id),
+    isHevyConnected(session.user.id),
+    getLastSyncDate(session.user.id, "mfp"),
   ]);
 
   const notice = google_calendar_connected
@@ -42,6 +47,10 @@ export default async function SettingsPage({
         <SettingsForm preferences={preferences} />
       </Card>
       <GoogleCalendarSettings connected={googleConnected} notice={notice} />
+      <HevySettings
+        connected={hevyConnected}
+        lastSync={mfpLastSync ? mfpLastSync.toLocaleDateString() : null}
+      />
       <Card>
         <SharingSettingsForm initialSettings={shareSettings || undefined} />
       </Card>

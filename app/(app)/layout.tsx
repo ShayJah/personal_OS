@@ -3,6 +3,7 @@ import { signOut } from "@/lib/auth/auth";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { QuickCaptureFab } from "@/components/layout/quick-capture-fab";
+import { CommandPalette } from "@/components/command-palette";
 
 export default async function AppLayout({
   children,
@@ -28,6 +29,7 @@ export default async function AppLayout({
       </main>
       <BottomNav userLabel={userLabel} signOutAction={signOutAction} />
       <QuickCaptureFab />
+      <CommandPalette />
     </div>
   );
 }

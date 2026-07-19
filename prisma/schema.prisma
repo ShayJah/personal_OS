@@ -53,6 +53,8 @@ model Project {
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks Task[]
 
+  searchVector Unsupported("tsvector")?
+
   @@index([userId])
 }
 
@@ -88,6 +90,8 @@ model Task {
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
   calendarEvents CalendarEvent[]
+
+  searchVector Unsupported("tsvector")?
 
   @@index([userId])
   @@index([projectId])
@@ -165,6 +169,8 @@ model Capture {
   createdAt DateTime   @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  searchVector Unsupported("tsvector")?
 
   @@index([userId])
 }

@@ -21,3 +21,16 @@ export async function updatePreferences(formData: FormData) {
   revalidatePath("/settings");
   revalidatePath("/dashboard");
 }
+
+export async function setThemeAction(theme: Theme) {
+  const session = await requireSession();
+  try {
+    await setUserPreferences(session.user.id, { theme });
+  } catch (error) {
+    await recoverFromOrphanedSession(error);
+    return;
+  }
+
+  revalidatePath("/settings");
+  revalidatePath("/dashboard");
+}

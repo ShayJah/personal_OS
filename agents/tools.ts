@@ -4,6 +4,7 @@ import { listTasks, createTask, type TaskFilter } from "@/lib/tasks";
 import { listProjectsWithProgress } from "@/lib/projects";
 import { getPrioritiesForDate } from "@/lib/priorities";
 import { searchAll } from "@/lib/search";
+import { listActiveGoals } from "@/lib/goals";
 import { toDateOnly } from "@/lib/date";
 
 export interface AgentTool {
@@ -83,6 +84,15 @@ export const TOOLS: Record<string, AgentTool> = {
       if (!query) return [];
       return searchAll(userId, query);
     },
+  },
+
+  list_goals: {
+    definition: {
+      name: "list_goals",
+      description: "List the user's active goals.",
+      input_schema: { type: "object", properties: {} },
+    },
+    execute: async (userId) => listActiveGoals(userId),
   },
 
   create_task: {

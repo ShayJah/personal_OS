@@ -3,12 +3,13 @@ import { prisma } from "@/lib/db";
 import { listTasks } from "@/lib/tasks";
 import { listProjectsWithProgress } from "@/lib/projects";
 import { getPrioritiesForDate } from "@/lib/priorities";
+import { listActiveGoals } from "@/lib/goals";
 import { toDateOnly } from "@/lib/date";
 
 export async function buildUserContext(userId: string): Promise<string> {
   const today = toDateOnly();
 
-  const [openTasks, projects, priorities, habits] = await Promise.all([
+  const [openTasks, projects, priorities, habits, goals] = await Promise.all([
     listTasks(userId, "all"),
     listProjectsWithProgress(userId),
     getPrioritiesForDate(userId, today),
@@ -16,6 +17,7 @@ export async function buildUserContext(userId: string): Promise<string> {
       where: { userId },
       include: { logs: { where: { date: today } } },
     }),
+    listActiveGoals(userId),
   ]);
 
   const lines: string[] = [];
@@ -49,6 +51,12 @@ export async function buildUserContext(userId: string): Promise<string> {
           .map((h) => `${h.name} (${h.logs.some((l) => l.completed) ? "done today" : "not done today"})`)
           .join("; ")}`
       : "No habits tracked."
+  );
+
+  lines.push(
+    goals.length > 0
+      ? `Active goals: ${goals.map((g) => `${g.title} (${g.horizon})`).join("; ")}`
+      : "No active goals."
   );
 
   return lines.join("\n");

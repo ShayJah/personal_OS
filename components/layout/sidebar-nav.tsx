@@ -11,6 +11,8 @@ const NAV_ITEMS = [
   { href: "/calendar", label: "Calendar" },
   { href: "/habits", label: "Habits" },
   { href: "/capture", label: "Capture" },
+  { href: "/journal", label: "Journal" },
+  { href: "/goals", label: "Goals" },
   { href: "/coach", label: "Coach" },
   { href: "/reports", label: "Reports" },
   { href: "/share-links", label: "Share" },

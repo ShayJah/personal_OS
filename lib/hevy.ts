@@ -1,4 +1,5 @@
 import "server-only";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { toDateOnly } from "@/lib/date";
 
@@ -46,10 +47,13 @@ interface HevySet {
 }
 
 interface HevyExercise {
+  title?: string;
   sets?: HevySet[];
 }
 
 interface HevyWorkout {
+  id: string;
+  title?: string;
   start_time: string;
   end_time: string;
   exercises?: HevyExercise[];
@@ -78,8 +82,42 @@ function workoutVolumeKg(workout: HevyWorkout): number {
   }, 0);
 }
 
+function toStoredExercises(workout: HevyWorkout) {
+  return (workout.exercises ?? []).map((exercise) => ({
+    name: exercise.title ?? "Unknown exercise",
+    sets: (exercise.sets ?? []).map((set) => ({
+      weightKg: set.weight_kg ?? 0,
+      reps: set.reps ?? 0,
+    })),
+  }));
+}
+
+async function persistWorkouts(userId: string, workouts: HevyWorkout[]): Promise<void> {
+  for (const workout of workouts) {
+    const startAt = new Date(workout.start_time);
+    const endAt = new Date(workout.end_time);
+    const volumeKg = workoutVolumeKg(workout);
+    const exercises = toStoredExercises(workout) as unknown as Prisma.InputJsonValue;
+
+    await prisma.workout.upsert({
+      where: { hevyWorkoutId: workout.id },
+      update: { title: workout.title, startAt, endAt, volumeKg, exercises },
+      create: {
+        userId,
+        hevyWorkoutId: workout.id,
+        title: workout.title,
+        startAt,
+        endAt,
+        volumeKg,
+        exercises,
+      },
+    });
+  }
+}
+
 export async function syncHevyMetrics(userId: string): Promise<number> {
   const workouts = await fetchRecentWorkouts(userId);
+  await persistWorkouts(userId, workouts);
 
   const byDate = new Map<string, { minutes: number; volumeKg: number }>();
   for (const workout of workouts) {

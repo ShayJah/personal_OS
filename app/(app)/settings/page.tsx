@@ -20,12 +20,12 @@ export default async function SettingsPage({
 }) {
   const session = await requireSession();
   const { google_calendar_connected, google_calendar_error } = await searchParams;
-  const [preferences, shareSettings, googleConnected, hevyConnected, mfpLastSync] = await Promise.all([
+  const [preferences, shareSettings, googleConnected, hevyConnected, hevyLastSync] = await Promise.all([
     getUserPreferences(session.user.id),
     getShareSettings(session.user.id),
     isGoogleCalendarConnected(session.user.id),
     isHevyConnected(session.user.id),
-    getLastSyncDate(session.user.id, "mfp"),
+    getLastSyncDate(session.user.id, "hevy"),
   ]);
 
   const notice = google_calendar_connected
@@ -49,7 +49,7 @@ export default async function SettingsPage({
       <GoogleCalendarSettings connected={googleConnected} notice={notice} />
       <HevySettings
         connected={hevyConnected}
-        lastSync={mfpLastSync ? mfpLastSync.toLocaleDateString() : null}
+        lastSync={hevyLastSync ? hevyLastSync.toLocaleDateString() : null}
       />
       <Card>
         <SharingSettingsForm initialSettings={shareSettings || undefined} />

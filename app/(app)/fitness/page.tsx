@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireSession } from "@/lib/auth/dal";
 import { getWeekSummary } from "@/lib/metrics";
 import { Card } from "@/components/ui/card";
@@ -19,7 +20,7 @@ export default async function FitnessPage() {
           <p className="eyebrow">This week</p>
           <h1 className="mt-1 font-serif text-3xl">Fitness</h1>
           <p className="mt-1 text-sm text-muted">
-            Synced from Hevy and MyFitnessPal, plus anything you log manually.
+            Synced from Hevy, plus anything you log manually.
           </p>
         </div>
         <LogMetricForm />
@@ -32,6 +33,9 @@ export default async function FitnessPage() {
           <p className="mt-1 text-sm text-muted">
             {formatNumber(summary.workoutMinutes)} min · {formatNumber(summary.workoutVolumeKg)} kg lifted
           </p>
+          <Link href="/fitness/lifts" className="mt-2 inline-block text-xs text-muted hover:text-foreground">
+            View all lifts →
+          </Link>
         </Card>
 
         <Card>

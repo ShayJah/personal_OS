@@ -95,7 +95,6 @@ export function HevySettings({
       )}
 
       <p className="text-xs text-muted">
-        MyFitnessPal (nutrition): synced nightly via an external job, not connected here.{" "}
         {lastSync ? `Last synced: ${lastSync}.` : "Not synced yet."}
       </p>
     </Card>

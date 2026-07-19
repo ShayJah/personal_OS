@@ -30,6 +30,7 @@ model User {
   journalEntries JournalEntry[]
   goals          Goal[]
   metrics        Metric[]
+  workouts       Workout[]
   googleCalendarConnection GoogleCalendarConnection?
   hevyConnection HevyConnection?
 }
@@ -163,6 +164,23 @@ model Metric {
 
   @@unique([userId, kind, date, source])
   @@index([userId, kind, date])
+}
+
+model Workout {
+  id            String   @id @default(cuid())
+  userId        String
+  hevyWorkoutId String   @unique
+  title         String?
+  startAt       DateTime
+  endAt         DateTime
+  volumeKg      Decimal
+  exercises     Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startAt])
 }
 
 model Habit {

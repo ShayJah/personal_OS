@@ -5,6 +5,7 @@ import { useState } from "react";
 
 const MORE_ITEMS = [
   { href: "/projects", label: "Projects" },
+  { href: "/businesses", label: "Businesses" },
   { href: "/fitness", label: "Fitness" },
   { href: "/journal", label: "Journal" },
   { href: "/goals", label: "Goals" },

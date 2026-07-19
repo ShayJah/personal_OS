@@ -14,6 +14,7 @@ export interface AgentTurnInput {
   model: string;
   systemPrompt: string;
   toolNames: string[];
+  extraTools?: Anthropic.ToolUnion[];
   messages: Anthropic.MessageParam[];
   maxTokens?: number;
 }
@@ -24,18 +25,20 @@ export interface AgentTurnResult {
 }
 
 export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnResult> {
-  const { userId, agent, trigger, model, systemPrompt, toolNames, messages, maxTokens = 1024 } = input;
+  const { userId, agent, trigger, model, systemPrompt, toolNames, extraTools, messages, maxTokens = 1024 } =
+    input;
 
   const run = await prisma.agentRun.create({
     data: { userId, agent, trigger, status: "running" },
   });
 
   const client = getAnthropicClient();
-  const tools = toolDefinitions(toolNames);
+  const tools: Anthropic.ToolUnion[] = [...toolDefinitions(toolNames), ...(extraTools ?? [])];
   const conversation: Anthropic.MessageParam[] = [...messages];
   const toolTrace: Array<{ tool: string; input: unknown; output: unknown }> = [];
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
+  let totalWebSearchRequests = 0;
   let finalText = "";
 
   try {
@@ -50,6 +53,7 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
 
       totalInputTokens += response.usage.input_tokens;
       totalOutputTokens += response.usage.output_tokens;
+      totalWebSearchRequests += response.usage.server_tool_use?.web_search_requests ?? 0;
 
       const toolUseBlocks = response.content.filter(
         (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
@@ -94,7 +98,7 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
         status: "done",
         output: { text: finalText },
         toolTrace: toolTrace as unknown as Prisma.InputJsonValue,
-        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens),
+        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests),
         finishedAt: new Date(),
       },
     });
@@ -106,7 +110,7 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
       data: {
         status: "error",
         toolTrace: toolTrace as unknown as Prisma.InputJsonValue,
-        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens),
+        costUsd: estimateCostUsd(totalInputTokens, totalOutputTokens, totalWebSearchRequests),
         finishedAt: new Date(),
       },
     });

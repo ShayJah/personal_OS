@@ -5,6 +5,7 @@ import { listProjectsWithProgress } from "@/lib/projects";
 import { getPrioritiesForDate } from "@/lib/priorities";
 import { searchAll } from "@/lib/search";
 import { listActiveGoals } from "@/lib/goals";
+import { getCrmRecordDetail, createEmailDraft } from "@/lib/crm";
 import { toDateOnly } from "@/lib/date";
 
 export interface AgentTool {
@@ -93,6 +94,48 @@ export const TOOLS: Record<string, AgentTool> = {
       input_schema: { type: "object", properties: {} },
     },
     execute: async (userId) => listActiveGoals(userId),
+  },
+
+  get_crm_record: {
+    definition: {
+      name: "get_crm_record",
+      description: "Get details for a CRM contact/lead: contact info, activity history, and existing drafts.",
+      input_schema: {
+        type: "object",
+        properties: {
+          crmRecordId: { type: "string", description: "The CRM record ID." },
+        },
+        required: ["crmRecordId"],
+      },
+    },
+    execute: async (userId, input) => getCrmRecordDetail(userId, String(input.crmRecordId)),
+  },
+
+  create_email_draft: {
+    definition: {
+      name: "create_email_draft",
+      description:
+        "Save a drafted outreach email for a CRM record. This only saves a draft for human review — it never sends anything.",
+      input_schema: {
+        type: "object",
+        properties: {
+          crmRecordId: { type: "string" },
+          subject: { type: "string" },
+          body: { type: "string" },
+          researchNotes: {
+            type: "string",
+            description: "What you found in research and used to personalize this draft.",
+          },
+        },
+        required: ["crmRecordId", "subject", "body"],
+      },
+    },
+    execute: async (userId, input) =>
+      createEmailDraft(userId, String(input.crmRecordId), {
+        subject: String(input.subject),
+        body: String(input.body),
+        researchNotes: typeof input.researchNotes === "string" ? input.researchNotes : undefined,
+      }),
   },
 
   create_task: {

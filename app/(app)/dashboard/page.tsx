@@ -5,6 +5,7 @@ import { toDateOnly } from "@/lib/date";
 import { Card } from "@/components/ui/card";
 import { PrioritiesCard } from "./priorities-card";
 import { QuickActionsCard } from "./quick-actions-card";
+import { NotificationsCard } from "./notifications-card";
 
 export default async function DashboardPage() {
   const session = await requireSession();
@@ -13,7 +14,7 @@ export default async function DashboardPage() {
   const tomorrow = new Date(today);
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
 
-  const [priorities, tasksDueToday, overdueCount, openTaskCount, habits] =
+  const [priorities, tasksDueToday, overdueCount, openTaskCount, habits, notifications] =
     await Promise.all([
       getPrioritiesForDate(userId, today),
       prisma.task.findMany({
@@ -32,6 +33,11 @@ export default async function DashboardPage() {
       prisma.habit.findMany({
         where: { userId },
         include: { logs: { where: { date: today } } },
+      }),
+      prisma.notification.findMany({
+        where: { userId, readAt: null },
+        orderBy: { createdAt: "desc" },
+        take: 5,
       }),
     ]);
 
@@ -57,6 +63,14 @@ export default async function DashboardPage() {
           Welcome back, {session.user.name?.split(" ")[0] ?? "there"}
         </p>
       </div>
+
+      <NotificationsCard
+        notifications={notifications.map((n) => ({
+          id: n.id,
+          title: n.title,
+          payload: n.payload as { priorities?: { title: string; why: string }[] } | null,
+        }))}
+      />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <PrioritiesCard initial={priorities.map((p) => p.content)} />

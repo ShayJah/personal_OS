@@ -25,6 +25,8 @@ model User {
   coachThreads   CoachThread[]
   reports        Report[]
   sharedLinks    SharedLink[]
+  agentRuns      AgentRun[]
+  notifications  Notification[]
   googleCalendarConnection GoogleCalendarConnection?
 }
 
@@ -212,6 +214,39 @@ model Report {
 
   @@unique([userId, type, periodStart])
   @@index([userId])
+}
+
+model AgentRun {
+  id         String    @id @default(cuid())
+  userId     String
+  agent      String
+  trigger    String
+  status     String    @default("running")
+  output     Json?
+  toolTrace  Json?
+  costUsd    Decimal?
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  kind      String
+  title     String
+  body      String?
+  actionUrl String?
+  payload   Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
 }
 
 model ShareSettings {

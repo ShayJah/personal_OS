@@ -1,9 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { getAnthropicClient, COACH_MODEL } from "@/lib/ai";
 import { buildUserContext } from "@/lib/user-context";
-
-const SYSTEM_PROMPT = `You are a calm, encouraging personal productivity coach inside an app called PersonalOS. Help the user plan their day, reflect on progress, and stay accountable to their priorities. Keep responses concise (a few sentences, or a short list) and grounded in the specific context provided below — reference actual task and project names when relevant rather than speaking generically. Do not invent tasks, priorities, or habits that aren't in the context.`;
+import { runAgenticTurn } from "@/agents/runtime";
+import { AGENTS } from "@/agents/definitions";
 
 export async function getOrCreateThread(userId: string) {
   let thread = await prisma.coachThread.findFirst({
@@ -36,12 +35,15 @@ export async function sendCoachMessage(userId: string, content: string) {
   });
 
   const context = await buildUserContext(userId);
-  const client = getAnthropicClient();
+  const coach = AGENTS.coach;
 
-  const response = await client.messages.create({
-    model: COACH_MODEL,
-    max_tokens: 1024,
-    system: `${SYSTEM_PROMPT}\n\nCurrent user context:\n${context}`,
+  const { text: replyText } = await runAgenticTurn({
+    userId,
+    agent: coach.name,
+    trigger: "chat",
+    model: coach.model,
+    systemPrompt: coach.systemPrompt(context),
+    toolNames: coach.toolNames,
     messages: [
       ...history.map((m) => ({
         role: m.role as "user" | "assistant",
@@ -50,12 +52,6 @@ export async function sendCoachMessage(userId: string, content: string) {
       { role: "user" as const, content },
     ],
   });
-
-  const textBlock = response.content.find((b) => b.type === "text");
-  const replyText =
-    textBlock && textBlock.type === "text"
-      ? textBlock.text
-      : "Sorry, I couldn't generate a response just now.";
 
   return prisma.coachMessage.create({
     data: { threadId: thread.id, role: "assistant", content: replyText },

@@ -20,10 +20,27 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
   return prisma.business.create({ data: { ...data, userId } });
 }
 
+function businessAccessWhere(userId: string) {
+  return { OR: [{ userId }, { collaborators: { some: { userId } } }] };
+}
+
 export async function getOwnedBusiness(userId: string, id: string) {
-  const business = await prisma.business.findFirst({ where: { id, userId } });
+  const business = await prisma.business.findFirst({
+    where: { id, ...businessAccessWhere(userId) },
+  });
   if (!business) throw new NotFoundError();
   return business;
+}
+
+export async function grantBusinessCollaborator(businessId: string, userId: string) {
+  const business = await prisma.business.findUnique({ where: { id: businessId } });
+  if (!business || business.userId === userId) return;
+
+  await prisma.businessCollaborator.upsert({
+    where: { businessId_userId: { businessId, userId } },
+    create: { businessId, userId },
+    update: {},
+  });
 }
 
 export async function listCrmRecords(userId: string, businessId: string) {
@@ -56,7 +73,7 @@ export async function addLead(userId: string, businessId: string, data: AddLeadI
 
 async function assertOwnsCrmRecord(userId: string, crmRecordId: string) {
   const record = await prisma.crmRecord.findFirst({
-    where: { id: crmRecordId, business: { userId } },
+    where: { id: crmRecordId, business: businessAccessWhere(userId) },
   });
   if (!record) throw new NotFoundError();
   return record;
@@ -114,7 +131,7 @@ export async function createEmailDraft(
 
 export async function setDraftStatus(userId: string, draftId: string, status: "approved" | "dismissed") {
   const draft = await prisma.emailDraft.findFirst({
-    where: { id: draftId, crmRecord: { business: { userId } } },
+    where: { id: draftId, crmRecord: { business: businessAccessWhere(userId) } },
   });
   if (!draft) throw new NotFoundError();
   return prisma.emailDraft.update({ where: { id: draftId }, data: { status } });

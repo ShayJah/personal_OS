@@ -90,8 +90,11 @@ export function TaskForm({
           <option value="3">Low</option>
         </select>
 
+        {defaultProjectId && (
+          <input type="hidden" name="projectId" value={defaultProjectId} />
+        )}
         <select
-          name="projectId"
+          name={defaultProjectId ? undefined : "projectId"}
           aria-label="Project"
           defaultValue={initial?.projectId ?? defaultProjectId ?? ""}
           disabled={Boolean(defaultProjectId)}

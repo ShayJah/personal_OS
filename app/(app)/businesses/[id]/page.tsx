@@ -4,6 +4,7 @@ import { getOwnedBusiness, listCrmRecords } from "@/lib/crm";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow } from "./crm-record-row";
+import { BusinessShareDialog } from "./business-share-dialog";
 
 export default async function BusinessDetailPage({
   params,
@@ -24,7 +25,10 @@ export default async function BusinessDetailPage({
         <Link href="/businesses" className="text-sm text-muted hover:text-foreground">
           ← Businesses
         </Link>
-        <h1 className="mt-3 font-serif text-3xl">{business.name}</h1>
+        <div className="mt-3 flex items-start justify-between gap-4">
+          <h1 className="font-serif text-3xl">{business.name}</h1>
+          <BusinessShareDialog businessId={business.id} />
+        </div>
         {business.description && <p className="mt-1 text-sm text-muted">{business.description}</p>}
       </div>
 

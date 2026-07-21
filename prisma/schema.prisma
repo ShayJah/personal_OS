@@ -32,6 +32,7 @@ model User {
   metrics        Metric[]
   workouts       Workout[]
   businesses     Business[]
+  businessCollaborations BusinessCollaborator[]
   contacts       Contact[]
   googleCalendarConnection GoogleCalendarConnection?
   hevyConnection HevyConnection?
@@ -352,12 +353,14 @@ model ShareSettings {
 model SharedLink {
   id        String   @id @default(cuid())
   userId    String
-  token     String   @unique
-  type      String   // "progress", "report", "summary"
-  target    String?  // For specific report IDs, etc.
-  expiresAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  token       String   @unique
+  type        String   // "progress", "report", "summary", "business"
+  target      String?  // For specific report IDs, business IDs, etc.
+  detailLevel String?  // "overview" | "pipeline" | "full" (business shares only)
+  allowEdit   Boolean  @default(false)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -374,9 +377,24 @@ model Business {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  crmRecords CrmRecord[]
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  crmRecords    CrmRecord[]
+  collaborators BusinessCollaborator[]
 
+  @@index([userId])
+}
+
+model BusinessCollaborator {
+  id         String   @id @default(cuid())
+  businessId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@index([businessId])
   @@index([userId])
 }
 

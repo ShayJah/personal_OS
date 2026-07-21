@@ -5,8 +5,12 @@ import {
   revokeShareLink,
   updateShareSettings,
   getShareSettings,
+  type BusinessDetailLevel,
 } from "@/lib/sharing";
+import { getOwnedBusiness } from "@/lib/crm";
 import { NextResponse } from "next/server";
+
+const BUSINESS_DETAIL_LEVELS: BusinessDetailLevel[] = ["overview", "pipeline", "full"];
 
 export async function GET(request: Request) {
   try {
@@ -32,6 +36,27 @@ export async function POST(request: Request) {
     if (action === "updateSettings") {
       const updated = await updateShareSettings(session.user.id, settings);
       return NextResponse.json(updated);
+    }
+
+    if (type === "business") {
+      const businessId = body.businessId;
+      const detailLevel = body.detailLevel;
+      const allowEdit = Boolean(body.allowEdit);
+
+      if (!businessId || !BUSINESS_DETAIL_LEVELS.includes(detailLevel)) {
+        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+      }
+
+      await getOwnedBusiness(session.user.id, businessId);
+
+      const link = await createShareLink(
+        session.user.id,
+        "business",
+        businessId,
+        expiresIn,
+        { detailLevel, allowEdit }
+      );
+      return NextResponse.json(link);
     }
 
     if (type && (type === "progress" || type === "report" || type === "summary")) {

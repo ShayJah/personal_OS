@@ -3,7 +3,11 @@ import {
   getProgressSummary,
   getSharedReport,
   getShareSettings,
+  getBusinessShareData,
+  type BusinessDetailLevel,
 } from "@/lib/sharing";
+import { grantBusinessCollaborator } from "@/lib/crm";
+import { auth } from "@/lib/auth/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -80,6 +84,42 @@ export async function GET(
         },
         userName,
         type: "report",
+      });
+    }
+
+    if (share.type === "business") {
+      if (!share.target) {
+        return NextResponse.json(
+          { error: "This business plan is no longer shared" },
+          { status: 403 }
+        );
+      }
+
+      const detailLevel = (share.detailLevel as BusinessDetailLevel) || "overview";
+      const data = await getBusinessShareData(share.userId, share.target, detailLevel);
+      if (!data) {
+        return NextResponse.json({ error: "Business not found" }, { status: 404 });
+      }
+
+      let canEdit = false;
+      if (share.allowEdit) {
+        const session = await auth();
+        const viewerId = session?.user?.id;
+        if (viewerId === share.userId) {
+          canEdit = true;
+        } else if (viewerId) {
+          await grantBusinessCollaborator(share.target, viewerId);
+          canEdit = true;
+        }
+      }
+
+      return NextResponse.json({
+        ...data,
+        businessId: share.target,
+        detailLevel,
+        userName,
+        canEdit,
+        type: "business",
       });
     }
 

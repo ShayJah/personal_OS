@@ -4,7 +4,8 @@ import { prisma } from "@/lib/db";
 import { toDateOnly } from "@/lib/date";
 import { addDays, startOfWeek } from "@/lib/calendar";
 
-export type ShareType = "progress" | "report" | "summary";
+export type ShareType = "progress" | "report" | "summary" | "business";
+export type BusinessDetailLevel = "overview" | "pipeline" | "full";
 
 /**
  * Generate a unique shareable token
@@ -20,7 +21,8 @@ export async function createShareLink(
   userId: string,
   type: ShareType,
   target?: string,
-  expiresIn?: number // milliseconds; null = never expires
+  expiresIn?: number, // milliseconds; null = never expires
+  options?: { detailLevel?: BusinessDetailLevel; allowEdit?: boolean }
 ) {
   const token = generateShareToken();
   const expiresAt = expiresIn ? new Date(Date.now() + expiresIn) : null;
@@ -32,6 +34,8 @@ export async function createShareLink(
       type,
       target,
       expiresAt,
+      detailLevel: options?.detailLevel,
+      allowEdit: options?.allowEdit ?? false,
     },
   });
 }
@@ -188,6 +192,61 @@ export async function getSharedReport(userId: string, reportId: string) {
   return prisma.report.findFirst({
     where: { id: reportId, userId },
   });
+}
+
+/**
+ * Get a business owned by ownerId for sharing, shaped by detail level
+ */
+export async function getBusinessShareData(
+  ownerId: string,
+  businessId: string,
+  detailLevel: BusinessDetailLevel
+) {
+  const business = await prisma.business.findFirst({
+    where: { id: businessId, userId: ownerId },
+  });
+  if (!business) return null;
+
+  const overview = {
+    name: business.name,
+    description: business.description,
+    contextDoc: business.contextDoc,
+  };
+
+  if (detailLevel === "overview") {
+    return { business: overview };
+  }
+
+  const records = await prisma.crmRecord.findMany({
+    where: { businessId },
+    include: { contact: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  if (detailLevel === "pipeline") {
+    const stageCounts: Record<string, number> = {};
+    for (const record of records) {
+      stageCounts[record.stage] = (stageCounts[record.stage] || 0) + 1;
+    }
+    return { business: overview, pipeline: { total: records.length, stageCounts } };
+  }
+
+  return {
+    business: overview,
+    records: records.map((record) => ({
+      id: record.id,
+      stage: record.stage,
+      value: record.value ? Number(record.value) : null,
+      source: record.source,
+      nextAction: record.nextAction,
+      nextActionAt: record.nextActionAt,
+      contact: {
+        name: record.contact.name,
+        email: record.contact.email,
+        company: record.contact.company,
+      },
+    })),
+  };
 }
 
 /**

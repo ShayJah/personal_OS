@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { setDraftStatusAction } from "./actions";
+import { setDraftStatusAction } from "@/lib/actions/draft-actions";
 
 export interface DraftData {
   id: string;
@@ -20,11 +20,16 @@ export function DraftCard({
   businessId,
   crmRecordId,
   recipientEmail,
+  contactName,
+  businessName,
 }: {
   draft: DraftData;
   businessId: string;
   crmRecordId: string;
   recipientEmail: string | null;
+  /** Shown above the draft when rendered outside the contact's own page (e.g. the /outreach feed). */
+  contactName?: string;
+  businessName?: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [copied, setCopied] = useState(false);
@@ -51,6 +56,11 @@ export function DraftCard({
 
   return (
     <Card className="space-y-2">
+      {(contactName || businessName) && (
+        <p className="text-xs text-muted">
+          {[contactName, businessName].filter(Boolean).join(" · ")}
+        </p>
+      )}
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm font-medium">{isLinkedIn ? "LinkedIn message" : draft.subject}</p>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -70,11 +80,36 @@ export function DraftCard({
         </p>
       )}
 
-      <div className="flex items-center gap-2 pt-1">
-        {draft.status === "pending" && (
+      {/* Copy/Gmail links are always available — batch-generated drafts (and Gmail-pushed
+          ones especially) are already ready to send. Approve/Dismiss is just bookkeeping. */}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        {isLinkedIn ? (
+          <>
+            <Button size="sm" variant="outline" onClick={handleCopy}>
+              {copied ? "Copied!" : "Copy message"}
+            </Button>
+            <span className="text-xs text-muted">
+              LinkedIn has no free API for auto-posting — paste this into a connection note or DM.
+            </span>
+          </>
+        ) : gmailHref ? (
+          <a
+            href={gmailHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/5"
+          >
+            {draft.gmailDraftId ? "Open Gmail draft" : "Open in Gmail"}
+          </a>
+        ) : (
+          <span className="text-xs text-muted">No email on file for this contact.</span>
+        )}
+
+        {draft.status === "pending" ? (
           <>
             <Button
               size="sm"
+              variant="ghost"
               disabled={isPending}
               onClick={() =>
                 startTransition(() =>
@@ -82,7 +117,7 @@ export function DraftCard({
                 )
               }
             >
-              Approve
+              Mark reviewed
             </Button>
             <Button
               size="sm"
@@ -97,32 +132,7 @@ export function DraftCard({
               Dismiss
             </Button>
           </>
-        )}
-
-        {draft.status === "approved" && isLinkedIn && (
-          <>
-            <Button size="sm" variant="outline" onClick={handleCopy}>
-              {copied ? "Copied!" : "Copy message"}
-            </Button>
-            <span className="text-xs text-muted">
-              LinkedIn has no free API for auto-posting — paste this into a connection note or DM.
-            </span>
-          </>
-        )}
-
-        {draft.status === "approved" && !isLinkedIn && gmailHref && (
-          <a
-            href={gmailHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/5"
-          >
-            {draft.gmailDraftId ? "Open Gmail draft" : "Open in Gmail"}
-          </a>
-        )}
-        {draft.status === "approved" && !isLinkedIn && !recipientEmail && (
-          <span className="text-xs text-muted">No email on file for this contact.</span>
-        )}
+        ) : null}
       </div>
     </Card>
   );

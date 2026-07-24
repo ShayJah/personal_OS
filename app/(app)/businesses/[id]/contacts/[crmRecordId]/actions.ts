@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/dal";
 import { addActivitySchema } from "@/lib/validation/crm";
-import { addActivity, setDraftStatus, type DraftChannel } from "@/lib/crm";
+import { addActivity, type DraftChannel } from "@/lib/crm";
 import { runResearchDraft } from "@/lib/agents/research-draft";
 
 function revalidateRecordPath(businessId: string, crmRecordId: string) {
@@ -32,16 +32,5 @@ export async function triggerResearchDraftAction(
 ) {
   const session = await requireSession();
   await runResearchDraft(session.user.id, crmRecordId, channel);
-  revalidateRecordPath(businessId, crmRecordId);
-}
-
-export async function setDraftStatusAction(
-  businessId: string,
-  crmRecordId: string,
-  draftId: string,
-  status: "approved" | "dismissed"
-) {
-  const session = await requireSession();
-  await setDraftStatus(session.user.id, draftId, status);
   revalidateRecordPath(businessId, crmRecordId);
 }

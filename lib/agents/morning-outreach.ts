@@ -5,19 +5,22 @@ import { listTopLeads, pushDraftToGmail } from "@/lib/crm";
 import { isConnected as isGmailConnected } from "@/lib/gmail";
 import { runResearchDraft } from "@/lib/agents/research-draft";
 
-const LEADS_PER_MORNING = 10;
+const LEADS_PER_BATCH = 10;
 
 /**
- * Drafts a personalized email + LinkedIn message for the user's top 10
+ * Drafts a personalized email + LinkedIn message for the user's top 10 open
  * leads. Email drafts get pushed into real Gmail drafts if the user has
  * connected Gmail and the contact has an email on file; LinkedIn has no
  * free API for this, so those drafts just wait in-app for copy/paste.
+ * Triggered on-demand from the /outreach page's "Generate more outreach"
+ * button — there's no schedule/cron running this automatically, so it only
+ * ever drafts when asked, and re-drafts with fresh research each time.
  * Runs leads sequentially — each one does two agent turns (research +
  * draft, for both channels), so running them in parallel would multiply
  * concurrent Anthropic + web-search calls for no real benefit here.
  */
-export async function runMorningOutreach(userId: string) {
-  const leads = await listTopLeads(userId, LEADS_PER_MORNING);
+export async function runMorningOutreach(userId: string, trigger: "manual" | "schedule" = "manual") {
+  const leads = await listTopLeads(userId, LEADS_PER_BATCH);
   if (leads.length === 0) return null;
 
   const gmailConnected = await isGmailConnected(userId);
@@ -27,7 +30,7 @@ export async function runMorningOutreach(userId: string) {
 
   for (const lead of leads) {
     try {
-      await runResearchDraft(userId, lead.id, "email", "schedule");
+      await runResearchDraft(userId, lead.id, "email", trigger);
       emailDrafted++;
 
       if (gmailConnected && lead.contact.email) {
@@ -45,7 +48,7 @@ export async function runMorningOutreach(userId: string) {
     }
 
     try {
-      await runResearchDraft(userId, lead.id, "linkedin", "schedule");
+      await runResearchDraft(userId, lead.id, "linkedin", trigger);
       linkedinDrafted++;
     } catch (error) {
       console.error(`Morning outreach: LinkedIn draft failed for CRM record ${lead.id}:`, error);
@@ -62,17 +65,18 @@ export async function runMorningOutreach(userId: string) {
     data: {
       userId,
       kind: "morning_outreach",
-      title: "Today's outreach drafts are ready",
+      title: "Your outreach drafts are ready",
       body,
-      actionUrl: "/businesses",
+      actionUrl: "/outreach",
       payload: { leadIds: leads.map((l) => l.id), emailDrafted, emailPushedToGmail, linkedinDrafted } as unknown as Prisma.InputJsonValue,
     },
   });
 }
 
+/** Used only by the (unscheduled) /api/cron/morning-outreach route for optional manual/ops triggering across all users at once. */
 export async function runMorningOutreachForAllUsers() {
   const users = await prisma.user.findMany({ select: { id: true } });
-  const results = await Promise.allSettled(users.map((u) => runMorningOutreach(u.id)));
+  const results = await Promise.allSettled(users.map((u) => runMorningOutreach(u.id, "schedule")));
   return {
     total: users.length,
     succeeded: results.filter((r) => r.status === "fulfilled").length,

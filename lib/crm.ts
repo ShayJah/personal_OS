@@ -15,6 +15,15 @@ export type AddLeadInput = z.infer<typeof addLeadSchema>;
 export type AddActivityInput = z.infer<typeof addActivitySchema>;
 export type DraftChannel = z.infer<typeof draftChannelSchema>;
 
+export async function listRecentDrafts(userId: string, limit: number) {
+  return prisma.emailDraft.findMany({
+    where: { crmRecord: { business: businessAccessWhere(userId) } },
+    include: { crmRecord: { include: { contact: true, business: true } } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
+
 export async function listBusinesses(userId: string) {
   return prisma.business.findMany({
     where: { userId },

@@ -19,3 +19,10 @@ export const addActivitySchema = z.object({
   kind: z.enum(["call", "meeting", "note"]),
   body: z.string().trim().min(1).max(5000),
 });
+
+export const updateContextDocSchema = z.object({
+  contextDoc: z.string().trim().max(20000),
+});
+
+export const draftChannelSchema = z.enum(["email", "linkedin"]);
+

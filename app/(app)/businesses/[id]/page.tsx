@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow } from "./crm-record-row";
 import { BusinessShareDialog } from "./business-share-dialog";
+import { BusinessNotes } from "./business-notes";
 
 export default async function BusinessDetailPage({
   params,
@@ -31,6 +32,8 @@ export default async function BusinessDetailPage({
         </div>
         {business.description && <p className="mt-1 text-sm text-muted">{business.description}</p>}
       </div>
+
+      <BusinessNotes businessId={business.id} initialNote={business.contextDoc ?? ""} />
 
       <NewLeadForm businessId={business.id} />
 

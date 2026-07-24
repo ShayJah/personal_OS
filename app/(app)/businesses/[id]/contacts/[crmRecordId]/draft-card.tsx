@@ -1,16 +1,18 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { setDraftStatusAction } from "./actions";
 
 export interface DraftData {
   id: string;
-  subject: string;
+  channel: string;
+  subject: string | null;
   body: string;
   researchNotes: string | null;
   status: string;
+  gmailDraftId: string | null;
 }
 
 export function DraftCard({
@@ -25,23 +27,40 @@ export function DraftCard({
   recipientEmail: string | null;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+  const isLinkedIn = draft.channel === "linkedin";
 
   // Gmail's own compose URL, not `mailto:` — mailto opens whatever the OS's
   // default mail app is (Outlook, Mail.app, etc.), which ignores that Gmail
   // is a webmail account. This opens Gmail's compose window directly.
-  const gmailHref = recipientEmail
+  const gmailComposeHref = recipientEmail
     ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
         recipientEmail
-      )}&su=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`
+      )}&su=${encodeURIComponent(draft.subject ?? "")}&body=${encodeURIComponent(draft.body)}`
     : undefined;
+  // If this draft was already pushed to a real Gmail draft, link straight to it instead.
+  const gmailHref = draft.gmailDraftId
+    ? `https://mail.google.com/mail/u/0/#drafts?compose=${draft.gmailDraftId}`
+    : gmailComposeHref;
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(draft.body);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   return (
     <Card className="space-y-2">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium">{draft.subject}</p>
-        <span className="shrink-0 rounded bg-accent-soft px-1.5 py-0.5 text-xs capitalize text-accent">
-          {draft.status}
-        </span>
+        <p className="text-sm font-medium">{isLinkedIn ? "LinkedIn message" : draft.subject}</p>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="rounded bg-accent-soft px-1.5 py-0.5 text-xs capitalize text-accent">
+            {isLinkedIn ? "LinkedIn" : "Email"}
+          </span>
+          <span className="rounded bg-accent-soft px-1.5 py-0.5 text-xs capitalize text-accent">
+            {draft.status}
+          </span>
+        </div>
       </div>
       <p className="whitespace-pre-wrap text-sm text-muted">{draft.body}</p>
       {draft.researchNotes && (
@@ -79,17 +98,29 @@ export function DraftCard({
             </Button>
           </>
         )}
-        {draft.status === "approved" && gmailHref && (
+
+        {draft.status === "approved" && isLinkedIn && (
+          <>
+            <Button size="sm" variant="outline" onClick={handleCopy}>
+              {copied ? "Copied!" : "Copy message"}
+            </Button>
+            <span className="text-xs text-muted">
+              LinkedIn has no free API for auto-posting — paste this into a connection note or DM.
+            </span>
+          </>
+        )}
+
+        {draft.status === "approved" && !isLinkedIn && gmailHref && (
           <a
             href={gmailHref}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex min-h-9 items-center justify-center rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground/5"
           >
-            Open in Gmail
+            {draft.gmailDraftId ? "Open Gmail draft" : "Open in Gmail"}
           </a>
         )}
-        {draft.status === "approved" && !recipientEmail && (
+        {draft.status === "approved" && !isLinkedIn && !recipientEmail && (
           <span className="text-xs text-muted">No email on file for this contact.</span>
         )}
       </div>

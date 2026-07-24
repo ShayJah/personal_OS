@@ -115,24 +115,33 @@ export const TOOLS: Record<string, AgentTool> = {
     definition: {
       name: "create_email_draft",
       description:
-        "Save a drafted outreach email for a CRM record. This only saves a draft for human review — it never sends anything.",
+        "Save a drafted outreach message for a CRM record — either an email or a LinkedIn message, per the requested channel. This only saves a draft for human review — it never sends or posts anything.",
       input_schema: {
         type: "object",
         properties: {
           crmRecordId: { type: "string" },
-          subject: { type: "string" },
+          channel: {
+            type: "string",
+            enum: ["email", "linkedin"],
+            description: "Which channel this draft is for. Defaults to 'email'.",
+          },
+          subject: {
+            type: "string",
+            description: "Email subject line. Omit for LinkedIn drafts — they have no subject.",
+          },
           body: { type: "string" },
           researchNotes: {
             type: "string",
             description: "What you found in research and used to personalize this draft.",
           },
         },
-        required: ["crmRecordId", "subject", "body"],
+        required: ["crmRecordId", "body"],
       },
     },
     execute: async (userId, input) =>
       createEmailDraft(userId, String(input.crmRecordId), {
-        subject: String(input.subject),
+        channel: input.channel === "linkedin" ? "linkedin" : "email",
+        subject: typeof input.subject === "string" ? input.subject : undefined,
         body: String(input.body),
         researchNotes: typeof input.researchNotes === "string" ? input.researchNotes : undefined,
       }),

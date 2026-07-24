@@ -1,12 +1,19 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/api/response";
-import type { createBusinessSchema, addLeadSchema, addActivitySchema } from "@/lib/validation/crm";
+import type {
+  createBusinessSchema,
+  addLeadSchema,
+  addActivitySchema,
+  draftChannelSchema,
+} from "@/lib/validation/crm";
 import type { z } from "zod";
+import { createGmailDraft, isConnected as isGmailConnected } from "@/lib/gmail";
 
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>;
 export type AddLeadInput = z.infer<typeof addLeadSchema>;
 export type AddActivityInput = z.infer<typeof addActivitySchema>;
+export type DraftChannel = z.infer<typeof draftChannelSchema>;
 
 export async function listBusinesses(userId: string) {
   return prisma.business.findMany({
@@ -49,6 +56,28 @@ export async function listCrmRecords(userId: string, businessId: string) {
     where: { businessId },
     include: { contact: true },
     orderBy: { updatedAt: "desc" },
+  });
+}
+
+export async function updateBusinessContextDoc(userId: string, businessId: string, contextDoc: string) {
+  await getOwnedBusiness(userId, businessId);
+  return prisma.business.update({
+    where: { id: businessId },
+    data: { contextDoc: contextDoc || null },
+  });
+}
+
+/**
+ * The user's highest-priority leads across every business they own or
+ * collaborate on, ranked by what's most overdue/soonest due, then least
+ * recently touched. Used to pick who the morning outreach agent drafts for.
+ */
+export async function listTopLeads(userId: string, limit: number) {
+  return prisma.crmRecord.findMany({
+    where: { business: businessAccessWhere(userId), stage: { notIn: ["won", "lost"] } },
+    include: { contact: true, business: true },
+    orderBy: [{ nextActionAt: { sort: "asc", nulls: "last" } }, { lastTouchAt: { sort: "asc", nulls: "first" } }],
+    take: limit,
   });
 }
 
@@ -116,16 +145,46 @@ export async function addActivity(userId: string, crmRecordId: string, data: Add
 export async function createEmailDraft(
   userId: string,
   crmRecordId: string,
-  data: { subject: string; body: string; researchNotes?: string }
+  data: { subject?: string; body: string; researchNotes?: string; channel?: DraftChannel }
 ) {
   await assertOwnsCrmRecord(userId, crmRecordId);
   return prisma.emailDraft.create({
     data: {
       crmRecordId,
+      channel: data.channel ?? "email",
       subject: data.subject,
       body: data.body,
       researchNotes: data.researchNotes,
     },
+  });
+}
+
+/**
+ * Pushes an existing "email" channel draft into the user's real Gmail
+ * Drafts folder, if they've connected Gmail and the contact has an email
+ * on file. No-op (returns null) otherwise — the draft just stays in-app.
+ */
+export async function pushDraftToGmail(userId: string, draftId: string) {
+  const draft = await prisma.emailDraft.findFirst({
+    where: { id: draftId, crmRecord: { business: businessAccessWhere(userId) } },
+    include: { crmRecord: { include: { contact: true } } },
+  });
+  if (!draft) throw new NotFoundError();
+  if (draft.channel !== "email" || draft.gmailDraftId) return null;
+
+  const recipientEmail = draft.crmRecord.contact.email;
+  if (!recipientEmail) return null;
+  if (!(await isGmailConnected(userId))) return null;
+
+  const gmailDraft = await createGmailDraft(userId, {
+    to: recipientEmail,
+    subject: draft.subject ?? "",
+    body: draft.body,
+  });
+
+  return prisma.emailDraft.update({
+    where: { id: draftId },
+    data: { gmailDraftId: gmailDraft.id },
   });
 }
 
@@ -134,5 +193,13 @@ export async function setDraftStatus(userId: string, draftId: string, status: "a
     where: { id: draftId, crmRecord: { business: businessAccessWhere(userId) } },
   });
   if (!draft) throw new NotFoundError();
-  return prisma.emailDraft.update({ where: { id: draftId }, data: { status } });
+  const updated = await prisma.emailDraft.update({ where: { id: draftId }, data: { status } });
+
+  if (status === "approved" && draft.channel === "email") {
+    await pushDraftToGmail(userId, draftId).catch((error) => {
+      console.error("Failed to push approved draft to Gmail:", error);
+    });
+  }
+
+  return updated;
 }

@@ -11,12 +11,8 @@ const NAV_ITEMS = [
   { href: "/businesses", label: "Businesses" },
   { href: "/outreach", label: "Outreach" },
   { href: "/calendar", label: "Calendar" },
-  { href: "/habits", label: "Habits" },
-  { href: "/fitness", label: "Fitness" },
   { href: "/capture", label: "Capture" },
-  { href: "/journal", label: "Journal" },
   { href: "/goals", label: "Goals" },
-  { href: "/coach", label: "Coach" },
   { href: "/reports", label: "Reports" },
   { href: "/share-links", label: "Share" },
 ];
@@ -36,8 +32,8 @@ export function SidebarNav({
       style={{ paddingTop: "max(2rem, env(safe-area-inset-top))" }}
     >
       <Link href="/dashboard" className="block">
-        <span className="font-serif text-2xl leading-none">PersonalOS</span>
-        <span className="eyebrow mt-1 block">daily operations</span>
+        <span className="font-serif text-2xl leading-none">Amahoro</span>
+        <span className="eyebrow mt-1 block">operations</span>
       </Link>
 
       <nav aria-label="Primary" className="mt-10 flex flex-1 flex-col gap-0.5">

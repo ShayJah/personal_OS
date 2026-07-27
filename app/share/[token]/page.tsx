@@ -5,6 +5,8 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { use } from "react";
+import { stageColorClasses } from "@/lib/crm-stages";
+import { cn } from "@/lib/utils";
 
 interface ProgressData {
   shareData: {
@@ -89,7 +91,7 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
               href={`/businesses/${data.businessId}`}
               className="mt-2 inline-block rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
             >
-              Open in PersonalOS
+              Open in Amahoro
             </Link>
           </Card>
         ) : (
@@ -127,9 +129,12 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
             <p className="text-sm text-muted">{data.pipeline.total} leads total</p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {Object.entries(data.pipeline.stageCounts).map(([stage, count]) => (
-                <div key={stage} className="rounded-lg bg-foreground/5 p-4">
+                <div
+                  key={stage}
+                  className={cn("rounded-lg border p-4", stageColorClasses(stage))}
+                >
                   <p className="text-2xl font-bold">{count}</p>
-                  <p className="text-xs capitalize text-muted">{stage}</p>
+                  <p className="text-xs capitalize">{stage}</p>
                 </div>
               ))}
             </div>
@@ -147,7 +152,12 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{record.contact.name}</span>
-                    <span className="rounded bg-foreground/10 px-2 py-0.5 text-xs capitalize text-muted">
+                    <span
+                      className={cn(
+                        "rounded border px-2 py-0.5 text-xs font-medium capitalize",
+                        stageColorClasses(record.stage)
+                      )}
+                    >
                       {record.stage}
                     </span>
                   </div>
@@ -171,7 +181,7 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
 
         <div className="text-center text-xs text-muted-soft">
           <p>
-            Shared via <span className="font-semibold">PersonalOS</span>
+            Shared via <span className="font-semibold">Amahoro</span>
           </p>
         </div>
       </div>
@@ -207,7 +217,7 @@ function ReportDisplay({ data }: { data: ReportShareData }) {
 
         <div className="text-center text-xs text-muted-soft">
           <p>
-            Shared via <span className="font-semibold">PersonalOS</span>
+            Shared via <span className="font-semibold">Amahoro</span>
           </p>
         </div>
       </div>
@@ -343,7 +353,7 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
         <div className="text-center text-xs text-muted-soft">
           <p>
             Shared via{" "}
-            <span className="font-semibold">PersonalOS</span>
+            <span className="font-semibold">Amahoro</span>
           </p>
         </div>
       </div>

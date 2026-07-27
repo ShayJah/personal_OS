@@ -44,7 +44,7 @@ export function ReportExportButton({
       const pdf = exportReportToPdf(reportTitle, reportContent, {
         period,
         date: new Date().toLocaleDateString(),
-        author: "PersonalOS",
+        author: "Amahoro",
       });
 
       pdf.save(`${reportType}-report-${reportId}.pdf`);

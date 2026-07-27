@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "PersonalOS",
-    short_name: "PersonalOS",
+    name: "Amahoro",
+    short_name: "Amahoro",
     description:
-      "A calm, minimal personal operating system for priorities, tasks, and habits.",
+      "A calm, minimal operations system for priorities, projects, and business/CRM workflows.",
     start_url: "/dashboard",
     display: "standalone",
     background_color: "#f6ece1",

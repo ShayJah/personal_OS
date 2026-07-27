@@ -37,7 +37,7 @@ export function HevySettings({
   };
 
   const handleDisconnect = async () => {
-    if (!confirm("Disconnect Hevy? Synced workout data stays in PersonalOS but stops updating.")) {
+    if (!confirm("Disconnect Hevy? Synced workout data stays in Amahoro but stops updating.")) {
       return;
     }
     setIsDisconnecting(true);

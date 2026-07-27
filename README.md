@@ -1,6 +1,6 @@
-# PersonalOS
+# Amahoro
 
-PersonalOS is a personal operating system concept project for organizing ideas, plans, and daily workflows.
+Amahoro is an operations tool for organizing priorities, projects, and business/CRM workflows — used personally and as the shared ops backbone for the Cobuu Ventures team.
 
 ## Structure
 - Prototype/: starter Python prototype

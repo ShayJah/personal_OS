@@ -8,7 +8,7 @@ import { MoreSheet } from "./more-sheet";
 const TAB_ITEMS = [
   { href: "/dashboard", label: "Today" },
   { href: "/tasks", label: "Tasks" },
-  { href: "/habits", label: "Habits" },
+  { href: "/businesses", label: "Businesses" },
   { href: "/calendar", label: "Calendar" },
 ];
 

@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useTransition } from "react";
 import { updateStageAction } from "./actions";
-
-const STAGES = ["lead", "contacted", "qualified", "proposal", "won", "lost"];
+import { CRM_STAGES, stageColorClasses } from "@/lib/crm-stages";
+import { cn } from "@/lib/utils";
 
 export interface CrmRecordRowData {
   id: string;
@@ -31,9 +31,12 @@ export function CrmRecordRow({ record }: { record: CrmRecordRowData }) {
           startTransition(() => updateStageAction(record.businessId, record.id, e.target.value))
         }
         aria-label={`Stage for ${record.contact.name}`}
-        className="shrink-0 rounded-lg border border-border-strong px-2 py-1.5 text-xs capitalize"
+        className={cn(
+          "shrink-0 rounded-lg border px-2 py-1.5 text-xs font-medium capitalize transition",
+          stageColorClasses(record.stage)
+        )}
       >
-        {STAGES.map((s) => (
+        {CRM_STAGES.map((s) => (
           <option key={s} value={s}>
             {s}
           </option>

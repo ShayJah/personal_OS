@@ -119,7 +119,7 @@ export function BusinessShareDialog({ businessId }: { businessId: string }) {
             <span>
               <span className="font-medium">Allow editing</span>{" "}
               <span className="text-muted">
-                — anyone who opens the link and signs in with GitHub gets full edit
+                — anyone who opens the link and signs in gets full edit
                 access to this business, the same as you.
               </span>
             </span>

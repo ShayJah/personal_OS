@@ -6,7 +6,7 @@ export default function OfflinePage() {
       <div className="max-w-sm space-y-3 text-center">
         <h1 className="font-serif text-2xl">You&apos;re offline</h1>
         <p className="text-sm text-muted">
-          PersonalOS couldn&apos;t reach the network. Check your connection
+          Amahoro couldn&apos;t reach the network. Check your connection
           and try again.
         </p>
       </div>

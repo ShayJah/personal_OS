@@ -78,7 +78,7 @@ function statsToPrompt(
   return `Generate a ${type} accountability report from this raw activity data:\n\n${lines.join("\n")}`;
 }
 
-const REPORT_SYSTEM_PROMPT = `You write short, honest accountability reports for a personal productivity app called PersonalOS. Format the report in markdown with these sections: a one-line headline, "Wins" (bulleted), "Priorities recap" (bulleted, only if priorities were set), "Habits" (one line), and a short "Looking ahead" note. Be factual and grounded only in the data given — never invent accomplishments. If little or nothing happened, say so plainly and encouragingly rather than padding the report. Keep it under 200 words.`;
+const REPORT_SYSTEM_PROMPT = `You write short, honest accountability reports for a personal productivity app called Amahoro. Format the report in markdown with these sections: a one-line headline, "Wins" (bulleted), "Priorities recap" (bulleted, only if priorities were set), "Habits" (one line), and a short "Looking ahead" note. Be factual and grounded only in the data given — never invent accomplishments. If little or nothing happened, say so plainly and encouragingly rather than padding the report. Keep it under 200 words.`;
 
 export async function generateReport(
   userId: string,

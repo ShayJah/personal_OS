@@ -23,13 +23,13 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "PersonalOS",
+  title: "Amahoro",
   description:
-    "A calm, minimal personal operating system for priorities, tasks, and habits.",
+    "A calm, minimal operations system for priorities, projects, and business/CRM workflows.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "PersonalOS",
+    title: "Amahoro",
   },
   icons: {
     icon: [

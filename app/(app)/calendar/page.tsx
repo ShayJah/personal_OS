@@ -96,24 +96,31 @@ export default async function CalendarPage({
 
       <NewEventForm tasks={tasks} defaultStart={weekStart} />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
-        {days.map((day, i) => (
-          <Card key={day.toISOString()} className="space-y-2">
-            <p className="eyebrow">
-              {DAY_LABELS[i]}{" "}
-              {day.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-            </p>
-            {eventsByDay[i].length === 0 ? (
-              <p className="text-xs text-muted-soft">No events</p>
-            ) : (
-              <div className="space-y-1.5">
-                {eventsByDay[i].map((event) => (
-                  <EventRow key={event.id} event={event} tasks={tasks} />
-                ))}
-              </div>
-            )}
-          </Card>
-        ))}
+      {/* Breaks out of the app shell's max-w-3xl column — a 7-day grid squeezed
+          into ~700px reads fine stacked on phone but is far too cramped on a
+          wide desktop window. This re-centers in a wider box just for the grid. */}
+      <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen px-4 md:px-10">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
+            {days.map((day, i) => (
+              <Card key={day.toISOString()} className="space-y-2">
+                <p className="eyebrow">
+                  {DAY_LABELS[i]}{" "}
+                  {day.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                </p>
+                {eventsByDay[i].length === 0 ? (
+                  <p className="text-xs text-muted-soft">No events</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {eventsByDay[i].map((event) => (
+                      <EventRow key={event.id} event={event} tasks={tasks} />
+                    ))}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -35,11 +35,17 @@ export async function scheduleInterviewAction(
     const body = scheduleInterviewSchema.parse({
       startAt: formData.get("startAt"),
       durationMinutes: formData.get("durationMinutes") || undefined,
+      extraAttendees: formData.get("extraAttendees") || undefined,
     });
     const endAt = new Date(body.startAt.getTime() + body.durationMinutes * 60_000);
+    const extraAttendeeEmails = (body.extraAttendees ?? "")
+      .split(/[,\s]+/)
+      .map((e) => e.trim())
+      .filter(Boolean);
     const result = await scheduleInterview(session.user.id, crmRecordId, {
       startAt: body.startAt,
       endAt,
+      extraAttendeeEmails,
     });
     revalidateRecordPath(businessId, crmRecordId);
     return result;

@@ -72,6 +72,43 @@ export async function listCrmRecords(userId: string, businessId: string) {
   });
 }
 
+export interface OutreachStats {
+  totalLeads: number;
+  totalActivities: number;
+  won: number;
+  byUser: { name: string; count: number }[];
+}
+
+/** Who's actually reaching out and how much, for the business's team performance card. */
+export async function getBusinessOutreachStats(userId: string, businessId: string): Promise<OutreachStats> {
+  await getOwnedBusiness(userId, businessId);
+
+  const [totalLeads, won, activityCounts] = await Promise.all([
+    prisma.crmRecord.count({ where: { businessId } }),
+    prisma.crmRecord.count({ where: { businessId, stage: "won" } }),
+    prisma.activity.groupBy({
+      by: ["userId"],
+      where: { crmRecord: { businessId } },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const totalActivities = activityCounts.reduce((sum, row) => sum + row._count._all, 0);
+
+  const userIds = activityCounts.map((row) => row.userId).filter((id): id is string => Boolean(id));
+  const users = userIds.length
+    ? await prisma.user.findMany({ where: { id: { in: userIds } }, select: { id: true, name: true, email: true } })
+    : [];
+  const userLabel = (id: string | null) =>
+    users.find((u) => u.id === id)?.name ?? users.find((u) => u.id === id)?.email ?? "Unattributed";
+
+  const byUser = activityCounts
+    .map((row) => ({ name: userLabel(row.userId), count: row._count._all }))
+    .sort((a, b) => b.count - a.count);
+
+  return { totalLeads, totalActivities, won, byUser };
+}
+
 export async function updateBusinessContextDoc(userId: string, businessId: string, contextDoc: string) {
   await getOwnedBusiness(userId, businessId);
   return prisma.business.update({
@@ -113,7 +150,7 @@ export async function updateBusinessSharedCalendar(userId: string, businessId: s
 export async function scheduleInterview(
   userId: string,
   crmRecordId: string,
-  data: { startAt: Date; endAt: Date }
+  data: { startAt: Date; endAt: Date; extraAttendeeEmails?: string[] }
 ) {
   const record = await assertOwnsCrmRecord(userId, crmRecordId);
   const [business, contact, actingUser] = await Promise.all([
@@ -129,11 +166,17 @@ export async function scheduleInterview(
   const assignedTo = record.assignedToUserId
     ? await prisma.user.findUnique({ where: { id: record.assignedToUserId }, select: { email: true } })
     : null;
-  const attendeeEmails = [contact.email, assignedTo?.email].filter((e): e is string => Boolean(e));
+  const attendeeEmails = [
+    ...new Set(
+      [contact.email, assignedTo?.email, ...(data.extraAttendeeEmails ?? [])].filter(
+        (e): e is string => Boolean(e)
+      )
+    ),
+  ];
 
   const event = await createInterviewEvent(userId, {
     calendarId: business.sharedCalendarId,
-    title: `Interview: ${contact.name} × ${business.name}`,
+    title: `${business.name} Meeting with ${contact.name}`,
     description: `Scheduled from Amahoro by ${actingUser?.name ?? actingUser?.email ?? "a teammate"}.`,
     startAt: data.startAt,
     endAt: data.endAt,

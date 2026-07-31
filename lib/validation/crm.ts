@@ -42,5 +42,6 @@ export const updateSharedCalendarSchema = z.object({
 export const scheduleInterviewSchema = z.object({
   startAt: z.coerce.date(),
   durationMinutes: z.coerce.number().int().min(15).max(240).default(30),
+  extraAttendees: z.string().trim().max(1000).optional(),
 });
 

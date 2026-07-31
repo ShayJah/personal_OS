@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/dal";
-import { getOwnedBusiness, listCrmRecords, listBusinessMembers } from "@/lib/crm";
+import { getOwnedBusiness, listCrmRecords, listBusinessMembers, getBusinessOutreachStats } from "@/lib/crm";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow } from "./crm-record-row";
@@ -8,6 +8,7 @@ import { BusinessShareDialog } from "./business-share-dialog";
 import { BusinessNotes } from "./business-notes";
 import { SheetImport } from "./sheet-import";
 import { SharedCalendarSettings } from "./shared-calendar";
+import { OutreachStatsCard } from "./outreach-stats";
 
 export default async function BusinessDetailPage({
   params,
@@ -17,10 +18,11 @@ export default async function BusinessDetailPage({
   const session = await requireSession();
   const { id } = await params;
 
-  const [business, records, members] = await Promise.all([
+  const [business, records, members, stats] = await Promise.all([
     getOwnedBusiness(session.user.id, id),
     listCrmRecords(session.user.id, id),
     listBusinessMembers(session.user.id, id),
+    getBusinessOutreachStats(session.user.id, id),
   ]);
 
   return (
@@ -35,6 +37,8 @@ export default async function BusinessDetailPage({
         </div>
         {business.description && <p className="mt-1 text-sm text-muted">{business.description}</p>}
       </div>
+
+      <OutreachStatsCard stats={stats} />
 
       <BusinessNotes businessId={business.id} initialNote={business.contextDoc ?? ""} />
 

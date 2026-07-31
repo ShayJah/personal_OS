@@ -29,23 +29,31 @@ export function ScheduleInterview({
         Creates a Google Meet on the shared calendar, invites the contact, moves this lead to
         Interviewed, and posts the link to Slack.
       </p>
-      <form action={handleSubmit} className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <form action={handleSubmit} className="space-y-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <input
+            type="datetime-local"
+            name="startAt"
+            required
+            className="rounded-lg border border-border-strong bg-transparent px-3 py-2 text-sm"
+          />
+          <select
+            name="durationMinutes"
+            defaultValue="30"
+            className="rounded-lg border border-border-strong bg-transparent px-2 py-2 text-sm"
+          >
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="45">45 min</option>
+            <option value="60">60 min</option>
+          </select>
+        </div>
         <input
-          type="datetime-local"
-          name="startAt"
-          required
-          className="rounded-lg border border-border-strong bg-transparent px-3 py-2 text-sm"
+          type="text"
+          name="extraAttendees"
+          placeholder="Other emails to invite (comma-separated) — other aliases, extra people, etc."
+          className="w-full rounded-lg border border-border-strong bg-transparent px-3 py-2 text-sm"
         />
-        <select
-          name="durationMinutes"
-          defaultValue="30"
-          className="rounded-lg border border-border-strong bg-transparent px-2 py-2 text-sm"
-        >
-          <option value="15">15 min</option>
-          <option value="30">30 min</option>
-          <option value="45">45 min</option>
-          <option value="60">60 min</option>
-        </select>
         <Button type="submit" disabled={isPending}>
           {isPending ? "Scheduling…" : "Schedule & notify"}
         </Button>

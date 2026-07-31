@@ -29,6 +29,9 @@ export default async function CrmRecordDetailPage({
             .filter(Boolean)
             .join(" · ") || "No details on file yet."}
         </p>
+        <p className="mt-1 text-xs text-muted">
+          Owner: {record.assignedTo ? record.assignedTo.name ?? record.assignedTo.email : "Unassigned"}
+        </p>
       </div>
 
       <div>
@@ -61,7 +64,10 @@ export default async function CrmRecordDetailPage({
             {record.activities.map((activity) => (
               <Card key={activity.id} className="py-2.5">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xs capitalize text-muted">{activity.kind}</span>
+                  <span className="text-xs capitalize text-muted">
+                    {activity.kind}
+                    {activity.user && ` · ${activity.user.name ?? activity.user.email}`}
+                  </span>
                   <span className="text-xs text-muted">
                     {activity.occurredAt.toLocaleDateString(undefined, {
                       month: "short",

@@ -7,6 +7,7 @@ import {
   updateStageSchema,
   updateContextDocSchema,
   updateSheetLinkSchema,
+  assignOwnerSchema,
 } from "@/lib/validation/crm";
 import {
   addLead,
@@ -14,6 +15,7 @@ import {
   updateBusinessContextDoc,
   updateBusinessSheetLink,
   importLeadsFromSheet,
+  assignCrmRecordOwner,
   type SheetImportResult,
 } from "@/lib/crm";
 
@@ -33,6 +35,13 @@ export async function updateStageAction(businessId: string, crmRecordId: string,
   const session = await requireSession();
   const body = updateStageSchema.parse({ stage });
   await updateCrmStage(session.user.id, crmRecordId, body.stage);
+  revalidatePath(`/businesses/${businessId}`);
+}
+
+export async function assignOwnerAction(businessId: string, crmRecordId: string, assignedToUserId: string) {
+  const session = await requireSession();
+  const body = assignOwnerSchema.parse({ assignedToUserId: assignedToUserId || null });
+  await assignCrmRecordOwner(session.user.id, crmRecordId, body.assignedToUserId);
   revalidatePath(`/businesses/${businessId}`);
 }
 

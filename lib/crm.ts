@@ -64,7 +64,7 @@ export async function listCrmRecords(userId: string, businessId: string) {
   await getOwnedBusiness(userId, businessId);
   return prisma.crmRecord.findMany({
     where: { businessId },
-    include: { contact: true },
+    include: { contact: true, assignedTo: { select: { id: true, name: true, email: true } } },
     orderBy: { updatedAt: "desc" },
   });
 }
@@ -92,15 +92,23 @@ export async function updateBusinessSheetLink(
   });
 }
 
+// Different sheets in use (Jaisun's active CRM tab vs. the bulk Master List)
+// use different header text for the same concept — map every known variant
+// onto the same internal key so both import cleanly through one code path.
 const SHEET_HEADER_ALIASES: Record<string, string> = {
   name: "name",
+  record: "name",
   company: "company",
+  "company > name": "company",
   "job title": "role",
   email: "email",
+  "email addresses": "email",
   linkedin: "linkedin",
   source: "source",
+  event: "source",
   notes: "notes",
   "reach out date": "reachOutDate",
+  "1st ro": "reachOutDate",
   "last contacted": "lastContacted",
   "next follow-up": "nextFollowUp",
   "meeting date": "meetingDate",
@@ -290,12 +298,36 @@ export async function getCrmRecordDetail(userId: string, crmRecordId: string) {
     include: {
       contact: true,
       business: true,
-      activities: { orderBy: { occurredAt: "desc" } },
+      assignedTo: { select: { id: true, name: true, email: true } },
+      activities: { orderBy: { occurredAt: "desc" }, include: { user: { select: { name: true, email: true } } } },
       drafts: { orderBy: { createdAt: "desc" } },
     },
   });
   if (!record) throw new NotFoundError();
   return record;
+}
+
+/** Everyone with access to a business — its owner plus every collaborator — for the Owner-assignment dropdown. */
+export async function listBusinessMembers(userId: string, businessId: string) {
+  const business = await getOwnedBusiness(userId, businessId);
+  const collaborators = await prisma.businessCollaborator.findMany({
+    where: { businessId },
+    include: { user: { select: { id: true, name: true, email: true } } },
+  });
+  const owner = await prisma.user.findUnique({
+    where: { id: business.userId },
+    select: { id: true, name: true, email: true },
+  });
+  const members = owner ? [owner, ...collaborators.map((c) => c.user)] : collaborators.map((c) => c.user);
+  return members.filter((m, i) => members.findIndex((m2) => m2.id === m.id) === i);
+}
+
+export async function assignCrmRecordOwner(userId: string, crmRecordId: string, assignedToUserId: string | null) {
+  await assertOwnsCrmRecord(userId, crmRecordId);
+  return prisma.crmRecord.update({
+    where: { id: crmRecordId },
+    data: { assignedToUserId },
+  });
 }
 
 export async function updateCrmStage(userId: string, crmRecordId: string, stage: string) {
@@ -313,7 +345,7 @@ export async function addActivity(userId: string, crmRecordId: string, data: Add
     data: { lastTouchAt: new Date() },
   });
   return prisma.activity.create({
-    data: { crmRecordId, kind: data.kind, body: data.body },
+    data: { crmRecordId, userId, kind: data.kind, body: data.body },
   });
 }
 

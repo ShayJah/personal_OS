@@ -37,6 +37,8 @@ model User {
   googleCalendarConnection GoogleCalendarConnection?
   hevyConnection HevyConnection?
   gmailConnection GmailConnection?
+  assignedCrmRecords CrmRecord[]
+  activities     Activity[]
 }
 
 model Profile {
@@ -433,35 +435,40 @@ model Contact {
 }
 
 model CrmRecord {
-  id           String    @id @default(cuid())
-  businessId   String
-  contactId    String
-  stage        String    @default("lead")
-  value        Decimal?
-  source       String?
-  lastTouchAt  DateTime?
-  nextAction   String?
-  nextActionAt DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  businessId     String
+  contactId      String
+  stage          String    @default("lead")
+  value          Decimal?
+  source         String?
+  lastTouchAt    DateTime?
+  nextAction     String?
+  nextActionAt   DateTime?
+  assignedToUserId String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   business   Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
   contact    Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  assignedTo User?        @relation(fields: [assignedToUserId], references: [id], onDelete: SetNull)
   activities Activity[]
   drafts     EmailDraft[]
 
   @@index([businessId])
   @@index([contactId])
+  @@index([assignedToUserId])
 }
 
 model Activity {
   id          String   @id @default(cuid())
   crmRecordId String
+  userId      String?
   kind        String
   body        String
   occurredAt  DateTime @default(now())
 
   crmRecord CrmRecord @relation(fields: [crmRecordId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([crmRecordId])
 }

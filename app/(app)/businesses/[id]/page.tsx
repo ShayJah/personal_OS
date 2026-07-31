@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/dal";
-import { getOwnedBusiness, listCrmRecords } from "@/lib/crm";
+import { getOwnedBusiness, listCrmRecords, listBusinessMembers } from "@/lib/crm";
 import { EmptyState } from "@/components/ui/empty-state";
 import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow } from "./crm-record-row";
@@ -16,9 +16,10 @@ export default async function BusinessDetailPage({
   const session = await requireSession();
   const { id } = await params;
 
-  const [business, records] = await Promise.all([
+  const [business, records, members] = await Promise.all([
     getOwnedBusiness(session.user.id, id),
     listCrmRecords(session.user.id, id),
+    listBusinessMembers(session.user.id, id),
   ]);
 
   return (
@@ -51,6 +52,7 @@ export default async function BusinessDetailPage({
           {records.map((record) => (
             <CrmRecordRow
               key={record.id}
+              members={members}
               record={{
                 id: record.id,
                 businessId: business.id,
@@ -60,6 +62,7 @@ export default async function BusinessDetailPage({
                   email: record.contact.email,
                   company: record.contact.company,
                 },
+                assignedTo: record.assignedTo,
               }}
             />
           ))}

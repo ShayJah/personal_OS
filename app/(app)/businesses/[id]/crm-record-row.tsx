@@ -2,18 +2,31 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { updateStageAction } from "./actions";
+import { updateStageAction, assignOwnerAction } from "./actions";
 import { CRM_STAGES, stageColorClasses } from "@/lib/crm-stages";
 import { cn } from "@/lib/utils";
+
+export interface BusinessMember {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
 export interface CrmRecordRowData {
   id: string;
   businessId: string;
   stage: string;
   contact: { name: string; email: string | null; company: string | null };
+  assignedTo: BusinessMember | null;
 }
 
-export function CrmRecordRow({ record }: { record: CrmRecordRowData }) {
+export function CrmRecordRow({
+  record,
+  members,
+}: {
+  record: CrmRecordRowData;
+  members: BusinessMember[];
+}) {
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -24,6 +37,22 @@ export function CrmRecordRow({ record }: { record: CrmRecordRowData }) {
           {[record.contact.company, record.contact.email].filter(Boolean).join(" · ") || "—"}
         </p>
       </Link>
+      <select
+        value={record.assignedTo?.id ?? ""}
+        disabled={isPending}
+        onChange={(e) =>
+          startTransition(() => assignOwnerAction(record.businessId, record.id, e.target.value))
+        }
+        aria-label={`Owner for ${record.contact.name}`}
+        className="shrink-0 rounded-lg border border-border-strong bg-transparent px-2 py-1.5 text-xs"
+      >
+        <option value="">Unassigned</option>
+        {members.map((m) => (
+          <option key={m.id} value={m.id}>
+            {m.name ?? m.email}
+          </option>
+        ))}
+      </select>
       <select
         value={record.stage}
         disabled={isPending}

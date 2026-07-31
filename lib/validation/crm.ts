@@ -26,6 +26,10 @@ export const updateContextDocSchema = z.object({
 
 export const draftChannelSchema = z.enum(["email", "linkedin"]);
 
+export const assignOwnerSchema = z.object({
+  assignedToUserId: z.string().trim().min(1).max(200).nullable(),
+});
+
 export const updateSheetLinkSchema = z.object({
   crmSheetUrl: z.string().trim().min(1).max(500),
   crmSheetTab: z.string().trim().min(1).max(100).default("CRM"),

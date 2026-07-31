@@ -388,6 +388,8 @@ model Business {
   name        String
   description String?
   contextDoc  String?
+  crmSheetId  String?
+  crmSheetTab String?  @default("CRM")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -420,6 +422,7 @@ model Contact {
   phone     String?
   company   String?
   role      String?
+  linkedin  String?
   notes     String?
   createdAt DateTime @default(now())
 

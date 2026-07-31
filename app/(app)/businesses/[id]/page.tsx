@@ -6,6 +6,7 @@ import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow } from "./crm-record-row";
 import { BusinessShareDialog } from "./business-share-dialog";
 import { BusinessNotes } from "./business-notes";
+import { SheetImport } from "./sheet-import";
 
 export default async function BusinessDetailPage({
   params,
@@ -34,6 +35,12 @@ export default async function BusinessDetailPage({
       </div>
 
       <BusinessNotes businessId={business.id} initialNote={business.contextDoc ?? ""} />
+
+      <SheetImport
+        businessId={business.id}
+        crmSheetId={business.crmSheetId}
+        crmSheetTab={business.crmSheetTab ?? "CRM"}
+      />
 
       <NewLeadForm businessId={business.id} />
 

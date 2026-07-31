@@ -26,3 +26,8 @@ export const updateContextDocSchema = z.object({
 
 export const draftChannelSchema = z.enum(["email", "linkedin"]);
 
+export const updateSheetLinkSchema = z.object({
+  crmSheetUrl: z.string().trim().min(1).max(500),
+  crmSheetTab: z.string().trim().min(1).max(100).default("CRM"),
+});
+

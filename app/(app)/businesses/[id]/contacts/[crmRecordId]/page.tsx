@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ActivityForm } from "./activity-form";
 import { ResearchButton } from "./research-button";
 import { DraftCard } from "./draft-card";
+import { ScheduleInterview } from "./schedule-interview";
 
 export default async function CrmRecordDetailPage({
   params,
@@ -38,6 +39,8 @@ export default async function CrmRecordDetailPage({
         <p className="eyebrow mb-2">Outreach</p>
         <ResearchButton businessId={businessId} crmRecordId={crmRecordId} />
       </div>
+
+      <ScheduleInterview businessId={businessId} crmRecordId={crmRecordId} />
 
       {record.drafts.length > 0 && (
         <div className="space-y-2">

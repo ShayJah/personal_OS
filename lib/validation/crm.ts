@@ -35,3 +35,12 @@ export const updateSheetLinkSchema = z.object({
   crmSheetTab: z.string().trim().min(1).max(100).default("CRM"),
 });
 
+export const updateSharedCalendarSchema = z.object({
+  sharedCalendarId: z.string().trim().max(300),
+});
+
+export const scheduleInterviewSchema = z.object({
+  startAt: z.coerce.date(),
+  durationMinutes: z.coerce.number().int().min(15).max(240).default(30),
+});
+

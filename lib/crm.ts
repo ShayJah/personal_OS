@@ -12,6 +12,7 @@ import { createGmailDraft, isConnected as isGmailConnected } from "@/lib/gmail";
 import { fetchSheetRows, parseSpreadsheetId } from "@/lib/google-sheets";
 import { postToSlack } from "@/lib/slack";
 import { SLACK_NOTIFY_STAGES } from "@/lib/crm-stages";
+import { createInterviewEvent, extractMeetLink } from "@/lib/google-calendar";
 
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>;
 export type AddLeadInput = z.infer<typeof addLeadSchema>;
@@ -92,6 +93,84 @@ export async function updateBusinessSheetLink(
       crmSheetTab: data.crmSheetTab,
     },
   });
+}
+
+export async function updateBusinessSharedCalendar(userId: string, businessId: string, sharedCalendarId: string) {
+  await getOwnedBusiness(userId, businessId);
+  return prisma.business.update({
+    where: { id: businessId },
+    data: { sharedCalendarId: sharedCalendarId || null },
+  });
+}
+
+/**
+ * Creates a Google Meet-enabled event on the business's shared calendar,
+ * inviting the contact and whoever's assigned to the lead, moves the lead
+ * to "interviewed", and posts the Meet link to Slack — all in one action,
+ * so scheduling happens the moment you set the interview instead of
+ * waiting on a polling job to notice the calendar changed.
+ */
+export async function scheduleInterview(
+  userId: string,
+  crmRecordId: string,
+  data: { startAt: Date; endAt: Date }
+) {
+  const record = await assertOwnsCrmRecord(userId, crmRecordId);
+  const [business, contact, actingUser] = await Promise.all([
+    prisma.business.findUniqueOrThrow({ where: { id: record.businessId } }),
+    prisma.contact.findUniqueOrThrow({ where: { id: record.contactId } }),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),
+  ]);
+
+  if (!business.sharedCalendarId) {
+    throw new Error("This business has no shared calendar linked yet.");
+  }
+
+  const assignedTo = record.assignedToUserId
+    ? await prisma.user.findUnique({ where: { id: record.assignedToUserId }, select: { email: true } })
+    : null;
+  const attendeeEmails = [contact.email, assignedTo?.email].filter((e): e is string => Boolean(e));
+
+  const event = await createInterviewEvent(userId, {
+    calendarId: business.sharedCalendarId,
+    title: `Interview: ${contact.name} × ${business.name}`,
+    description: `Scheduled from Amahoro by ${actingUser?.name ?? actingUser?.email ?? "a teammate"}.`,
+    startAt: data.startAt,
+    endAt: data.endAt,
+    attendeeEmails,
+  });
+  const meetLink = extractMeetLink(event);
+
+  await prisma.crmRecord.update({
+    where: { id: crmRecordId },
+    data: {
+      stage: "interviewed",
+      lastTouchAt: new Date(),
+      nextAction: "Interview",
+      nextActionAt: data.startAt,
+    },
+  });
+  await prisma.activity.create({
+    data: {
+      crmRecordId,
+      userId,
+      kind: "meeting",
+      body: `Interview scheduled for ${data.startAt.toLocaleString()}.${meetLink ? ` Meet: ${meetLink}` : ""}`,
+    },
+  });
+
+  const when = data.startAt.toLocaleString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  postToSlack(
+    `📅 Interview scheduled: *${contact.name}* (${business.name}) — ${when}${meetLink ? `\n${meetLink}` : ""}`
+  ).catch(() => {});
+
+  return { meetLink };
 }
 
 // Different sheets in use (Jaisun's active CRM tab vs. the bulk Master List)

@@ -8,6 +8,7 @@ import {
   updateContextDocSchema,
   updateSheetLinkSchema,
   assignOwnerSchema,
+  updateSharedCalendarSchema,
 } from "@/lib/validation/crm";
 import {
   addLead,
@@ -16,6 +17,7 @@ import {
   updateBusinessSheetLink,
   importLeadsFromSheet,
   assignCrmRecordOwner,
+  updateBusinessSharedCalendar,
   type SheetImportResult,
 } from "@/lib/crm";
 
@@ -59,6 +61,15 @@ export async function updateSheetLinkAction(businessId: string, formData: FormDa
     crmSheetTab: formData.get("crmSheetTab") || undefined,
   });
   await updateBusinessSheetLink(session.user.id, businessId, body);
+  revalidatePath(`/businesses/${businessId}`);
+}
+
+export async function updateSharedCalendarAction(businessId: string, formData: FormData) {
+  const session = await requireSession();
+  const body = updateSharedCalendarSchema.parse({
+    sharedCalendarId: formData.get("sharedCalendarId"),
+  });
+  await updateBusinessSharedCalendar(session.user.id, businessId, body.sharedCalendarId);
   revalidatePath(`/businesses/${businessId}`);
 }
 

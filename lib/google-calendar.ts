@@ -1,4 +1,5 @@
 import "server-only";
+import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
 
 const SCOPE = "https://www.googleapis.com/auth/calendar";
@@ -249,6 +250,61 @@ export async function updateGoogleEvent(
   });
   if (!res.ok) throw new Error(`Failed to update Google event: ${await res.text()}`);
   return res.json();
+}
+
+export type InterviewEventInput = {
+  calendarId: string;
+  title: string;
+  description?: string;
+  startAt: Date;
+  endAt: Date;
+  attendeeEmails: string[];
+};
+
+export type GoogleEventWithMeet = GoogleEvent & {
+  hangoutLink?: string;
+  conferenceData?: { entryPoints?: { entryPointType?: string; uri?: string }[] };
+};
+
+/**
+ * Creates an event with a real Google Meet link attached, on a specific
+ * calendar (not necessarily the caller's own — e.g. a shared team
+ * calendar), and emails invites to attendees. Used for interview scheduling.
+ */
+export async function createInterviewEvent(
+  userId: string,
+  input: InterviewEventInput
+): Promise<GoogleEventWithMeet> {
+  const { accessToken } = await getValidAccessToken(userId);
+  const url = `${EVENTS_BASE}/${encodeURIComponent(input.calendarId)}/events?conferenceDataVersion=1&sendUpdates=all`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      summary: input.title,
+      description: input.description,
+      start: { dateTime: input.startAt.toISOString() },
+      end: { dateTime: input.endAt.toISOString() },
+      attendees: input.attendeeEmails.map((email) => ({ email })),
+      conferenceData: {
+        createRequest: {
+          requestId: randomUUID(),
+          conferenceSolutionKey: { type: "hangoutsMeet" },
+        },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error(`Failed to create interview event: ${await res.text()}`);
+  return res.json();
+}
+
+export function extractMeetLink(event: GoogleEventWithMeet): string | null {
+  const videoEntry = event.conferenceData?.entryPoints?.find((e) => e.entryPointType === "video");
+  return videoEntry?.uri ?? event.hangoutLink ?? null;
 }
 
 export async function deleteGoogleEvent(

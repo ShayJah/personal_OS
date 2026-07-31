@@ -7,6 +7,7 @@ import { CrmRecordRow } from "./crm-record-row";
 import { BusinessShareDialog } from "./business-share-dialog";
 import { BusinessNotes } from "./business-notes";
 import { SheetImport } from "./sheet-import";
+import { SharedCalendarSettings } from "./shared-calendar";
 
 export default async function BusinessDetailPage({
   params,
@@ -42,6 +43,8 @@ export default async function BusinessDetailPage({
         crmSheetId={business.crmSheetId}
         crmSheetTab={business.crmSheetTab ?? "CRM"}
       />
+
+      <SharedCalendarSettings businessId={business.id} sharedCalendarId={business.sharedCalendarId} />
 
       <NewLeadForm businessId={business.id} />
 

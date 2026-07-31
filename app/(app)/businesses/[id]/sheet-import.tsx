@@ -22,12 +22,7 @@ export function SheetImport({
   function handleImport() {
     setResult(null);
     startImporting(async () => {
-      try {
-        const outcome = await importFromSheetAction(businessId);
-        setResult(outcome);
-      } catch (error) {
-        setResult({ error: error instanceof Error ? error.message : "Import failed." });
-      }
+      setResult(await importFromSheetAction(businessId));
     });
   }
 

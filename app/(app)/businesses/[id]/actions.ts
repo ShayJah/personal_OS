@@ -53,9 +53,19 @@ export async function updateSheetLinkAction(businessId: string, formData: FormDa
   revalidatePath(`/businesses/${businessId}`);
 }
 
-export async function importFromSheetAction(businessId: string): Promise<SheetImportResult> {
+export async function importFromSheetAction(
+  businessId: string
+): Promise<SheetImportResult | { error: string }> {
   const session = await requireSession();
-  const result = await importLeadsFromSheet(session.user.id, businessId);
-  revalidatePath(`/businesses/${businessId}`);
-  return result;
+  try {
+    const result = await importLeadsFromSheet(session.user.id, businessId);
+    revalidatePath(`/businesses/${businessId}`);
+    return result;
+  } catch (error) {
+    // Thrown errors from Server Actions get their message redacted by
+    // Next.js in production — return the message as data instead so it
+    // actually reaches the UI.
+    console.error("Sheet import failed:", error);
+    return { error: error instanceof Error ? error.message : "Import failed." };
+  }
 }

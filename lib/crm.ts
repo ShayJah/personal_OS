@@ -10,6 +10,8 @@ import type {
 import type { z } from "zod";
 import { createGmailDraft, isConnected as isGmailConnected } from "@/lib/gmail";
 import { fetchSheetRows, parseSpreadsheetId } from "@/lib/google-sheets";
+import { postToSlack } from "@/lib/slack";
+import { SLACK_NOTIFY_STAGES } from "@/lib/crm-stages";
 
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>;
 export type AddLeadInput = z.infer<typeof addLeadSchema>;
@@ -332,10 +334,20 @@ export async function assignCrmRecordOwner(userId: string, crmRecordId: string, 
 
 export async function updateCrmStage(userId: string, crmRecordId: string, stage: string) {
   await assertOwnsCrmRecord(userId, crmRecordId);
-  return prisma.crmRecord.update({
+  const updated = await prisma.crmRecord.update({
     where: { id: crmRecordId },
     data: { stage, lastTouchAt: new Date() },
+    include: { contact: true, business: true },
   });
+
+  if (SLACK_NOTIFY_STAGES.includes(stage)) {
+    const actingUser = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
+    postToSlack(
+      `*${updated.contact.name}* (${updated.business.name}) moved to *${stage}* by ${actingUser?.name ?? actingUser?.email ?? "someone"}.`
+    ).catch(() => {});
+  }
+
+  return updated;
 }
 
 export async function addActivity(userId: string, crmRecordId: string, data: AddActivityInput) {

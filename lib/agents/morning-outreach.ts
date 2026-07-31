@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { listTopLeads, pushDraftToGmail } from "@/lib/crm";
 import { isConnected as isGmailConnected } from "@/lib/gmail";
 import { runResearchDraft } from "@/lib/agents/research-draft";
+import { postToSlack } from "@/lib/slack";
 
 const LEADS_PER_BATCH = 10;
 
@@ -61,7 +62,7 @@ export async function runMorningOutreach(userId: string, trigger: "manual" | "sc
     `${linkedinDrafted} LinkedIn draft${linkedinDrafted === 1 ? "" : "s"} staged in-app`,
   ].join(" · ");
 
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId,
       kind: "morning_outreach",
@@ -71,6 +72,10 @@ export async function runMorningOutreach(userId: string, trigger: "manual" | "sc
       payload: { leadIds: leads.map((l) => l.id), emailDrafted, emailPushedToGmail, linkedinDrafted } as unknown as Prisma.InputJsonValue,
     },
   });
+
+  postToSlack(`New outreach batch ready: ${body}`).catch(() => {});
+
+  return notification;
 }
 
 /** Used only by the (unscheduled) /api/cron/morning-outreach route for optional manual/ops triggering across all users at once. */

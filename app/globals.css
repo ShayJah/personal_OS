@@ -24,6 +24,8 @@
   --info-soft: #dde5ea;
   --warning: #b8862e;
   --warning-soft: #f0e2c4;
+  --violet: #6d5a8a;
+  --violet-soft: #e5dfec;
 }
 
 @theme inline {
@@ -45,6 +47,8 @@
   --color-info-soft: var(--info-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-fraunces);

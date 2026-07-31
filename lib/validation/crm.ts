@@ -12,7 +12,7 @@ export const addLeadSchema = z.object({
 });
 
 export const updateStageSchema = z.object({
-  stage: z.enum(["lead", "contacted", "qualified", "proposal", "won", "lost"]),
+  stage: z.enum(["lead", "contacted", "qualified", "interviewed", "proposal", "won", "lost"]),
 });
 
 export const addActivitySchema = z.object({

@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { createTaskAction } from "@/app/(app)/tasks/actions";
-import { setThemeAction } from "@/app/(app)/settings/actions";
+import { createTaskAction } from "@/app/(app)/(narrow)/tasks/actions";
+import { setThemeAction } from "@/app/(app)/(narrow)/settings/actions";
 import type { SearchResult } from "@/lib/search";
 
 const NAV_COMMANDS = [

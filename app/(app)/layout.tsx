@@ -22,7 +22,7 @@ export default async function AppLayout({
     <div className="flex min-h-screen">
       <SidebarNav userLabel={userLabel} signOutAction={signOutAction} />
       <main
-        className="mx-auto w-full max-w-3xl flex-1 px-4 pt-8 md:px-10 md:py-12"
+        className="w-full flex-1 px-4 pt-8 md:px-10 md:py-12"
         style={{ paddingBottom: "calc(6rem + env(safe-area-inset-bottom))" }}
       >
         {children}

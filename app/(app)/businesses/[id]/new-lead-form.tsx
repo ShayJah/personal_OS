@@ -5,8 +5,14 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { addLeadAction } from "./actions";
 
-export function NewLeadForm({ businessId }: { businessId: string }) {
-  const [open, setOpen] = useState(false);
+export function NewLeadForm({
+  businessId,
+  defaultOpen = false,
+}: {
+  businessId: string;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   const [saving, setSaving] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 

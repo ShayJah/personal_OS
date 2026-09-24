@@ -109,7 +109,7 @@ function BusinessCard({ business: b }: { business: BusinessCardData }) {
   return (
     <article className="group relative flex min-w-0 flex-col rounded-3xl border border-border bg-surface p-5 shadow-[0_1px_2px_rgba(33,24,16,0.04)] transition hover:border-border-strong hover:shadow-md">
       <div className="flex items-center gap-3">
-        <BusinessAvatar name={b.name} color={b.color} />
+        <BusinessAvatar name={b.name} color={b.color} icon={b.icon} image={b.iconImage} />
         <h2 className="min-w-0 flex-1 truncate font-serif text-2xl">
           {/* Stretched link: the whole card opens the business, inner actions sit above it. */}
           <Link href={`/businesses/${b.id}`} className="after:absolute after:inset-0 after:rounded-3xl">

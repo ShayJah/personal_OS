@@ -11,7 +11,7 @@ import type { z } from "zod";
 import { createGmailDraft, isConnected as isGmailConnected } from "@/lib/gmail";
 import { fetchSheetRows, parseSpreadsheetId } from "@/lib/google-sheets";
 import { postToSlack } from "@/lib/slack";
-import { SLACK_NOTIFY_STAGES } from "@/lib/crm-stages";
+import { SLACK_NOTIFY_STAGES, STAGE_ACTIVITY_KIND, stageChangeBody } from "@/lib/crm-stages";
 import { createInterviewEvent, extractMeetLink } from "@/lib/google-calendar";
 
 export type CreateBusinessInput = z.infer<typeof createBusinessSchema>;
@@ -181,6 +181,16 @@ export async function updateBusinessSheetLink(
       crmSheetTab: data.crmSheetTab,
     },
   });
+}
+
+/** Sets the emoji and/or uploaded photo; a field left undefined is untouched, null clears it. */
+export async function updateBusinessIcon(
+  userId: string,
+  businessId: string,
+  data: { icon?: string | null; iconImage?: string | null }
+) {
+  await getOwnedBusiness(userId, businessId);
+  return prisma.business.update({ where: { id: businessId }, data });
 }
 
 export async function updateBusinessSharedCalendar(userId: string, businessId: string, sharedCalendarId: string) {
@@ -506,12 +516,19 @@ export async function assignCrmRecordOwner(userId: string, crmRecordId: string, 
 }
 
 export async function updateCrmStage(userId: string, crmRecordId: string, stage: string) {
-  await assertOwnsCrmRecord(userId, crmRecordId);
+  const before = await assertOwnsCrmRecord(userId, crmRecordId);
   const updated = await prisma.crmRecord.update({
     where: { id: crmRecordId },
     data: { stage, lastTouchAt: new Date() },
     include: { contact: true, business: true },
   });
+
+  // Keep a dated, attributed trail of stage moves — the outreach chart derives replies from it.
+  if (before.stage !== stage) {
+    await prisma.activity.create({
+      data: { crmRecordId, userId, kind: STAGE_ACTIVITY_KIND, body: stageChangeBody(stage) },
+    });
+  }
 
   if (SLACK_NOTIFY_STAGES.includes(stage)) {
     const actingUser = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
@@ -585,7 +602,16 @@ export async function setDraftStatus(userId: string, draftId: string, status: "a
     where: { id: draftId, crmRecord: { business: businessAccessWhere(userId) } },
   });
   if (!draft) throw new NotFoundError();
-  const updated = await prisma.emailDraft.update({ where: { id: draftId }, data: { status } });
+  const updated = await prisma.emailDraft.update({
+    where: { id: draftId },
+    data: {
+      status,
+      // Record when and by whom, so "sent" lands in the week it was actually approved.
+      ...(status === "approved" && draft.status !== "approved"
+        ? { approvedAt: new Date(), approvedByUserId: userId }
+        : {}),
+    },
+  });
 
   if (status === "approved" && draft.channel === "email") {
     await pushDraftToGmail(userId, draftId).catch((error) => {

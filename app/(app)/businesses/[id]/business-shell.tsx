@@ -20,7 +20,7 @@ export function BusinessShell({
   counts,
   children,
 }: {
-  business: { id: string; name: string; description: string | null; color: string };
+  business: { id: string; name: string; description: string | null; color: string; icon: string | null; iconImage: string | null };
   tab: TabValue;
   /** Small numbers shown beside a tab label. */
   counts: Partial<Record<TabValue, number>>;
@@ -46,7 +46,7 @@ export function BusinessShell({
 
       <header className="mt-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-4">
         <div className="flex min-w-0 items-center gap-4 sm:gap-5">
-          <BusinessAvatar name={business.name} color={business.color} className="h-14 w-14 text-3xl sm:h-16 sm:w-16 sm:text-4xl" />
+          <BusinessAvatar name={business.name} color={business.color} icon={business.icon} image={business.iconImage} className="h-14 w-14 text-3xl sm:h-16 sm:w-16 sm:text-4xl" />
           <div className="min-w-0">
             <h1 className="font-serif text-4xl leading-[1.05] sm:text-5xl">{business.name}</h1>
             {business.description && (

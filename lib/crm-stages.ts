@@ -28,3 +28,14 @@ export const SLACK_NOTIFY_STAGES: readonly string[] = ["interviewed", "won", "lo
 export function stageColorClasses(stage: string): string {
   return STAGE_COLOR_CLASSES[stage] ?? STAGE_COLOR_CLASSES.lead;
 }
+
+/** Moving a lead into one of these means they answered us. */
+export const REPLIED_STAGES: readonly string[] = ["qualified", "interviewed", "proposal", "won"];
+
+// Stage moves are logged as activities so they carry a time and a person.
+export const STAGE_ACTIVITY_KIND = "stage";
+export const stageChangeBody = (stage: string) => `Moved to ${stage}`;
+export function parseStageChange(body: string): string | null {
+  const match = /^Moved to (\w+)$/.exec(body);
+  return match ? match[1] : null;
+}

@@ -9,6 +9,7 @@ import {
   updateSheetLinkSchema,
   assignOwnerSchema,
   updateSharedCalendarSchema,
+  updateBusinessIconSchema,
 } from "@/lib/validation/crm";
 import {
   addLead,
@@ -18,6 +19,7 @@ import {
   importLeadsFromSheet,
   assignCrmRecordOwner,
   updateBusinessSharedCalendar,
+  updateBusinessIcon,
   type SheetImportResult,
 } from "@/lib/crm";
 
@@ -88,4 +90,18 @@ export async function importFromSheetAction(
     console.error("Sheet import failed:", error);
     return { error: error instanceof Error ? error.message : "Import failed." };
   }
+}
+
+export async function updateBusinessIconAction(
+  businessId: string,
+  change: { icon?: string | null; image?: string | null }
+) {
+  const session = await requireSession();
+  const body = updateBusinessIconSchema.parse({
+    icon: change.icon === undefined ? undefined : change.icon || null,
+    image: change.image,
+  });
+  await updateBusinessIcon(session.user.id, businessId, { icon: body.icon, iconImage: body.image });
+  revalidatePath(`/businesses/${businessId}`);
+  revalidatePath("/businesses");
 }

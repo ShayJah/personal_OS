@@ -15,6 +15,8 @@ const ACTIVITY_DOT_CLASSES: Record<string, string> = {
   note: "bg-muted-soft",
   call: "bg-info",
   meeting: "bg-violet",
+  reply: "bg-success",
+  stage: "bg-accent",
 };
 
 function formatDate(date: Date | null) {

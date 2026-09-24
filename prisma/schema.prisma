@@ -398,6 +398,8 @@ model Business {
   crmSheetId  String?
   crmSheetTab String?  @default("CRM")
   sharedCalendarId String?
+  icon        String?
+  iconImage   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -489,6 +491,8 @@ model EmailDraft {
   researchNotes String?
   status        String   @default("pending")
   gmailDraftId  String?
+  approvedAt    DateTime?
+  approvedByUserId String?
   createdAt     DateTime @default(now())
 
   crmRecord CrmRecord @relation(fields: [crmRecordId], references: [id], onDelete: Cascade)

@@ -45,3 +45,16 @@ export const scheduleInterviewSchema = z.object({
   extraAttendees: z.string().trim().max(1000).optional(),
 });
 
+
+// icon: one emoji (a ZWJ sequence can run a dozen code units). image: a small
+// data URL the browser already cropped and shrunk (~10 KB); the cap is generous
+// but keeps a hand-crafted request from stuffing the row.
+export const updateBusinessIconSchema = z.object({
+  icon: z.string().trim().max(16).nullable().optional(),
+  image: z
+    .string()
+    .max(150_000)
+    .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/)
+    .nullable()
+    .optional(),
+});

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { BusinessSnapshot } from "@/lib/business-stats";
 import { StatCell, signed } from "../businesses-view";
-import { OutreachChart } from "../outreach-chart";
+import { OutreachPanel } from "../outreach-panel";
 import { BusinessShareDialog } from "./business-share-dialog";
 
 export type PendingDraft = {
@@ -42,7 +42,7 @@ export function OverviewTab({
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-5">
         <section className={card} aria-label="Outreach chart">
-          <OutreachChart weeks={s.weekly} />
+          <OutreachPanel weeks={s.weekly} people={s.people} />
         </section>
 
         <section className={card} aria-label="Stages">

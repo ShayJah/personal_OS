@@ -9,6 +9,7 @@ import { NewLeadForm } from "./new-lead-form";
 import { CrmRecordRow, type CrmRecordRowData } from "./crm-record-row";
 import { BusinessNotes } from "./business-notes";
 import { SheetImport } from "./sheet-import";
+import { IconPicker } from "./icon-picker";
 import { SharedCalendarSettings } from "./shared-calendar";
 import { OutreachStatsCard } from "./outreach-stats";
 import { ContactsList } from "./contacts-list";
@@ -219,6 +220,15 @@ export default async function BusinessDetailPage({
   } else {
     content = (
       <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
+        <div className="lg:col-span-2">
+          <IconPicker
+            businessId={business.id}
+            name={business.name}
+            color={colorForKey(business.id)}
+            icon={business.icon}
+            image={business.iconImage}
+          />
+        </div>
         <BusinessNotes businessId={business.id} initialNote={business.contextDoc ?? ""} />
         <SheetImport
           businessId={business.id}
@@ -236,6 +246,8 @@ export default async function BusinessDetailPage({
         name: business.name,
         description: business.description,
         color: colorForKey(business.id),
+        icon: business.icon,
+        iconImage: business.iconImage,
       }}
       tab={tab}
       counts={{ pipeline: snapshot.leads, contacts: snapshot.leads, drafts: snapshot.pendingDrafts }}

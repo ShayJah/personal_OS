@@ -5,6 +5,7 @@ import { requireSession } from "@/lib/auth/dal";
 import { prisma } from "@/lib/db";
 import { setPrioritiesForDate } from "@/lib/priorities";
 import { toDateOnly } from "@/lib/date";
+import { setHabitLogToday } from "@/lib/habits";
 import { setPrioritiesSchema } from "@/lib/validation/priority";
 import { createTaskSchema } from "@/lib/validation/task";
 
@@ -55,5 +56,11 @@ export async function dismissNotification(notificationId: string) {
     where: { id: notificationId, userId: session.user.id },
     data: { readAt: new Date() },
   });
+  revalidatePath("/dashboard");
+}
+
+export async function toggleHabit(habitId: string, completed: boolean) {
+  const session = await requireSession();
+  await setHabitLogToday(session.user.id, habitId, completed);
   revalidatePath("/dashboard");
 }

@@ -34,6 +34,7 @@ export function ActivityForm({
         <option value="note">Note</option>
         <option value="call">Call</option>
         <option value="meeting">Meeting</option>
+        <option value="reply">Reply received</option>
       </select>
       <input
         name="body"

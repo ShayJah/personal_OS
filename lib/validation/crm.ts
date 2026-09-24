@@ -16,7 +16,7 @@ export const updateStageSchema = z.object({
 });
 
 export const addActivitySchema = z.object({
-  kind: z.enum(["call", "meeting", "note"]),
+  kind: z.enum(["call", "meeting", "note", "reply"]),
   body: z.string().trim().min(1).max(5000),
 });
 

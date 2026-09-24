@@ -10,11 +10,16 @@ export function TaskItem({
   task,
   projects,
   compact = false,
+  hideProject = false,
+  sections,
 }: {
   task: TaskItemData;
   projects: ProjectOption[];
   /** Narrow containers (the side rail): always stack title above details. */
   compact?: boolean;
+  /** On a project page every task shares the project, so the chip is noise. */
+  hideProject?: boolean;
+  sections?: string[];
 }) {
   const [editing, setEditing] = useState(false);
   const [checked, setChecked] = useState(task.completed);
@@ -27,6 +32,7 @@ export function TaskItem({
           action={updateTaskAction.bind(null, task.id)}
           projects={projects}
           initial={task}
+          sections={sections}
           submitLabel="Save changes"
           onDone={() => setEditing(false)}
         />
@@ -86,7 +92,7 @@ export function TaskItem({
           {task.priority === 1 && !checked && (
             <span className="rounded-full bg-warning-soft px-2 py-0.5 text-warning">High</span>
           )}
-          {task.project && (
+          {task.project && !hideProject && (
             <span className="inline-flex max-w-40 items-center gap-1.5 rounded-full bg-surface-sunken px-2.5 py-0.5 text-foreground/80">
               <span
                 aria-hidden="true"

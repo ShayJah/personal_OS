@@ -53,6 +53,7 @@ export default async function TasksPage({
       dueDate: t.dueDate?.toISOString() ?? null,
       priority: t.priority,
       tags: t.tags,
+      section: t.section,
       projectId: t.projectId,
       project: t.project
         ? { id: t.project.id, name: t.project.name, color: colorById.get(t.project.id) ?? projectColor(0) }

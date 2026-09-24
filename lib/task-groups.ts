@@ -11,6 +11,7 @@ export type TaskItemData = {
   dueDate: string | null;
   priority: number | null;
   tags: string[];
+  section: string | null;
   projectId: string | null;
   project: { id: string; name: string; color: string } | null;
   dueLabel: string | null;

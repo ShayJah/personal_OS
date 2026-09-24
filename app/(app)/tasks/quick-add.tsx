@@ -16,7 +16,13 @@ function isoDay(offset: number) {
 const chip =
   "inline-flex min-h-9 items-center rounded-full border px-3 text-xs transition active:scale-[0.97]";
 
-export function FocusQuickAddButton({ className }: { className?: string }) {
+export function FocusQuickAddButton({
+  className,
+  label = "New task",
+}: {
+  className?: string;
+  label?: string;
+}) {
   return (
     <button
       type="button"
@@ -28,7 +34,7 @@ export function FocusQuickAddButton({ className }: { className?: string }) {
       className={className}
     >
       <span aria-hidden="true" className="mr-1.5 text-base leading-none">+</span>
-      New task
+      {label}
     </button>
   );
 }
@@ -36,20 +42,27 @@ export function FocusQuickAddButton({ className }: { className?: string }) {
 export function QuickAdd({
   projects,
   defaultProjectId,
+  hideProject = false,
+  sections,
 }: {
   projects: ProjectOption[];
   defaultProjectId?: string;
+  /** Project pages fix the project, so the picker is replaced by a hidden field. */
+  hideProject?: boolean;
+  /** When set, shows a Section field suggesting these names. */
+  sections?: string[];
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
   const [due, setDue] = useState("");
   const [projectId, setProjectId] = useState(defaultProjectId ?? "");
   const [high, setHigh] = useState(false);
+  const [section, setSection] = useState("");
   const [saving, setSaving] = useState(false);
 
   const today = isoDay(0);
   const tomorrow = isoDay(1);
-  const hasOptions = Boolean(due || high || (projectId && projectId !== defaultProjectId));
+  const hasOptions = Boolean(due || high || section || (projectId && projectId !== defaultProjectId));
 
   return (
     <form
@@ -123,20 +136,43 @@ export function QuickAdd({
           aria-label="Due date"
           className="!min-h-9 !rounded-full px-3 text-xs"
         />
-        <select
-          name="projectId"
-          value={projectId}
-          onChange={(e) => setProjectId(e.target.value)}
-          aria-label="Project"
-          className="!min-h-9 !rounded-full px-3 text-xs"
-        >
-          <option value="">No project</option>
-          {projects.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+        {hideProject ? (
+          <input type="hidden" name="projectId" value={defaultProjectId ?? ""} />
+        ) : (
+          <select
+            name="projectId"
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+            aria-label="Project"
+            className="!min-h-9 !rounded-full px-3 text-xs"
+          >
+            <option value="">No project</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        )}
+        {sections && (
+          <>
+            <input
+              name="section"
+              value={section}
+              onChange={(e) => setSection(e.target.value)}
+              list="quick-add-sections"
+              placeholder="Section"
+              aria-label="Section"
+              maxLength={60}
+              className="!min-h-9 w-32 !rounded-full px-3 text-xs"
+            />
+            <datalist id="quick-add-sections">
+              {sections.map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+          </>
+        )}
         <button
           type="button"
           onClick={() => setHigh(!high)}

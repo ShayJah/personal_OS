@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { toggleTaskAction } from "../(narrow)/tasks/actions";
+import { toggleTaskAction } from "../tasks/actions";
 import { quickAddTask } from "./actions";
 
 export type TodayTask = {

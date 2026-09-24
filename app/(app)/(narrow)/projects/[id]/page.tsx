@@ -2,8 +2,8 @@ import { requireSession } from "@/lib/auth/dal";
 import { getProjectDetail } from "@/lib/projects";
 import { listProjectsWithProgress } from "@/lib/projects";
 import { Card } from "@/components/ui/card";
-import { TaskList } from "../../tasks/task-list";
-import { NewTaskForm } from "../../tasks/new-task-form";
+import { TaskList } from "@/app/(app)/tasks/task-list";
+import { NewTaskForm } from "@/app/(app)/tasks/new-task-form";
 import { ProjectHeader } from "./project-header";
 
 export default async function ProjectDetailPage({

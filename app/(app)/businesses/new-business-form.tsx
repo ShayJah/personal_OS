@@ -12,7 +12,7 @@ export function NewBusinessForm() {
 
   if (!open) {
     return (
-      <Button variant="ghost" onClick={() => setOpen(true)} className="w-fit">
+      <Button variant="primary" onClick={() => setOpen(true)} className="w-fit">
         + New business
       </Button>
     );

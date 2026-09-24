@@ -40,6 +40,57 @@ export async function createBusiness(userId: string, data: CreateBusinessInput) 
   return prisma.business.create({ data: { ...data, userId } });
 }
 
+export interface BusinessWithStats {
+  id: string;
+  name: string;
+  description: string | null;
+  leads: number;
+  won: number;
+  overdue: number;
+}
+
+/**
+ * Same as listBusinesses, plus per-business won/overdue counts for the
+ * list page's stat row — two batched queries total, not one per business.
+ */
+export async function listBusinessesWithStats(userId: string): Promise<BusinessWithStats[]> {
+  const businesses = await listBusinesses(userId);
+  if (businesses.length === 0) return [];
+
+  const businessIds = businesses.map((b) => b.id);
+
+  const [wonCounts, overdueRecords] = await Promise.all([
+    prisma.crmRecord.groupBy({
+      by: ["businessId"],
+      where: { businessId: { in: businessIds }, stage: "won" },
+      _count: { _all: true },
+    }),
+    prisma.crmRecord.findMany({
+      where: {
+        businessId: { in: businessIds },
+        nextActionAt: { lt: new Date() },
+        stage: { notIn: ["won", "lost"] },
+      },
+      select: { businessId: true },
+    }),
+  ]);
+
+  const wonByBusiness = new Map(wonCounts.map((row) => [row.businessId, row._count._all]));
+  const overdueByBusiness = new Map<string, number>();
+  for (const record of overdueRecords) {
+    overdueByBusiness.set(record.businessId, (overdueByBusiness.get(record.businessId) ?? 0) + 1);
+  }
+
+  return businesses.map((b) => ({
+    id: b.id,
+    name: b.name,
+    description: b.description,
+    leads: b._count.crmRecords,
+    won: wonByBusiness.get(b.id) ?? 0,
+    overdue: overdueByBusiness.get(b.id) ?? 0,
+  }));
+}
+
 function businessAccessWhere(userId: string) {
   return { OR: [{ userId }, { collaborators: { some: { userId } } }] };
 }

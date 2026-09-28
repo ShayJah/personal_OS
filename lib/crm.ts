@@ -91,6 +91,15 @@ export async function listBusinessesWithStats(userId: string): Promise<BusinessW
   }));
 }
 
+/** Every business the user owns or collaborates on — what the cross-business views show. */
+export async function listAccessibleBusinesses(userId: string) {
+  return prisma.business.findMany({
+    where: businessAccessWhere(userId),
+    orderBy: { createdAt: "asc" },
+    select: { id: true, name: true, icon: true, iconImage: true },
+  });
+}
+
 function businessAccessWhere(userId: string) {
   return { OR: [{ userId }, { collaborators: { some: { userId } } }] };
 }

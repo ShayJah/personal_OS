@@ -9,6 +9,7 @@ function readGoalFields(formData: FormData) {
   const targetRaw = formData.get("targetValue");
   const currentRaw = formData.get("currentValue");
   const whyRaw = formData.get("why");
+  const metricRaw = formData.get("metric");
 
   return {
     horizon: formData.get("horizon") || "year",
@@ -16,18 +17,22 @@ function readGoalFields(formData: FormData) {
     why: whyRaw ? String(whyRaw) : undefined,
     area: formData.get("area") || "personal",
     targetValue: targetRaw ? Number(targetRaw) : undefined,
-    currentValue: currentRaw ? Number(currentRaw) : undefined,
+    // An auto-tracked goal counts its own progress, so a typed value would only go stale.
+    currentValue: currentRaw && !metricRaw ? Number(currentRaw) : undefined,
+    metric: metricRaw ? String(metricRaw) : null,
   };
 }
 
 function revalidateGoalPaths() {
   revalidatePath("/goals");
   revalidatePath("/dashboard");
+  revalidatePath("/outreach");
 }
 
 export async function createGoalAction(formData: FormData) {
   const session = await requireSession();
-  const body = createGoalSchema.parse(readGoalFields(formData));
+  const fields = readGoalFields(formData);
+  const body = createGoalSchema.parse({ ...fields, metric: fields.metric ?? undefined });
   await createGoal(session.user.id, body);
   revalidateGoalPaths();
 }

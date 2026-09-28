@@ -19,6 +19,14 @@ export const SENT_ACTIVITY_KINDS = ["call"];
 export const REPLY_ACTIVITY_KIND = "reply";
 export const MEETING_ACTIVITY_KIND = "meeting";
 
+/** A "Reply received" note, or moving a lead into a replied stage, means the lead answered. */
+export function isReplySignal(a: { kind: string; body: string }): boolean {
+  return (
+    a.kind === REPLY_ACTIVITY_KIND ||
+    (a.kind === STAGE_ACTIVITY_KIND && REPLIED_STAGES.includes(parseStageChange(a.body) ?? ""))
+  );
+}
+
 export type WeekBucket = {
   weekStart: string;
   sent: number;
@@ -155,10 +163,7 @@ export async function getBusinessSnapshots(
     // One reply per lead: the earliest reply signal.
     const firstReply = new Map<string, Event>();
     for (const a of acts) {
-      const isReply =
-        a.kind === REPLY_ACTIVITY_KIND ||
-        (a.kind === STAGE_ACTIVITY_KIND && REPLIED_STAGES.includes(parseStageChange(a.body) ?? ""));
-      if (!isReply) continue;
+      if (!isReplySignal(a)) continue;
       const t = a.occurredAt.getTime();
       const prev = firstReply.get(a.crmRecordId);
       if (!prev || t < prev.t) firstReply.set(a.crmRecordId, { t, userId: a.userId });
@@ -245,4 +250,66 @@ export async function listBusinessDrafts(businessId: string) {
     orderBy: { createdAt: "desc" },
     take: 60,
   });
+}
+
+export type OutreachTotals = {
+  sends: number;
+  replies: number;
+  meetings: number;
+  /** Same three counts, for the week (Mon-Sun UTC) containing `now`. */
+  thisWeek: { sends: number; replies: number; meetings: number };
+};
+
+/**
+ * Outreach counted with the same rules as the charts, from `since` to now,
+ * across the given businesses. Callers must already have checked access.
+ * Powers goals that track outreach automatically.
+ */
+export async function getOutreachTotals(businessIds: string[], since: Date): Promise<OutreachTotals> {
+  const empty = { sends: 0, replies: 0, meetings: 0 };
+  if (businessIds.length === 0) return { ...empty, thisWeek: { ...empty } };
+
+  const now = new Date();
+  const weekStart = weekStartUtc(now);
+  const sinceT = since.getTime();
+
+  const [activities, drafts] = await Promise.all([
+    prisma.activity.findMany({
+      where: {
+        crmRecord: { businessId: { in: businessIds } },
+        OR: [{ occurredAt: { gte: since } }, { kind: { in: [REPLY_ACTIVITY_KIND, STAGE_ACTIVITY_KIND] } }],
+      },
+      select: { kind: true, body: true, occurredAt: true, crmRecordId: true },
+    }),
+    prisma.emailDraft.findMany({
+      where: { crmRecord: { businessId: { in: businessIds } }, status: "approved" },
+      select: { createdAt: true, approvedAt: true },
+    }),
+  ]);
+
+  const sends = [
+    ...drafts.map((d) => (d.approvedAt ?? d.createdAt).getTime()),
+    ...activities.filter((a) => SENT_ACTIVITY_KINDS.includes(a.kind)).map((a) => a.occurredAt.getTime()),
+  ];
+  const firstReply = new Map<string, number>();
+  for (const a of activities) {
+    if (!isReplySignal(a)) continue;
+    const t = a.occurredAt.getTime();
+    const prev = firstReply.get(a.crmRecordId);
+    if (prev === undefined || t < prev) firstReply.set(a.crmRecordId, t);
+  }
+  const replies = [...firstReply.values()];
+  const meetings = activities.filter((a) => a.kind === MEETING_ACTIVITY_KIND).map((a) => a.occurredAt.getTime());
+
+  const count = (times: number[], from: number) => times.filter((t) => t >= from).length;
+  return {
+    sends: count(sends, sinceT),
+    replies: count(replies, sinceT),
+    meetings: count(meetings, sinceT),
+    thisWeek: {
+      sends: count(sends, Math.max(weekStart, sinceT)),
+      replies: count(replies, Math.max(weekStart, sinceT)),
+      meetings: count(meetings, Math.max(weekStart, sinceT)),
+    },
+  };
 }

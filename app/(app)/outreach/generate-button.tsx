@@ -24,11 +24,15 @@ export function GenerateOutreachButton() {
   }
 
   return (
-    <div className="space-y-2">
-      <Button type="button" onClick={handleClick} disabled={isPending}>
-        {isPending ? "Researching & drafting…" : "Generate more outreach"}
+    <div className="flex flex-col items-start gap-2 sm:items-end">
+      <Button type="button" onClick={handleClick} disabled={isPending} className="rounded-xl px-5">
+        {isPending ? "Researching & drafting…" : "Draft outreach"}
       </Button>
-      {result && <p className="text-sm text-muted">{result}</p>}
+      {result && (
+        <p role="status" className="max-w-xs text-xs text-muted sm:text-right">
+          {result}
+        </p>
+      )}
     </div>
   );
 }

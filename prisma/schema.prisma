@@ -346,6 +346,8 @@ model Goal {
   area         String   @default("personal")
   targetValue  Decimal?
   currentValue Decimal?
+  // "sends" | "replies" | "meetings": when set, progress is counted live from outreach.
+  metric       String?
   status       String   @default("active")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

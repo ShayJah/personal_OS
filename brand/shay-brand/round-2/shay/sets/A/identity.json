@@ -1,0 +1,49 @@
+{
+  "schema": "brand-identity/identity@1",
+  "brand": {
+    "name": "Shay",
+    "tagline": "",
+    "languages": [
+      "en"
+    ],
+    "doc_lang": "en",
+    "sector": "",
+    "numbers": false
+  },
+  "set": {
+    "id": "A",
+    "name": "",
+    "recommended": false,
+    "mechanism": "",
+    "expression_move": "",
+    "differs_by": ""
+  },
+  "axes": {},
+  "components": {
+    "logo": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "type": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "palette": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    }
+  },
+  "type": null,
+  "logo": null,
+  "palette": "palette.json",
+  "defaults_used": [],
+  "rationale": [],
+  "derived": [],
+  "audit": null
+}

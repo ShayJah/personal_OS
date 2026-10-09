@@ -1,10 +1,15 @@
 import "server-only";
 import { randomUUID } from "crypto";
 import { prisma } from "@/lib/db";
+import {
+  buildGoogleAuthUrl,
+  exchangeCodeForTokens,
+  isGoogleConfigured,
+  validAccessToken,
+  type TokenResponse,
+} from "@/lib/google-oauth";
 
 const SCOPE = "https://www.googleapis.com/auth/calendar";
-const AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const EVENTS_BASE = "https://www.googleapis.com/calendar/v3/calendars";
 
 export class GoogleCalendarNotConnectedError extends Error {
@@ -13,80 +18,10 @@ export class GoogleCalendarNotConnectedError extends Error {
   }
 }
 
-function requireClientCredentials() {
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error("GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set.");
-  }
-  return { clientId, clientSecret };
-}
+export const isGoogleCalendarConfigured = isGoogleConfigured;
 
-export function isGoogleCalendarConfigured(): boolean {
-  return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
-}
-
-export function buildAuthUrl(redirectUri: string, state: string): string {
-  const { clientId } = requireClientCredentials();
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUri,
-    response_type: "code",
-    scope: SCOPE,
-    access_type: "offline",
-    prompt: "consent",
-    state,
-  });
-  return `${AUTH_URL}?${params.toString()}`;
-}
-
-type TokenResponse = {
-  access_token: string;
-  refresh_token?: string;
-  expires_in: number;
-  scope: string;
-  token_type: string;
-};
-
-export async function exchangeCodeForTokens(
-  code: string,
-  redirectUri: string
-): Promise<TokenResponse> {
-  const { clientId, clientSecret } = requireClientCredentials();
-  const res = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      code,
-      client_id: clientId,
-      client_secret: clientSecret,
-      redirect_uri: redirectUri,
-      grant_type: "authorization_code",
-    }),
-  });
-  if (!res.ok) {
-    throw new Error(`Google token exchange failed: ${await res.text()}`);
-  }
-  return res.json();
-}
-
-async function refreshAccessToken(refreshToken: string): Promise<TokenResponse> {
-  const { clientId, clientSecret } = requireClientCredentials();
-  const res = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      refresh_token: refreshToken,
-      client_id: clientId,
-      client_secret: clientSecret,
-      grant_type: "refresh_token",
-    }),
-  });
-  if (!res.ok) {
-    throw new Error(`Google token refresh failed: ${await res.text()}`);
-  }
-  return res.json();
-}
+export const buildAuthUrl = (redirectUri: string, state: string) => buildGoogleAuthUrl(SCOPE, redirectUri, state);
+export { exchangeCodeForTokens };
 
 export async function saveConnection(userId: string, tokens: TokenResponse) {
   if (!tokens.refresh_token) {
@@ -143,25 +78,12 @@ async function getValidAccessToken(userId: string): Promise<{
   accessToken: string;
   calendarId: string;
 }> {
-  const connection = await prisma.googleCalendarConnection.findUnique({
-    where: { userId },
-  });
+  const connection = await prisma.googleCalendarConnection.findUnique({ where: { userId } });
   if (!connection) throw new GoogleCalendarNotConnectedError();
-
-  const expiresSoon = connection.expiresAt.getTime() - Date.now() < 60_000;
-  if (!expiresSoon) {
-    return { accessToken: connection.accessToken, calendarId: connection.calendarId };
-  }
-
-  const tokens = await refreshAccessToken(connection.refreshToken);
-  await prisma.googleCalendarConnection.update({
-    where: { userId },
-    data: {
-      accessToken: tokens.access_token,
-      expiresAt: new Date(Date.now() + tokens.expires_in * 1000),
-    },
-  });
-  return { accessToken: tokens.access_token, calendarId: connection.calendarId };
+  const accessToken = await validAccessToken(connection, (data) =>
+    prisma.googleCalendarConnection.update({ where: { userId }, data })
+  );
+  return { accessToken, calendarId: connection.calendarId };
 }
 
 export type GoogleEventInput = {

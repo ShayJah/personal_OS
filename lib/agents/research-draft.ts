@@ -12,7 +12,7 @@ export async function runResearchDraft(
   const agent = AGENTS["research-draft"];
   const channelLabel = channel === "linkedin" ? "LinkedIn message" : "email";
 
-  return runAgenticTurn({
+  const result = await runAgenticTurn({
     userId,
     agent: agent.name,
     trigger,
@@ -27,4 +27,8 @@ export async function runResearchDraft(
       },
     ],
   });
+  if (!result.toolsUsed.includes("create_email_draft")) {
+    throw new Error(`Research agent finished without saving a draft for CRM record ${crmRecordId}.`);
+  }
+  return result;
 }

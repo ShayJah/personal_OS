@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { prisma } from "@/lib/db";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth = NextAuth({
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -10,7 +10,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       authorization: {
         params: {
           scope:
-            "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets.readonly",
+            "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets",
           access_type: "offline",
           prompt: "consent",
         },
@@ -80,3 +80,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
+
+export const { handlers, signIn, signOut } = nextAuth;
+
+// Local-only escape hatch: with DEV_BYPASS_AUTH=1 in `next dev`, skip Google sign-in and act as a seeded
+// dev user. Hard-gated on NODE_ENV so it can never activate in a production build.
+const DEV_BYPASS = process.env.NODE_ENV === "development" && process.env.DEV_BYPASS_AUTH === "1";
+let devUserId: string | undefined;
+
+async function devSession() {
+  if (!devUserId) {
+    const user = await prisma.user.upsert({
+      where: { email: "dev@local" },
+      update: {},
+      create: { email: "dev@local", name: "Dev User", profile: { create: { onboardingDone: true } } },
+    });
+    devUserId = user.id;
+  }
+  return { user: { id: devUserId, name: "Dev User", email: "dev@local" }, expires: new Date(Date.now() + 86_400_000).toISOString() };
+}
+
+export const auth = ((...args: unknown[]) =>
+  DEV_BYPASS ? devSession() : (nextAuth.auth as (...a: unknown[]) => unknown)(...args)) as typeof nextAuth.auth;

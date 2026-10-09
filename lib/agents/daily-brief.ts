@@ -3,15 +3,17 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { runAgenticTurn } from "@/agents/runtime";
 import { AGENTS } from "@/agents/definitions";
+import { settleInBatches } from "@/lib/api/cron";
 
 interface DailyBriefPriority {
   title: string;
   why: string;
 }
 
-function parseBrief(text: string): DailyBriefPriority[] {
+export function parseBrief(text: string): DailyBriefPriority[] {
   try {
-    const parsed = JSON.parse(text);
+    // Models sometimes wrap JSON in a ```json fence despite instructions.
+    const parsed = JSON.parse(text.replace(/^\s*```(?:json)?\s*|\s*```\s*$/g, ""));
     if (!Array.isArray(parsed.priorities)) return [];
     return parsed.priorities
       .filter((p: unknown): p is DailyBriefPriority =>
@@ -24,6 +26,14 @@ function parseBrief(text: string): DailyBriefPriority[] {
 }
 
 export async function runDailyBrief(userId: string) {
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+  const alreadyDone = await prisma.notification.findFirst({
+    where: { userId, kind: "daily_brief", createdAt: { gte: startOfDay } },
+    select: { id: true },
+  });
+  if (alreadyDone) return null;
+
   const agent = AGENTS["daily-brief"];
 
   const { text } = await runAgenticTurn({
@@ -52,10 +62,5 @@ export async function runDailyBrief(userId: string) {
 
 export async function runDailyBriefForAllUsers() {
   const users = await prisma.user.findMany({ select: { id: true } });
-  const results = await Promise.allSettled(users.map((u) => runDailyBrief(u.id)));
-  return {
-    total: users.length,
-    succeeded: results.filter((r) => r.status === "fulfilled").length,
-    failed: results.filter((r) => r.status === "rejected").length,
-  };
+  return settleInBatches(users, (u) => runDailyBrief(u.id));
 }

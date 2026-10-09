@@ -21,7 +21,7 @@ interface ProgressData {
       tasksTotal: number;
       completionRate: number;
       habitLogsCompleted: number;
-      habitStreak: number;
+      habitsDoneToday: number;
     };
     habits: Array<{
       name: string;
@@ -66,12 +66,32 @@ interface BusinessShareData {
   detailLevel: "overview" | "pipeline" | "full";
   userName: string;
   canEdit: boolean;
+  canJoin?: boolean;
+  signedIn?: boolean;
   type: "business";
 }
 
 type ShareData = ProgressData | ReportShareData | BusinessShareData;
 
 function BusinessDisplay({ data, token }: { data: BusinessShareData; token: string }) {
+  const [joining, setJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [joined, setJoined] = useState(false);
+
+  async function join() {
+    setJoining(true);
+    setJoinError(null);
+    try {
+      const res = await fetch(`/api/shares/${token}`, { method: "POST" });
+      if (!res.ok) throw new Error((await res.json()).error ?? "Could not join");
+      setJoined(true);
+    } catch (err) {
+      setJoinError(err instanceof Error ? err.message : "Could not join");
+    } finally {
+      setJoining(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/80">
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-12">
@@ -82,11 +102,9 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
           </p>
         </div>
 
-        {data.canEdit ? (
+        {data.canEdit || joined ? (
           <Card className="p-4 text-center">
-            <p className="text-sm">
-              You have edit access to this business.
-            </p>
+            <p className="text-sm">You have edit access to this business.</p>
             <Link
               href={`/businesses/${data.businessId}`}
               className="mt-2 inline-block rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90"
@@ -94,19 +112,29 @@ function BusinessDisplay({ data, token }: { data: BusinessShareData; token: stri
               Open in Amahoro
             </Link>
           </Card>
-        ) : (
+        ) : data.canJoin ? (
           <Card className="p-4 text-center">
-            <p className="text-sm text-muted">
-              Sign in with GitHub to get edit access to this business.
-            </p>
+            <p className="text-sm text-muted">This link lets you join as an editor.</p>
+            <button
+              onClick={join}
+              disabled={joining}
+              className="mt-2 inline-block rounded-lg bg-foreground px-4 py-2 text-sm font-medium text-background hover:opacity-90 disabled:opacity-50"
+            >
+              {joining ? "Joining…" : "Join with edit access"}
+            </button>
+            {joinError && <p className="mt-2 text-sm text-danger">{joinError}</p>}
+          </Card>
+        ) : !data.signedIn ? (
+          <Card className="p-4 text-center">
+            <p className="text-sm text-muted">Sign in with Google to get edit access to this business.</p>
             <Link
               href={`/login?from=${encodeURIComponent(`/share/${token}`)}`}
               className="mt-2 inline-block rounded-lg border border-border-strong px-4 py-2 text-sm font-medium hover:bg-foreground/5"
             >
-              Sign in with GitHub
+              Sign in with Google
             </Link>
           </Card>
-        )}
+        ) : null}
 
         {data.business.description && (
           <Card className="p-6">
@@ -310,9 +338,9 @@ function ProgressDisplay({ data }: { data: ProgressData }) {
             </div>
             <div className="rounded-lg bg-foreground/5 p-4">
               <p className="text-2xl font-bold">
-                {data.shareData.week.habitStreak}
+                {data.shareData.week.habitsDoneToday}
               </p>
-              <p className="text-xs text-muted">Habits Active</p>
+              <p className="text-xs text-muted">Habits Done Today</p>
             </div>
             <div className="rounded-lg bg-foreground/5 p-4">
               <p className="text-2xl font-bold">

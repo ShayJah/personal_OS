@@ -1,6 +1,6 @@
 import "server-only";
+import { userToday } from "@/lib/user/preferences";
 import { prisma } from "@/lib/db";
-import { toDateOnly } from "@/lib/date";
 import type { logMetricSchema } from "@/lib/validation/metric";
 import type { z } from "zod";
 
@@ -25,7 +25,7 @@ export async function getLastSyncDate(userId: string, source: string) {
 }
 
 export async function getRecentByKind(userId: string, kind: string, days = 14) {
-  const today = toDateOnly();
+  const today = await userToday(userId);
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - (days - 1));
 
@@ -49,7 +49,7 @@ function avgByKind(metrics: { kind: string; value: unknown; date: Date }[], kind
 }
 
 export async function getWeekSummary(userId: string) {
-  const today = toDateOnly();
+  const today = await userToday(userId);
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - 6);
 

@@ -1,7 +1,7 @@
 import { requireSession } from "@/lib/auth/dal";
+import { userToday } from "@/lib/user/preferences";
 import { listTasks, type TaskFilter } from "@/lib/tasks";
 import { listProjectsWithProgress } from "@/lib/projects";
-import { toDateOnly } from "@/lib/date";
 import {
   describeDue,
   endOfWeek,
@@ -30,7 +30,7 @@ export default async function TasksPage({
     : "all";
   const group = params.group === "project" ? "project" : "due";
 
-  const today = toDateOnly();
+  const today = await userToday(userId);
   const tomorrow = new Date(today.getTime() + DAY_MS);
   const weekEnd = endOfWeek(today);
 

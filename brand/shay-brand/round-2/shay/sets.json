@@ -1,0 +1,436 @@
+{
+  "schema": "brand-identity/sets@1",
+  "sets": [
+    {
+      "identity": {
+        "set": {
+          "id": "A",
+          "name": "Pacer",
+          "recommended": true,
+          "mechanism": "The pacer at a race wears a bib and runs a steady time so others hit theirs: the mark is that bib, the type is a calm printed start number, and the palette is trail brown on bib white with Okanagan lake blue for the pace you are holding.",
+          "expression_move": "The bib, and nothing else loud: plain captions, steady type, one small blue.",
+          "differs_by": "The reference creators sell intensity; a pacer is the opposite, steady and a few steps ahead, so Shay's content reads as 'run with me' rather than 'watch me'."
+        },
+        "axes": {
+          "quiet_loud": 0,
+          "playful_serious": -1,
+          "friend_authority": -1
+        },
+        "type": {
+          "pairing_mode": "contrast",
+          "display": {
+            "family": "Big Shoulders",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              700
+            ],
+            "location": {
+              "wght": 700,
+              "opsz": 72
+            },
+            "features": [],
+            "case": "upper",
+            "tracking": 20,
+            "fallback": "'Arial Narrow', sans-serif",
+            "file": null
+          },
+          "text": {
+            "family": "Hanken Grotesk",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600
+            ],
+            "location": {
+              "wght": 400
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "symbol",
+          "concept": "A pacer's bib with four pin holes and the name punched through: steady, a few steps ahead, there to run with.",
+          "symbol": "logo/symbol.svg",
+          "wordmark": {
+            "text": "SHAY",
+            "role": "display",
+            "location": null,
+            "tracking": 20,
+            "case": "upper"
+          },
+          "monogram": null,
+          "lockups": [],
+          "colors": {
+            "bib": "primary"
+          },
+          "tags": [
+            "letterform"
+          ],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 24,
+            "mm": 8
+          }
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#fbfaf7",
+          "dark_bg": null,
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [],
+        "rationale": [
+          {
+            "claim": "Shay picked the bib as the most distinctive idea of round one and wants to help people; a pacer is the runner whose job is other people's finish.",
+            "evidence": "judgement",
+            "source": "user feedback, round 1"
+          },
+          {
+            "claim": "Lake blue against trail brown differs in lightness as well as hue, so it survives colour-blind viewing better than round one's pine.",
+            "evidence": "measured",
+            "source": "round 1 palette audit (protanopia warning)"
+          },
+          {
+            "claim": "Warm with a light cool accent is a well-rated pairing direction.",
+            "evidence": "strong",
+            "source": "references/color.md"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Pacer",
+        "direction": "Trail brown on bib white, Okanagan lake blue for the pace line.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "source": "chosen",
+            "locked": true,
+            "name": "Trail Brown",
+            "hex": "#5a3a26",
+            "usage": "bib mark, headings, buttons"
+          },
+          {
+            "id": "brand-2",
+            "source": "chosen",
+            "locked": true,
+            "name": "Okanagan Lake",
+            "hex": "#8fb1c4",
+            "usage": "pace lines, tags, one highlight per screen; on brown or as fills, never as text on white"
+          }
+        ],
+        "feels": [
+          "steady",
+          "helpful",
+          "chill"
+        ]
+      },
+      "symbol_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"bib\" x=\"4\" y=\"16\" width=\"92\" height=\"68\" rx=\"5\" data-color=\"primary\"/><circle id=\"pin-tl\" cx=\"12.5\" cy=\"24.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-tr\" cx=\"87.5\" cy=\"24.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-bl\" cx=\"12.5\" cy=\"75.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-br\" cx=\"87.5\" cy=\"75.5\" r=\"3\" data-op=\"subtract\"/><path id=\"name\" data-glyphs=\"SHAY\" data-x=\"50\" data-baseline=\"65\" data-cap=\"30\" data-anchor=\"middle\" data-op=\"subtract\"/></svg>",
+      "symbol_small_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"bib\" x=\"4\" y=\"16\" width=\"92\" height=\"68\" rx=\"5\" data-color=\"primary\"/><circle id=\"pin-tl\" cx=\"13\" cy=\"25\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-tr\" cx=\"87\" cy=\"25\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-bl\" cx=\"13\" cy=\"75\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-br\" cx=\"87\" cy=\"75\" r=\"4\" data-op=\"subtract\"/><path id=\"initial-s\" data-glyphs=\"S\" data-x=\"50\" data-baseline=\"73\" data-cap=\"46\" data-anchor=\"middle\" data-op=\"subtract\"/></svg>",
+      "wordmark_detail_svg": null
+    },
+    {
+      "identity": {
+        "set": {
+          "id": "B",
+          "name": "Spotter",
+          "recommended": false,
+          "mechanism": "A spotter's hands around the bar, ready but not lifting for you: two square brackets grip a bar, which is also how code holds a value, so the mark, the mono-plus-sans type and the walnut-and-steel palette all say 'I've got you, you do the rep'.",
+          "expression_move": "The bracketed bar; type and colour stay plain.",
+          "differs_by": "None of the reference creators uses a symbol; this one carries builder and gym in one shape and stays readable at avatar size."
+        },
+        "axes": {
+          "quiet_loud": -1,
+          "playful_serious": 1,
+          "friend_authority": 0
+        },
+        "type": {
+          "pairing_mode": "superfamily",
+          "display": {
+            "family": "IBM Plex Mono",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              500
+            ],
+            "location": {
+              "wght": 500
+            },
+            "features": [],
+            "case": "lower",
+            "tracking": -20,
+            "fallback": "ui-monospace, Menlo, monospace",
+            "file": null
+          },
+          "text": {
+            "family": "IBM Plex Sans",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600
+            ],
+            "location": {
+              "wght": 400,
+              "wdth": 100
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "symbol+wordmark",
+          "concept": "Two brackets grip a bar: a spotter's hands, and code holding a value.",
+          "symbol": "logo/symbol.svg",
+          "wordmark": {
+            "text": "shay",
+            "role": "display",
+            "location": null,
+            "tracking": -20,
+            "case": "lower"
+          },
+          "monogram": null,
+          "lockups": [
+            "horizontal",
+            "stacked"
+          ],
+          "colors": {
+            "hands": "primary",
+            "bar": "accent"
+          },
+          "tags": [
+            "abstract-geometric"
+          ],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 24,
+            "mm": 8
+          }
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#f7f6f2",
+          "dark_bg": null,
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [],
+        "rationale": [
+          {
+            "claim": "Brackets are code to a CS student and hands to anyone in a gym; one shape covers both halves of Shay's life.",
+            "evidence": "judgement",
+            "source": "brief"
+          },
+          {
+            "claim": "Plex Mono and Plex Sans share one skeleton, so the code voice and the reading voice match without effort.",
+            "evidence": "practice",
+            "source": "references/type.md"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Spotter",
+        "direction": "Walnut hands on chalk white, a steel bar.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "source": "chosen",
+            "locked": true,
+            "name": "Walnut",
+            "hex": "#4b3326",
+            "usage": "brackets, text, buttons"
+          },
+          {
+            "id": "brand-2",
+            "source": "chosen",
+            "locked": true,
+            "name": "Bar Steel",
+            "hex": "#a69f95",
+            "usage": "the bar, rules, secondary fills"
+          }
+        ],
+        "feels": [
+          "steady",
+          "supportive",
+          "plain"
+        ]
+      },
+      "symbol_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"bar\" x=\"2\" y=\"45\" width=\"96\" height=\"10\" data-color=\"accent\"/><g id=\"hands\" data-color=\"primary\"><rect id=\"l-stem\" x=\"16\" y=\"20\" width=\"11\" height=\"60\"/><rect id=\"l-top\" x=\"16\" y=\"20\" width=\"22\" height=\"11\"/><rect id=\"l-bot\" x=\"16\" y=\"69\" width=\"22\" height=\"11\"/><rect id=\"r-stem\" x=\"73\" y=\"20\" width=\"11\" height=\"60\"/><rect id=\"r-top\" x=\"62\" y=\"20\" width=\"22\" height=\"11\"/><rect id=\"r-bot\" x=\"62\" y=\"69\" width=\"22\" height=\"11\"/></g></svg>",
+      "symbol_small_svg": null,
+      "wordmark_detail_svg": null
+    },
+    {
+      "identity": {
+        "set": {
+          "id": "C",
+          "name": "Trail Blaze",
+          "recommended": false,
+          "mechanism": "Painted blazes on trees mark the path for whoever comes next: two offset larch-gold blazes (the trail sign for 'turn here') sit beside a relaxed lowercase name on bark brown.",
+          "expression_move": "The two blazes in larch gold; everything else is bark and birch.",
+          "differs_by": "Outdoorsy and slow where the reference feeds are studio or gym; it makes Shay the person who marks the way, not the one performing."
+        },
+        "axes": {
+          "quiet_loud": -1,
+          "playful_serious": -1,
+          "friend_authority": -2
+        },
+        "type": {
+          "pairing_mode": "single-family",
+          "display": {
+            "family": "Figtree",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              600
+            ],
+            "location": {
+              "wght": 600
+            },
+            "features": [],
+            "case": "lower",
+            "tracking": -20,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "text": {
+            "family": "Figtree",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600
+            ],
+            "location": {
+              "wght": 400
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "symbol+wordmark",
+          "concept": "Two offset trail blazes, the sign for 'turn here', painted for whoever is behind you.",
+          "symbol": "logo/symbol.svg",
+          "wordmark": {
+            "text": "shay",
+            "role": "display",
+            "location": null,
+            "tracking": -20,
+            "case": "lower"
+          },
+          "monogram": null,
+          "lockups": [
+            "horizontal",
+            "stacked"
+          ],
+          "colors": {
+            "blaze-upper": "accent",
+            "blaze-lower": "accent"
+          },
+          "tags": [
+            "abstract-geometric"
+          ],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 24,
+            "mm": 8
+          }
+        },
+        "card": {
+          "ground": "brand-1"
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#f8f7f4",
+          "dark_bg": "#2a1e17",
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [
+          {
+            "id": "gold-brass-accent",
+            "why": "Larches in the Okanagan turn gold in fall, the one place-specific fall colour Shay has lived with; used only for the blazes, with no cream or terracotta beside it."
+          }
+        ],
+        "rationale": [
+          {
+            "claim": "A double blaze is a real trail sign meaning a turn ahead; the mark keeps that meaning without explaining it.",
+            "evidence": "practice",
+            "source": "trail marking convention"
+          },
+          {
+            "claim": "Larch gold reads only on dark grounds, so the card and avatar sit on bark brown.",
+            "evidence": "measured",
+            "source": "palette audit"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Trail Blaze",
+        "direction": "Bark brown and birch white, larch gold for the blazes.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "source": "chosen",
+            "locked": true,
+            "name": "Bark",
+            "hex": "#3b2a20",
+            "usage": "ground, text, wordmark"
+          },
+          {
+            "id": "brand-2",
+            "source": "chosen",
+            "locked": true,
+            "name": "Larch Gold",
+            "hex": "#d2a03a",
+            "usage": "the blazes, one highlight per screen"
+          }
+        ],
+        "feels": [
+          "calm",
+          "outdoors",
+          "helpful"
+        ]
+      },
+      "symbol_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"blaze-upper\" x=\"44\" y=\"8\" width=\"26\" height=\"38\" rx=\"2\" data-color=\"accent\"/><rect id=\"blaze-lower\" x=\"30\" y=\"54\" width=\"26\" height=\"38\" rx=\"2\" data-color=\"accent\"/></svg>",
+      "symbol_small_svg": null,
+      "wordmark_detail_svg": null
+    }
+  ]
+}

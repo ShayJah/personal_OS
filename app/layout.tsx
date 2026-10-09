@@ -1,25 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ServiceWorkerRegistration } from "@/components/layout/service-worker-registration";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const hanken = localFont({
+  src: "./fonts/HankenGrotesk.ttf",
+  variable: "--font-hanken",
+  weight: "100 900",
+});
+
+const bigShoulders = localFont({
+  src: "./fonts/BigShoulders.ttf",
+  variable: "--font-display",
+  weight: "100 900",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-});
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
-  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F6ECE1",
+  themeColor: "#EBE3D3",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -55,7 +56,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${hanken.variable} ${bigShoulders.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

@@ -16,12 +16,11 @@ import {
   updateCrmStage,
   updateBusinessContextDoc,
   updateBusinessSheetLink,
-  importLeadsFromSheet,
   assignCrmRecordOwner,
   updateBusinessSharedCalendar,
   updateBusinessIcon,
-  type SheetImportResult,
 } from "@/lib/crm";
+import { createBusinessTemplateSheet, syncBusinessSheet, type SheetSyncResult } from "@/lib/sheet-sync";
 
 export async function addLeadAction(businessId: string, formData: FormData) {
   const session = await requireSession();
@@ -75,21 +74,30 @@ export async function updateSharedCalendarAction(businessId: string, formData: F
   revalidatePath(`/businesses/${businessId}`);
 }
 
-export async function importFromSheetAction(
-  businessId: string
-): Promise<SheetImportResult | { error: string }> {
+async function runSheetAction(
+  businessId: string,
+  run: (userId: string) => Promise<SheetSyncResult>
+): Promise<SheetSyncResult | { error: string }> {
   const session = await requireSession();
   try {
-    const result = await importLeadsFromSheet(session.user.id, businessId);
+    const result = await run(session.user.id);
     revalidatePath(`/businesses/${businessId}`);
     return result;
   } catch (error) {
     // Thrown errors from Server Actions get their message redacted by
     // Next.js in production — return the message as data instead so it
     // actually reaches the UI.
-    console.error("Sheet import failed:", error);
-    return { error: error instanceof Error ? error.message : "Import failed." };
+    console.error("Sheet sync failed:", error);
+    return { error: error instanceof Error ? error.message : "Sync failed." };
   }
+}
+
+export async function syncSheetAction(businessId: string) {
+  return runSheetAction(businessId, (userId) => syncBusinessSheet(userId, businessId));
+}
+
+export async function createTemplateSheetAction(businessId: string) {
+  return runSheetAction(businessId, (userId) => createBusinessTemplateSheet(userId, businessId));
 }
 
 export async function updateBusinessIconAction(

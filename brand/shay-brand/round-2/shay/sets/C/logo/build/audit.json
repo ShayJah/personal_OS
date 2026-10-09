@@ -1,0 +1,77 @@
+{
+  "schema": "brand-identity/audit@1",
+  "findings": [
+    {
+      "id": "logo.contrast",
+      "component": "logo",
+      "severity": "warn",
+      "measured": 2.22,
+      "threshold": ">= 3.0:1 (WCAG 2.2 SC 1.4.11, practice)",
+      "message": "full-color: accent #d2a03a on #f8f7f4 is 2.22:1",
+      "suggested_fix": "use a one-colour version on this ground, or declare logo.device tile|outline",
+      "roles": [
+        "accent"
+      ]
+    },
+    {
+      "id": "logo.contrast",
+      "component": "logo",
+      "severity": "warn",
+      "measured": 2.22,
+      "threshold": ">= 3.0:1 (WCAG 2.2 SC 1.4.11, practice)",
+      "message": "on-light-background: accent #d2a03a on #f8f7f4 is 2.22:1",
+      "suggested_fix": "use a one-colour version on this ground, or declare logo.device tile|outline",
+      "roles": [
+        "accent"
+      ]
+    },
+    {
+      "id": "logo.light-swap",
+      "component": "logo",
+      "severity": "info",
+      "measured": 2.22,
+      "threshold": null,
+      "message": "symbol-only: accent #d2a03a is 2.22:1 on #f8f7f4; drawn in the light text colour #241912 (a colour stays only where it reads)",
+      "suggested_fix": null,
+      "roles": [
+        "accent"
+      ]
+    },
+    {
+      "id": "logo.light-swap",
+      "component": "logo",
+      "severity": "info",
+      "measured": 2.22,
+      "threshold": null,
+      "message": "favicon-16: accent #d2a03a is 2.22:1 on #f8f7f4; drawn in the light text colour #241912 (a colour stays only where it reads)",
+      "suggested_fix": null,
+      "roles": [
+        "accent"
+      ]
+    },
+    {
+      "id": "logo.light-swap",
+      "component": "logo",
+      "severity": "info",
+      "measured": 2.22,
+      "threshold": null,
+      "message": "favicon-32: accent #d2a03a is 2.22:1 on #f8f7f4; drawn in the light text colour #241912 (a colour stays only where it reads)",
+      "suggested_fix": null,
+      "roles": [
+        "accent"
+      ]
+    },
+    {
+      "id": "logo.light-swap",
+      "component": "logo",
+      "severity": "info",
+      "measured": 2.22,
+      "threshold": null,
+      "message": "favicon-48: accent #d2a03a is 2.22:1 on #f8f7f4; drawn in the light text colour #241912 (a colour stays only where it reads)",
+      "suggested_fix": null,
+      "roles": [
+        "accent"
+      ]
+    }
+  ]
+}

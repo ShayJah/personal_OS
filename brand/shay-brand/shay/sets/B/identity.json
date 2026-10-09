@@ -1,0 +1,398 @@
+{
+  "schema": "brand-identity/identity@1",
+  "brand": {
+    "name": "Shay",
+    "tagline": "Building in public, between Western and the Okanagan.",
+    "languages": [
+      "en"
+    ],
+    "doc_lang": "en",
+    "sector": "Personal brand: builder, CS student and founder of Cobuu Ventures; training and health lifestyle",
+    "numbers": false,
+    "copy": {
+      "sentence": {
+        "en": "Most days I write code, lift something heavy and ship one small thing."
+      },
+      "nav": [
+        "Work",
+        "Journal",
+        "Training",
+        "About"
+      ],
+      "cta": "Say hi"
+    }
+  },
+  "set": {
+    "id": "B",
+    "name": "Race Bib",
+    "recommended": false,
+    "mechanism": "A race bib pinned at four corners: the mark is the bib with SHAY punched through it, the type is a condensed athletic grotesk like a printed start number, and the palette is bib white, trail brown and Forest City pine.",
+    "expression_move": "The bib shape itself, pinned on everything from the profile picture to the end card.",
+    "differs_by": "None of the reference creators has a mark at all, only captions; this gives Shay an object people can recognise in a 16 px avatar and that belongs to training and building alike (you pin a bib on before you start)."
+  },
+  "axes": {
+    "quiet_loud": 2,
+    "playful_serious": -2,
+    "classic_contemporary": 1
+  },
+  "components": {
+    "logo": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "type": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "palette": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    }
+  },
+  "type": {
+    "pairing_mode": "contrast",
+    "display": {
+      "family": "Big Shoulders",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        800
+      ],
+      "location": {
+        "wght": 800,
+        "opsz": 72
+      },
+      "features": [],
+      "case": "upper",
+      "tracking": 20,
+      "fallback": "'Arial Narrow', 'Helvetica Neue Condensed', sans-serif",
+      "file": null
+    },
+    "text": {
+      "family": "Hanken Grotesk",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        400,
+        600
+      ],
+      "location": {
+        "wght": 400
+      },
+      "features": [],
+      "case": "as-is",
+      "tracking": 0,
+      "fallback": "'Helvetica Neue', Arial, sans-serif",
+      "file": null
+    },
+    "mono": null
+  },
+  "logo": {
+    "type": "symbol",
+    "concept": "A start bib with four pin holes and the name punched through: you pin it on before you build or race.",
+    "symbol": "logo/symbol.svg",
+    "wordmark": {
+      "text": "SHAY",
+      "role": "display",
+      "location": null,
+      "tracking": 20,
+      "case": "upper"
+    },
+    "monogram": null,
+    "lockups": [],
+    "colors": {
+      "bib": "primary"
+    },
+    "tags": [
+      "letterform"
+    ],
+    "clear_space": {
+      "unit": "cap-height",
+      "multiple": 1,
+      "inferred": true
+    },
+    "min_size": {
+      "px": 24,
+      "mm": 8
+    }
+  },
+  "palette": "palette.json",
+  "defaults_used": [],
+  "rationale": [
+    {
+      "claim": "Shay wants the brand to work for a training and health lifestyle as well as building; a race bib belongs to both starts.",
+      "evidence": "judgement",
+      "source": "brief"
+    },
+    {
+      "claim": "Pine green names London, Ontario's Forest City, where Shay studied at Western; the local meaning is a private nod, not a requirement to read the mark.",
+      "evidence": "judgement",
+      "source": "brief"
+    },
+    {
+      "claim": "A condensed grotesk at 800 holds four capitals inside a small bib and stays legible at avatar size.",
+      "evidence": "practice",
+      "source": "references/logo.md"
+    }
+  ],
+  "derived": [
+    {
+      "file": "card.png",
+      "requires": [
+        "logo",
+        "type",
+        "palette"
+      ],
+      "inputs_sha256": "6cbf46f73a4524b2f0061fff613359091249f6cc2a4112e01a96fbbd725b43fc"
+    }
+  ],
+  "audit": {
+    "schema": "brand-identity/audit@1",
+    "passed": true,
+    "counts": {
+      "gate": 0,
+      "warn": 5,
+      "info": 10
+    },
+    "findings": [
+      {
+        "id": "palette.cvd.light.protan.primary-accent",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 9.58,
+        "threshold": 10.0,
+        "message": "light: primary and accent collapse to CIEDE2000 9.6 for protanopia (#433d24 vs #5d5845)",
+        "suggested_fix": {
+          "change": "modes.light.accent",
+          "from": "#2f5e46",
+          "to": "#326149",
+          "how": "never carry meaning by colour alone (icon/label); or lighten by OKLCH L +0.01, same hue"
+        },
+        "roles": [
+          "light.primary",
+          "light.accent"
+        ]
+      },
+      {
+        "id": "palette.cvd.light.deutan.primary-accent",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 8.93,
+        "threshold": 10.0,
+        "message": "light: primary and accent collapse to CIEDE2000 8.9 for deutanopia (#4b4426 vs #565347)",
+        "suggested_fix": {
+          "change": "modes.light.accent",
+          "from": "#2f5e46",
+          "to": "#35644b",
+          "how": "never carry meaning by colour alone (icon/label); or lighten by OKLCH L +0.02, same hue"
+        },
+        "roles": [
+          "light.primary",
+          "light.accent"
+        ]
+      },
+      {
+        "id": "palette.cvd.dark.protan.primary-accent",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 5.16,
+        "threshold": 10.0,
+        "message": "dark: primary and accent collapse to CIEDE2000 5.2 for protanopia (#999171 vs #a69f86)",
+        "suggested_fix": {
+          "change": "modes.dark.accent",
+          "from": "#6ea788",
+          "to": "#80ba9a",
+          "how": "never carry meaning by colour alone (icon/label); or lighten by OKLCH L +0.06, same hue"
+        },
+        "roles": [
+          "dark.primary",
+          "dark.accent"
+        ]
+      },
+      {
+        "id": "palette.cvd.dark.deutan.primary-accent",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 8.41,
+        "threshold": 10.0,
+        "message": "dark: primary and accent collapse to CIEDE2000 8.4 for deutanopia (#a39a73 vs #9c988a)",
+        "suggested_fix": {
+          "change": "modes.dark.accent",
+          "from": "#6ea788",
+          "to": "#5d9678",
+          "how": "never carry meaning by colour alone (icon/label); or darken by OKLCH L -0.06, same hue"
+        },
+        "roles": [
+          "dark.primary",
+          "dark.accent"
+        ]
+      },
+      {
+        "id": "palette.structure.lightness-range",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 8.4,
+        "threshold": 25,
+        "message": "brand and action colours span only Delta L* 8.4; without a clear light/dark step between them the palette reads flat (lightness contrast is the strongest harmony predictor, O'Donovan 2011)",
+        "suggested_fix": {
+          "change": "brand/accent",
+          "how": "move the accent (not a locked brand colour) at least 25 L* away from the primary"
+        },
+        "roles": [
+          "brand",
+          "light.primary",
+          "light.accent"
+        ]
+      },
+      {
+        "id": "palette.contrast.light.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 1.35,
+        "threshold": 3.0,
+        "message": "light: border #dbd9d3 on background #fbfaf7 is 1.35:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.border",
+          "from": "#dbd9d3",
+          "to": "#92918b",
+          "how": "darken by OKLCH L -0.23, same hue",
+          "ratio_after": 3.03
+        },
+        "roles": [
+          "light.border",
+          "light.background"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.link-on-text",
+        "component": "palette",
+        "severity": "info",
+        "measured": 2.66,
+        "threshold": 3.0,
+        "message": "dark: link #b88d73 on text #f5f2f1 is 2.66:1, below 3.0:1 (underline links in dark mode (WCAG G183: without underline a link needs 3:1 against body text); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.link",
+          "from": "#b88d73",
+          "to": "#9a7158",
+          "how": "use primary-600 (same scale)",
+          "ratio_after": 3.87
+        },
+        "roles": [
+          "dark.link",
+          "dark.text"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 1.86,
+        "threshold": 3.0,
+        "message": "dark: border #4b3e36 on background #160d08 is 1.86:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.border",
+          "from": "#4b3e36",
+          "to": "#7c706a",
+          "how": "use neutral-500 (same scale)",
+          "ratio_after": 4.0
+        },
+        "roles": [
+          "dark.border",
+          "dark.background"
+        ]
+      },
+      {
+        "id": "palette.structure.greyscale.brand-1-brand-2",
+        "component": "palette",
+        "severity": "info",
+        "measured": 8.4,
+        "threshold": 15.0,
+        "message": "#5a3a26 and #2f5e46 differ by only Delta L* 8.4; side by side in a logo they merge in greyscale/one-colour print",
+        "suggested_fix": null,
+        "roles": [
+          "brand-1",
+          "brand-2"
+        ]
+      },
+      {
+        "id": "palette.harmony.primary-accent",
+        "component": "palette",
+        "severity": "info",
+        "measured": -0.71,
+        "threshold": -0.3,
+        "message": "Ou-Luo two-colour model scores #5a3a26 + #2f5e46 at -0.71 (negative = less harmonious on a grey CRT test, no context): model signal only; the pairing table in references/pairing.md takes precedence",
+        "suggested_fix": null,
+        "roles": [
+          "light.primary",
+          "light.accent"
+        ]
+      },
+      {
+        "id": "type.display.confusables",
+        "component": "type",
+        "severity": "info",
+        "measured": 1.0,
+        "threshold": "0.9 (heuristic, uncalibrated)",
+        "message": "Big Shoulders: I/l look alike at small sizes (IoU 1.00 at 48 px)",
+        "suggested_fix": "try ss01 'a y g open loops, R leg'"
+      },
+      {
+        "id": "type.display.web-weight",
+        "component": "type",
+        "severity": "info",
+        "measured": 62,
+        "threshold": null,
+        "message": "Big Shoulders: ~62 KB WOFF2 for the brief's characters (one variable file, all weights; estimate)",
+        "suggested_fix": null
+      },
+      {
+        "id": "type.text.coverage.en_Latn.extended",
+        "component": "type",
+        "severity": "info",
+        "measured": "101/102",
+        "threshold": "100% auxiliary + punctuation",
+        "message": "Hanken Grotesk lacks English auxiliary/punctuation characters: ʻ",
+        "suggested_fix": "fine if the brand never writes them (loanwords, names); else another family"
+      },
+      {
+        "id": "type.text.web-weight",
+        "component": "type",
+        "severity": "info",
+        "measured": 29,
+        "threshold": null,
+        "message": "Hanken Grotesk: ~29 KB WOFF2 for the brief's characters (one variable file, all weights; estimate)",
+        "suggested_fix": null
+      },
+      {
+        "id": "logo.thin-feature",
+        "component": "logo",
+        "severity": "info",
+        "measured": {
+          "stroke_px2": 2.17,
+          "gap_px2": 0.11
+        },
+        "threshold": ">= 1 px = 4.2 units (heuristic, uncalibrated)",
+        "message": "symbol at 24 px (min size): strokes/gaps thinner than 1 px (lost 2.17 px², clogged 0.11 px²); symbol-small.svg covers small sizes",
+        "suggested_fix": "add symbol_small_svg for small sizes, or raise logo.min_size.px (or thicken the thin part / widen the gap)"
+      }
+    ],
+    "defaults": {
+      "matched": []
+    }
+  },
+  "palette_build": {
+    "strategy": null,
+    "accent": null,
+    "light_bg": "#fbfaf7",
+    "dark_bg": null,
+    "neutral_tint": null,
+    "neutral_chroma": null,
+    "extra": []
+  }
+}

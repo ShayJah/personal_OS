@@ -1,0 +1,9 @@
+:root {
+  --font-display: "Big Shoulders", 'Arial Narrow', sans-serif;
+  --font-display-weight: 800;
+  --font-display-tracking: 0.040em;
+  --font-display-variation: "opsz" 72;
+  --font-text: "Hanken Grotesk", 'Helvetica Neue', Arial, sans-serif;
+  --font-text-weight: 400;
+  --font-text-tracking: 0.000em;
+}

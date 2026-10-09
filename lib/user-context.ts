@@ -1,13 +1,13 @@
 import "server-only";
+import { userToday } from "@/lib/user/preferences";
 import { prisma } from "@/lib/db";
 import { listTasks } from "@/lib/tasks";
 import { listProjectsWithProgress } from "@/lib/projects";
 import { getPrioritiesForDate } from "@/lib/priorities";
 import { listActiveGoals } from "@/lib/goals";
-import { toDateOnly } from "@/lib/date";
 
 export async function buildUserContext(userId: string): Promise<string> {
-  const today = toDateOnly();
+  const today = await userToday(userId);
 
   const [openTasks, projects, priorities, habits, goals] = await Promise.all([
     listTasks(userId, "all"),

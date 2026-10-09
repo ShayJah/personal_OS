@@ -234,6 +234,8 @@ export default async function BusinessDetailPage({
           businessId={business.id}
           crmSheetId={business.crmSheetId}
           crmSheetTab={business.crmSheetTab ?? "CRM"}
+          lastSyncedAt={business.sheetSyncedAt?.toISOString() ?? null}
+          isOwner={business.userId === session.user.id}
         />
       </div>
     );

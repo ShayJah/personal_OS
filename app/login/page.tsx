@@ -1,4 +1,5 @@
 import { signIn } from "@/lib/auth/auth";
+import { LogoMark } from "@/components/brand/logo-mark";
 
 export default async function LoginPage({
   searchParams,
@@ -10,8 +11,9 @@ export default async function LoginPage({
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6 rounded-2xl border border-border-strong p-8">
-        <div className="space-y-1 text-center">
-          <h1 className="text-xl font-semibold">Sign in to Amahoro</h1>
+        <div className="space-y-2 text-center">
+          <LogoMark className="mx-auto size-14" />
+          <h1 className="text-3xl">Sign in to Amahoro</h1>
           <p className="text-sm text-muted">
             Your priorities, projects, and business operations in one place.
           </p>

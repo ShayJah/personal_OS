@@ -1,7 +1,7 @@
 import { requireSession } from "@/lib/auth/dal";
+import { userToday } from "@/lib/user/preferences";
 import { getProjectDetail } from "@/lib/projects";
 import { listBusinesses } from "@/lib/crm";
-import { toDateOnly } from "@/lib/date";
 import { describeDue, type TaskItemData } from "@/lib/task-groups";
 import { colorForKey, computeProjectHealth, formatDay } from "@/lib/project-health";
 import { ProjectView, type ProjectSection } from "./project-view";
@@ -19,7 +19,7 @@ export default async function ProjectDetailPage({
     listBusinesses(session.user.id),
   ]);
 
-  const today = toDateOnly();
+  const today = await userToday(session.user.id);
   const completed = project.tasks.filter((t) => t.completed).length;
   const { status, pct, pace } = computeProjectHealth({
     total: project.tasks.length,

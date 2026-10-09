@@ -7,7 +7,8 @@ import {
   getShareSettings,
   type BusinessDetailLevel,
 } from "@/lib/sharing";
-import { getOwnedBusiness } from "@/lib/crm";
+import { assertBusinessOwner } from "@/lib/crm";
+import { shareSettingsSchema } from "@/lib/validation/share";
 import { NextResponse } from "next/server";
 
 const BUSINESS_DETAIL_LEVELS: BusinessDetailLevel[] = ["overview", "pipeline", "full"];
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     const { type, target, expiresIn, action, settings } = body;
 
     if (action === "updateSettings") {
-      const updated = await updateShareSettings(session.user.id, settings);
+      const updated = await updateShareSettings(session.user.id, shareSettingsSchema.parse(settings));
       return NextResponse.json(updated);
     }
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Invalid request" }, { status: 400 });
       }
 
-      await getOwnedBusiness(session.user.id, businessId);
+      await assertBusinessOwner(session.user.id, businessId);
 
       const link = await createShareLink(
         session.user.id,
@@ -90,7 +91,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await revokeShareLink(token);
+    await revokeShareLink(session.user.id, token);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error revoking share link:", error);

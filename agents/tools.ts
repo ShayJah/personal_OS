@@ -7,6 +7,7 @@ import { searchAll } from "@/lib/search";
 import { listActiveGoals } from "@/lib/goals";
 import { getCrmRecordDetail, createEmailDraft } from "@/lib/crm";
 import { toDateOnly } from "@/lib/date";
+import { userToday } from "@/lib/user/preferences";
 
 export interface AgentTool {
   definition: Anthropic.Tool;
@@ -63,7 +64,7 @@ export const TOOLS: Record<string, AgentTool> = {
       },
     },
     execute: async (userId, input) => {
-      const date = typeof input.date === "string" ? toDateOnly(new Date(input.date)) : toDateOnly();
+      const date = typeof input.date === "string" ? toDateOnly(new Date(input.date)) : await userToday(userId);
       return getPrioritiesForDate(userId, date);
     },
   },

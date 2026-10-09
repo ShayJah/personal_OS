@@ -3,6 +3,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getAnthropicClient, estimateCostUsd } from "@/lib/ai";
+import { enforceDailyAiLimit } from "@/lib/ai-limit";
 import { toolDefinitions, executeTool } from "@/agents/tools";
 
 const MAX_STEPS = 4;
@@ -22,11 +23,15 @@ export interface AgentTurnInput {
 export interface AgentTurnResult {
   text: string;
   agentRunId: string;
+  /** Tools that ran without error, so callers can tell "finished" from "actually did the job". */
+  toolsUsed: string[];
 }
 
 export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnResult> {
   const { userId, agent, trigger, model, systemPrompt, toolNames, extraTools, messages, maxTokens = 1024 } =
     input;
+
+  if (trigger !== "schedule") await enforceDailyAiLimit(userId);
 
   const run = await prisma.agentRun.create({
     data: { userId, agent, trigger, status: "running" },
@@ -72,16 +77,21 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
 
       const toolResults: Anthropic.ToolResultBlockParam[] = [];
       for (const block of toolUseBlocks) {
-        const output = await executeTool(
-          block.name,
-          userId,
-          (block.input ?? {}) as Record<string, unknown>
-        );
+        // A bad tool call (unknown id, malformed date) goes back to the model to correct, not up to crash the run.
+        let output: unknown;
+        let isError = false;
+        try {
+          output = await executeTool(block.name, userId, (block.input ?? {}) as Record<string, unknown>);
+        } catch (error) {
+          isError = true;
+          output = { error: error instanceof Error ? error.message : "Tool failed" };
+        }
         toolTrace.push({ tool: block.name, input: block.input, output });
         toolResults.push({
           type: "tool_result",
           tool_use_id: block.id,
           content: JSON.stringify(output),
+          ...(isError && { is_error: true }),
         });
       }
 
@@ -103,7 +113,11 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
       },
     });
 
-    return { text: finalText, agentRunId: run.id };
+    return {
+      text: finalText,
+      agentRunId: run.id,
+      toolsUsed: toolTrace.filter((t) => !(t.output as { error?: string } | null)?.error).map((t) => t.tool),
+    };
   } catch (error) {
     await prisma.agentRun.update({
       where: { id: run.id },

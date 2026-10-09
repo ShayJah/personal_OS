@@ -1,4 +1,5 @@
 import { requireSession } from "@/lib/auth/dal";
+import { userToday } from "@/lib/user/preferences";
 import { getPrioritiesForDate } from "@/lib/priorities";
 import { listHabitsWithHistory } from "@/lib/habits";
 import { listEventsForRange } from "@/lib/calendar";
@@ -12,7 +13,7 @@ const DAY_MS = 86_400_000;
 export default async function DashboardPage() {
   const session = await requireSession();
   const userId = session.user.id;
-  const today = toDateOnly();
+  const today = await userToday(userId);
   const tomorrow = new Date(today.getTime() + DAY_MS);
 
   const [priorities, tasks, dueTodayCount, overdueCount, openTaskCount, habits, notifications, events, followUps] =

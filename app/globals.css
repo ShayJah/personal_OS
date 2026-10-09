@@ -6,26 +6,29 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #f6ece1;
-  --surface: #fbf6f0;
-  --surface-sunken: #efe2d3;
-  --foreground: #211a13;
-  --muted: #8a7c6c;
-  --muted-soft: #b8ab99;
-  --border: #21181008;
-  --border-strong: #21181017;
-  --accent: #bf5730;
-  --accent-soft: #f0dcc9;
-  --danger: #af3626;
-  --danger-soft: #f4dcd7;
-  --success: #5f7052;
-  --success-soft: #e2e6d8;
-  --info: #4a6b8a;
-  --info-soft: #dde5ea;
-  --warning: #b8862e;
-  --warning-soft: #f0e2c4;
-  --violet: #6d5a8a;
-  --violet-soft: #e5dfec;
+  /* Shay brand: oat ground, chocolate ink, olive second surface, caramel accent, night for dark frames. */
+  --background: #ebe3d3;
+  --surface: #f4eee2;
+  --surface-sunken: #e0d5c0;
+  --foreground: #3b2418;
+  --muted: #6b5545;
+  --muted-soft: #9a8672;
+  --border: #3b241814;
+  --border-strong: #3b241829;
+  --caramel: #b9814a; /* fills, borders, the logo core — too light for small text on oat */
+  --accent: #8f5a2a; /* caramel, darkened so accent text/links stay readable */
+  --accent-soft: #e2d0b3;
+  --danger: #a5502a;
+  --danger-soft: #efd8c9;
+  --success: #6f7347;
+  --success-soft: #dcdcc0;
+  --info: #56646b;
+  --info-soft: #d9dcd6;
+  --warning: #8f5a2a;
+  --warning-soft: #ead9ba;
+  --violet: #6b5460;
+  --violet-soft: #e1d6d4;
+  --night: #1d1612;
 }
 
 @theme inline {
@@ -37,6 +40,8 @@
   --color-muted-soft: var(--muted-soft);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-caramel: var(--caramel);
+  --color-night: var(--night);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-danger: var(--danger);
@@ -49,15 +54,16 @@
   --color-warning-soft: var(--warning-soft);
   --color-violet: var(--violet);
   --color-violet-soft: var(--violet-soft);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-hanken);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-fraunces);
+  --font-serif: var(--font-display);
+  --font-display: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), "Helvetica Neue", Arial, sans-serif;
   overscroll-behavior-y: none;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -67,12 +73,20 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-h1,
-h2,
-h3 {
-  font-family: var(--font-serif);
-  font-optical-sizing: auto;
-  letter-spacing: -0.01em;
+/* Tall, calm caps for headings — as in the Shay board. In @layer base so size utilities still win. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-display), "Arial Narrow", sans-serif;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 1;
+  }
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
 }
 
 .eyebrow {
@@ -80,7 +94,7 @@ h3 {
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--success);
 }
 
 input[type="checkbox"] {
@@ -132,7 +146,7 @@ input:not([type="checkbox"]):not([type="hidden"]):focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: var(--accent) !important;
+  border-color: var(--caramel) !important;
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 

@@ -1,0 +1,43 @@
+{
+  "schema": "brand-identity/brief@1",
+  "brand": "Shay",
+  "tagline": "A few steps ahead. Run with me.",
+  "site": null,
+  "languages": [
+    "en"
+  ],
+  "doc_lang": "en",
+  "numbers": false,
+  "components": {
+    "logo": "new",
+    "type": "new",
+    "palette": "new"
+  },
+  "sources": {},
+  "sets": 3,
+  "sector": "Personal brand: builder, CS student and founder of Cobuu Ventures; training and health lifestyle",
+  "audience": "Builders, students and people who train; Instagram first, website as a creative catalogue, LinkedIn",
+  "attributes": [
+    "grounded",
+    "helpful",
+    "chill"
+  ],
+  "competitors": [
+    "zerotoui (Instagram)",
+    "Asterisk Create (Instagram)",
+    "Hyrox-style athlete creators"
+  ],
+  "axes": [],
+  "copy": {
+    "sentence": {
+      "en": "Most days I write code, lift something heavy and ship one small thing."
+    },
+    "nav": [
+      "Work",
+      "Notes",
+      "Training",
+      "About"
+    ],
+    "cta": "Say hi"
+  }
+}

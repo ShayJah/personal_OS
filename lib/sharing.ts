@@ -1,7 +1,7 @@
 import "server-only";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { toDateOnly } from "@/lib/date";
+import { userToday } from "@/lib/user/preferences";
 import { addDays, startOfWeek } from "@/lib/calendar";
 
 export type ShareType = "progress" | "report" | "summary" | "business";
@@ -107,7 +107,7 @@ export async function updateShareSettings(
  * Get progress summary for sharing
  */
 export async function getProgressSummary(userId: string) {
-  const today = toDateOnly(new Date());
+  const today = await userToday(userId);
   const weekStart = startOfWeek(today);
   const weekEnd = addDays(weekStart, 6);
 
@@ -120,17 +120,14 @@ export async function getProgressSummary(userId: string) {
       prisma.task.findMany({
         where: {
           userId,
-          createdAt: {
-            gte: new Date(today),
-            lt: new Date(addDays(today, 1)),
-          },
+          dueDate: { gte: today, lt: addDays(today, 1) },
         },
         select: { title: true, completed: true },
       }),
       prisma.task.findMany({
         where: {
           userId,
-          createdAt: { gte: weekStart, lt: addDays(weekEnd, 1) },
+          dueDate: { gte: weekStart, lt: addDays(weekEnd, 1) },
         },
         select: { title: true, completed: true },
       }),
@@ -153,7 +150,7 @@ export async function getProgressSummary(userId: string) {
 
   const todayCompleted = todayTasks.filter((t) => t.completed).length;
   const weekCompleted = weekTasks.filter((t) => t.completed).length;
-  const habitStreak = habits.filter((h) =>
+  const habitsDoneToday = habits.filter((h) =>
     h.logs.some((l) => l.completed)
   ).length;
 
@@ -176,7 +173,7 @@ export async function getProgressSummary(userId: string) {
           ? Math.round((weekCompleted / weekTasks.length) * 100)
           : 0,
       habitLogsCompleted: weekHabits.length,
-      habitStreak,
+      habitsDoneToday,
     },
     habits: habits.map((h) => ({
       name: h.name,
@@ -252,10 +249,8 @@ export async function getBusinessShareData(
 /**
  * Revoke a share link
  */
-export async function revokeShareLink(token: string) {
-  return prisma.sharedLink.delete({
-    where: { token },
-  });
+export async function revokeShareLink(userId: string, token: string) {
+  return prisma.sharedLink.deleteMany({ where: { token, userId } });
 }
 
 /**

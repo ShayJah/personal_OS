@@ -1,4 +1,5 @@
 import "server-only";
+import { userToday } from "@/lib/user/preferences";
 import { prisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/api/response";
 import { toDateOnly } from "@/lib/date";
@@ -33,7 +34,7 @@ export function computeStreak(
 }
 
 export async function listHabitsWithHistory(userId: string) {
-  const today = toDateOnly();
+  const today = await userToday(userId);
   const since = new Date(today);
   since.setUTCDate(since.getUTCDate() - (HISTORY_DAYS - 1));
 
@@ -98,7 +99,7 @@ export async function setHabitLogToday(
   completed: boolean
 ) {
   await getOwnedHabit(userId, habitId);
-  const date = toDateOnly();
+  const date = await userToday(userId);
 
   return prisma.habitLog.upsert({
     where: { habitId_date: { habitId, date } },

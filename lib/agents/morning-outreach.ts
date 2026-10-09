@@ -4,7 +4,9 @@ import { prisma } from "@/lib/db";
 import { listTopLeads, pushDraftToGmail } from "@/lib/crm";
 import { isConnected as isGmailConnected } from "@/lib/gmail";
 import { runResearchDraft } from "@/lib/agents/research-draft";
+import { after } from "next/server";
 import { postToSlack } from "@/lib/slack";
+import { settleInBatches } from "@/lib/api/cron";
 
 const LEADS_PER_BATCH = 10;
 
@@ -73,7 +75,7 @@ export async function runMorningOutreach(userId: string, trigger: "manual" | "sc
     },
   });
 
-  postToSlack(`New outreach batch ready: ${body}`).catch(() => {});
+  after(() => postToSlack(`New outreach batch ready: ${body}`));
 
   return notification;
 }
@@ -81,10 +83,5 @@ export async function runMorningOutreach(userId: string, trigger: "manual" | "sc
 /** Used only by the (unscheduled) /api/cron/morning-outreach route for optional manual/ops triggering across all users at once. */
 export async function runMorningOutreachForAllUsers() {
   const users = await prisma.user.findMany({ select: { id: true } });
-  const results = await Promise.allSettled(users.map((u) => runMorningOutreach(u.id, "schedule")));
-  return {
-    total: users.length,
-    succeeded: results.filter((r) => r.status === "fulfilled").length,
-    failed: results.filter((r) => r.status === "rejected").length,
-  };
+  return settleInBatches(users, (u) => runMorningOutreach(u.id, "schedule"), 2);
 }

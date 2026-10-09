@@ -1,9 +1,9 @@
 "use server";
 
+import { userToday } from "@/lib/user/preferences";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/dal";
 import { prisma } from "@/lib/db";
-import { toDateOnly } from "@/lib/date";
 import { createTaskSchema, updateTaskSchema } from "@/lib/validation/task";
 import { createTask, deleteTask, updateTask } from "@/lib/tasks";
 
@@ -80,13 +80,13 @@ export async function deleteTaskAction(taskId: string, projectId?: string | null
 
 export async function moveTaskToTodayAction(taskId: string) {
   const session = await requireSession();
-  const task = await updateTask(session.user.id, taskId, { dueDate: toDateOnly() });
+  const task = await updateTask(session.user.id, taskId, { dueDate: await userToday(session.user.id) });
   revalidateTaskPaths(task.projectId);
 }
 
 export async function rescheduleOverdueAction() {
   const session = await requireSession();
-  const today = toDateOnly();
+  const today = await userToday(session.user.id);
   await prisma.task.updateMany({
     where: { userId: session.user.id, completed: false, dueDate: { lt: today } },
     data: { dueDate: today },

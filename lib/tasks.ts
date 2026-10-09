@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import { userToday } from "@/lib/user/preferences";
 import { NotFoundError } from "@/lib/api/response";
 import type { createTaskSchema, updateTaskSchema } from "@/lib/validation/task";
 import type { z } from "zod";
@@ -9,16 +10,15 @@ export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
 
 export type TaskFilter = "today" | "upcoming" | "completed" | "all";
 
-function todayRange() {
-  const now = new Date();
-  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+async function todayRange(userId: string) {
+  const today = await userToday(userId);
   const tomorrow = new Date(today);
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
   return { today, tomorrow };
 }
 
 export async function listTasks(userId: string, filter: TaskFilter) {
-  const { today, tomorrow } = todayRange();
+  const { today, tomorrow } = await todayRange(userId);
 
   const where =
     filter === "today"

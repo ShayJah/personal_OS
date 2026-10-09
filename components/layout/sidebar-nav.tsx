@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { LogoMark } from "@/components/brand/logo-mark";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Today" },
@@ -31,9 +32,12 @@ export function SidebarNav({
       className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface/60 px-6 pb-6 pt-8 md:flex"
       style={{ paddingTop: "max(2rem, env(safe-area-inset-top))" }}
     >
-      <Link href="/dashboard" className="block">
-        <span className="font-serif text-2xl leading-none">Amahoro</span>
-        <span className="eyebrow mt-1 block">operations</span>
+      <Link href="/dashboard" className="flex items-center gap-3">
+        <LogoMark className="size-9 shrink-0" />
+        <span>
+          <span className="block font-serif text-3xl font-extrabold uppercase leading-none tracking-wide">Amahoro</span>
+          <span className="eyebrow mt-1 block">operations</span>
+        </span>
       </Link>
 
       <nav aria-label="Primary" className="mt-10 flex flex-1 flex-col gap-0.5">

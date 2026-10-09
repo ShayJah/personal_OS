@@ -9,7 +9,8 @@ import type {
 } from "@/lib/validation/crm";
 import type { z } from "zod";
 import { createGmailDraft, isConnected as isGmailConnected } from "@/lib/gmail";
-import { fetchSheetRows, parseSpreadsheetId } from "@/lib/google-sheets";
+import { parseSpreadsheetId } from "@/lib/google-sheets";
+import { after } from "next/server";
 import { postToSlack } from "@/lib/slack";
 import { SLACK_NOTIFY_STAGES, STAGE_ACTIVITY_KIND, stageChangeBody } from "@/lib/crm-stages";
 import { createInterviewEvent, extractMeetLink } from "@/lib/google-calendar";
@@ -112,6 +113,17 @@ export async function getOwnedBusiness(userId: string, id: string) {
   return business;
 }
 
+/** Owner-only — collaborators can work the pipeline but not share the business or repoint its integrations. */
+export async function assertBusinessOwner(userId: string, id: string) {
+  const business = await prisma.business.findFirst({ where: { id, userId } });
+  if (!business) throw new NotFoundError();
+  return business;
+}
+
+export async function isBusinessMember(userId: string, businessId: string) {
+  return Boolean(await prisma.business.findFirst({ where: { id: businessId, ...businessAccessWhere(userId) }, select: { id: true } }));
+}
+
 export async function grantBusinessCollaborator(businessId: string, userId: string) {
   const business = await prisma.business.findUnique({ where: { id: businessId } });
   if (!business || business.userId === userId) return;
@@ -182,10 +194,11 @@ export async function updateBusinessSheetLink(
   businessId: string,
   data: { crmSheetUrl: string; crmSheetTab: string }
 ) {
-  await getOwnedBusiness(userId, businessId);
+  await assertBusinessOwner(userId, businessId);
   return prisma.business.update({
     where: { id: businessId },
     data: {
+      sheetSyncedAt: null,
       crmSheetId: parseSpreadsheetId(data.crmSheetUrl),
       crmSheetTab: data.crmSheetTab,
     },
@@ -203,7 +216,7 @@ export async function updateBusinessIcon(
 }
 
 export async function updateBusinessSharedCalendar(userId: string, businessId: string, sharedCalendarId: string) {
-  await getOwnedBusiness(userId, businessId);
+  await assertBusinessOwner(userId, businessId);
   return prisma.business.update({
     where: { id: businessId },
     data: { sharedCalendarId: sharedCalendarId || null },
@@ -279,169 +292,13 @@ export async function scheduleInterview(
     hour: "numeric",
     minute: "2-digit",
   });
-  postToSlack(
+  after(() =>
+    postToSlack(
     `📅 Interview scheduled: *${contact.name}* (${business.name}) — ${when}${meetLink ? `\n${meetLink}` : ""}`
-  ).catch(() => {});
+    )
+  );
 
   return { meetLink };
-}
-
-// Different sheets in use (Jaisun's active CRM tab vs. the bulk Master List)
-// use different header text for the same concept — map every known variant
-// onto the same internal key so both import cleanly through one code path.
-const SHEET_HEADER_ALIASES: Record<string, string> = {
-  name: "name",
-  record: "name",
-  company: "company",
-  "company > name": "company",
-  "job title": "role",
-  email: "email",
-  "email addresses": "email",
-  linkedin: "linkedin",
-  source: "source",
-  event: "source",
-  notes: "notes",
-  "reach out date": "reachOutDate",
-  "1st ro": "reachOutDate",
-  "last contacted": "lastContacted",
-  "next follow-up": "nextFollowUp",
-  "meeting date": "meetingDate",
-  response: "response",
-};
-
-function parseSheetDate(value: string | undefined): Date | null {
-  if (!value) return null;
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-// Maps the sheet's free-text "Response" column (Ghost/Decline/Maybe/Accept/blank)
-// onto our stage enum. A judgment call, not a 1:1 mapping — re-run the import
-// after manually correcting a stage in-app and it'll get overwritten again,
-// since the sheet is the source of truth by design.
-function stageFromSheetRow(response: string | undefined, reachOutDate: Date | null): string {
-  const normalized = (response ?? "").trim().toLowerCase();
-  if (normalized === "decline") return "lost";
-  if (normalized === "accept") return "proposal";
-  if (normalized === "maybe") return "qualified";
-  if (normalized === "ghost") return "contacted";
-  return reachOutDate ? "contacted" : "lead";
-}
-
-export interface SheetImportResult {
-  rowsSeen: number;
-  created: number;
-  updated: number;
-  skipped: number;
-}
-
-/**
- * Pulls leads from the business's linked Google Sheet CRM tab into our own
- * Contact/CrmRecord tables. One-way, pull-only — the Sheet stays the source
- * of truth (it has its own daily-sort automation the team relies on), we
- * never write back to it. Safe to re-run any time; matches existing leads
- * by email (or name+company if no email) and updates them in place.
- */
-export async function importLeadsFromSheet(userId: string, businessId: string): Promise<SheetImportResult> {
-  const business = await getOwnedBusiness(userId, businessId);
-  if (!business.crmSheetId) {
-    throw new Error("This business has no linked Google Sheet yet.");
-  }
-
-  const rows = await fetchSheetRows(userId, business.crmSheetId, business.crmSheetTab ?? "CRM");
-  if (rows.length === 0) return { rowsSeen: 0, created: 0, updated: 0, skipped: 0 };
-
-  const headerIndex: Record<string, number> = {};
-  rows[0].forEach((header, i) => {
-    const key = SHEET_HEADER_ALIASES[header.trim().toLowerCase()];
-    if (key) headerIndex[key] = i;
-  });
-
-  const get = (row: string[], key: string) => {
-    const i = headerIndex[key];
-    return i === undefined ? undefined : row[i]?.trim();
-  };
-
-  let created = 0;
-  let updated = 0;
-  let skipped = 0;
-
-  for (const row of rows.slice(1)) {
-    const name = get(row, "name");
-    if (!name) {
-      skipped++;
-      continue;
-    }
-
-    const email = get(row, "email") || undefined;
-    const company = get(row, "company") || undefined;
-    const reachOutDate = parseSheetDate(get(row, "reachOutDate"));
-    const lastContacted = parseSheetDate(get(row, "lastContacted"));
-    const nextFollowUp = parseSheetDate(get(row, "nextFollowUp"));
-    const meetingDate = parseSheetDate(get(row, "meetingDate"));
-    const stage = stageFromSheetRow(get(row, "response"), reachOutDate);
-
-    const existingContact = await prisma.contact.findFirst({
-      where: email
-        ? { userId, email }
-        : { userId, name: { equals: name, mode: "insensitive" }, company: company ?? null },
-    });
-
-    const contact = existingContact
-      ? await prisma.contact.update({
-          where: { id: existingContact.id },
-          data: {
-            name,
-            email,
-            company,
-            role: get(row, "role") || undefined,
-            linkedin: get(row, "linkedin") || undefined,
-            notes: get(row, "notes") || undefined,
-          },
-        })
-      : await prisma.contact.create({
-          data: {
-            userId,
-            name,
-            email,
-            company,
-            role: get(row, "role") || undefined,
-            linkedin: get(row, "linkedin") || undefined,
-            notes: get(row, "notes") || undefined,
-          },
-        });
-
-    const existingRecord = await prisma.crmRecord.findFirst({
-      where: { businessId, contactId: contact.id },
-    });
-
-    const recordData = {
-      stage,
-      source: get(row, "source") || undefined,
-      lastTouchAt: lastContacted ?? reachOutDate ?? undefined,
-      nextAction: meetingDate ? "Meeting" : nextFollowUp ? "Follow up" : undefined,
-      nextActionAt: meetingDate ?? nextFollowUp ?? undefined,
-    };
-
-    if (existingRecord) {
-      await prisma.crmRecord.update({ where: { id: existingRecord.id }, data: recordData });
-      updated++;
-    } else {
-      const created_ = await prisma.crmRecord.create({
-        data: { businessId, contactId: contact.id, ...recordData },
-      });
-      await prisma.activity.create({
-        data: {
-          crmRecordId: created_.id,
-          kind: "note",
-          body: "Imported from Google Sheet CRM.",
-        },
-      });
-      created++;
-    }
-  }
-
-  return { rowsSeen: rows.length - 1, created, updated, skipped };
 }
 
 /**
@@ -541,9 +398,9 @@ export async function updateCrmStage(userId: string, crmRecordId: string, stage:
 
   if (SLACK_NOTIFY_STAGES.includes(stage)) {
     const actingUser = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } });
-    postToSlack(
+    after(() => postToSlack(
       `*${updated.contact.name}* (${updated.business.name}) moved to *${stage}* by ${actingUser?.name ?? actingUser?.email ?? "someone"}.`
-    ).catch(() => {});
+    ));
   }
 
   return updated;

@@ -1,10 +1,10 @@
 "use server";
 
+import { userToday } from "@/lib/user/preferences";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/dal";
 import { prisma } from "@/lib/db";
 import { setPrioritiesForDate } from "@/lib/priorities";
-import { toDateOnly } from "@/lib/date";
 import { setHabitLogToday } from "@/lib/habits";
 import { setPrioritiesSchema } from "@/lib/validation/priority";
 import { createTaskSchema } from "@/lib/validation/task";
@@ -16,7 +16,7 @@ export async function saveTodayPriorities(formData: FormData) {
     items: raw.map((v) => v.trim()).filter(Boolean),
   }).items;
 
-  await setPrioritiesForDate(session.user.id, toDateOnly(), items);
+  await setPrioritiesForDate(session.user.id, await userToday(session.user.id), items);
   revalidatePath("/dashboard");
 }
 
@@ -41,7 +41,7 @@ export async function acceptDailyBrief(notificationId: string) {
   const titles = (payload?.priorities ?? []).map((p) => p.title).slice(0, 3);
 
   if (titles.length > 0) {
-    await setPrioritiesForDate(session.user.id, toDateOnly(), titles);
+    await setPrioritiesForDate(session.user.id, await userToday(session.user.id), titles);
   }
   await prisma.notification.update({
     where: { id: notificationId },

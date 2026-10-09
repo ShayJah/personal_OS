@@ -6,7 +6,7 @@ import {
   getBusinessShareData,
   type BusinessDetailLevel,
 } from "@/lib/sharing";
-import { grantBusinessCollaborator } from "@/lib/crm";
+import { grantBusinessCollaborator, isBusinessMember } from "@/lib/crm";
 import { auth } from "@/lib/auth/auth";
 import { NextResponse } from "next/server";
 
@@ -50,7 +50,7 @@ export async function GET(
             tasksTotal: settings.shareTasks ? summary.week.tasksTotal : 0,
             completionRate: settings.shareTasks ? summary.week.completionRate : 0,
             habitLogsCompleted: settings.shareHabits ? summary.week.habitLogsCompleted : 0,
-            habitStreak: settings.shareHabits ? summary.week.habitStreak : 0,
+            habitsDoneToday: settings.shareHabits ? summary.week.habitsDoneToday : 0,
           },
           habits: settings.shareHabits ? summary.habits : [],
         },
@@ -101,17 +101,10 @@ export async function GET(
         return NextResponse.json({ error: "Business not found" }, { status: 404 });
       }
 
-      let canEdit = false;
-      if (share.allowEdit) {
-        const session = await auth();
-        const viewerId = session?.user?.id;
-        if (viewerId === share.userId) {
-          canEdit = true;
-        } else if (viewerId) {
-          await grantBusinessCollaborator(share.target, viewerId);
-          canEdit = true;
-        }
-      }
+      // Viewing never changes access; joining is an explicit POST below.
+      const viewerId = share.allowEdit ? (await auth())?.user?.id : undefined;
+      const canEdit = Boolean(viewerId) && (await isBusinessMember(viewerId!, share.target));
+      const canJoin = Boolean(share.allowEdit && viewerId && !canEdit);
 
       return NextResponse.json({
         ...data,
@@ -119,6 +112,8 @@ export async function GET(
         detailLevel,
         userName,
         canEdit,
+        canJoin,
+        signedIn: Boolean(viewerId),
         type: "business",
       });
     }
@@ -134,4 +129,20 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+export async function POST(
+  _request: Request,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  const { token } = await params;
+  const share = await getShareLinkByToken(token);
+  if (!share || share.type !== "business" || !share.target || !share.allowEdit) {
+    return NextResponse.json({ error: "This link does not grant edit access" }, { status: 403 });
+  }
+  const viewerId = (await auth())?.user?.id;
+  if (!viewerId) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+
+  await grantBusinessCollaborator(share.target, viewerId);
+  return NextResponse.json({ ok: true });
 }

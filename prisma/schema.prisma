@@ -399,6 +399,7 @@ model Business {
   contextDoc  String?
   crmSheetId  String?
   crmSheetTab String?  @default("CRM")
+  sheetSyncedAt DateTime?
   sharedCalendarId String?
   icon        String?
   iconImage   String?

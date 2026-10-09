@@ -1,0 +1,376 @@
+{
+  "schema": "brand-identity/identity@1",
+  "brand": {
+    "name": "Shay",
+    "tagline": "Building in public, between Western and the Okanagan.",
+    "languages": [
+      "en"
+    ],
+    "doc_lang": "en",
+    "sector": "Personal brand: builder, CS student and founder of Cobuu Ventures; training and health lifestyle",
+    "numbers": false,
+    "copy": {
+      "sentence": {
+        "en": "Most days I write code, lift something heavy and ship one small thing."
+      },
+      "nav": [
+        "Work",
+        "Journal",
+        "Training",
+        "About"
+      ],
+      "cta": "Say hi"
+    }
+  },
+  "set": {
+    "id": "A",
+    "name": "Two Voices",
+    "recommended": true,
+    "mechanism": "Builder and creative in one line: heavy wide capitals say the fact, an italic serif word says the feeling, so the caption system, the italic wordmark and the espresso-and-maple palette all come from the same two-voice sentence.",
+    "expression_move": "The italic serif word inside a line of heavy capitals: the only loud thing, used once per post.",
+    "differs_by": "zerotoui uses one heavy sans in white and Asterisk Create pairs a serif with red-orange on grass green and mustard; this keeps the two-voice caption but sets it on espresso and bone white with one maple orange, so the feed reads as fall rather than studio or field."
+  },
+  "axes": {
+    "quiet_loud": 1,
+    "playful_serious": 0,
+    "classic_contemporary": -1
+  },
+  "components": {
+    "logo": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "type": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "palette": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    }
+  },
+  "type": {
+    "pairing_mode": "contrast",
+    "display": {
+      "family": "Bodoni Moda",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        500
+      ],
+      "location": {
+        "ital": 1,
+        "wght": 500,
+        "opsz": 96
+      },
+      "features": [],
+      "case": "lower",
+      "tracking": -10,
+      "fallback": "Didot, 'Bodoni 72', Georgia, serif",
+      "file": null
+    },
+    "text": {
+      "family": "Archivo",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        400,
+        600,
+        900
+      ],
+      "location": {
+        "wght": 400,
+        "wdth": 100
+      },
+      "features": [],
+      "case": "as-is",
+      "tracking": 0,
+      "fallback": "'Helvetica Neue', Arial, sans-serif",
+      "file": null
+    },
+    "mono": null
+  },
+  "logo": {
+    "type": "wordmark",
+    "concept": "The name in the creative voice, ended by the builder's voice: a lowercase italic 'shay' with one heavy square full stop in maple.",
+    "symbol": null,
+    "wordmark": {
+      "text": "shay",
+      "role": "display",
+      "location": null,
+      "tracking": -10,
+      "case": "lower"
+    },
+    "monogram": null,
+    "lockups": [
+      "horizontal"
+    ],
+    "colors": {
+      "wordmark": "primary",
+      "builder-stop": "accent"
+    },
+    "tags": [],
+    "clear_space": {
+      "unit": "cap-height",
+      "multiple": 1,
+      "inferred": true
+    },
+    "min_size": {
+      "px": 32,
+      "mm": 10
+    },
+    "defect": "Plain italic name had nothing ownable; added the square maple full stop that carries the heavy-caption voice into the mark."
+  },
+  "palette": "palette.json",
+  "defaults_used": [
+    {
+      "id": "cream-ground",
+      "why": "Shay asked for whites and browns with a fall feel; the bone ground is the white of that request, kept close to white rather than yellow cream."
+    },
+    {
+      "id": "terracotta-clay",
+      "why": "Shay asked for a fall palette and pointed at Asterisk Create's red-orange captions; maple is pushed redder and more saturated than clay, and there is no gold accent with it."
+    }
+  ],
+  "rationale": [
+    {
+      "claim": "Heavy capitals plus an italic serif word is the caption style Shay pointed at in both reference feeds.",
+      "evidence": "measured",
+      "source": "user reference screenshots (zerotoui, Asterisk Create)"
+    },
+    {
+      "claim": "Archivo's width axis gives wide black capitals for captions and a normal-width 400 for reading from one family, so the second face is only the italic.",
+      "evidence": "measured",
+      "source": "fonts search: Archivo wght 100-900 +wdth"
+    },
+    {
+      "claim": "Bodoni italic at large optical size has the drama of the reference captions; it is kept to display sizes because hairlines thin out when small.",
+      "evidence": "practice",
+      "source": "references/type.md"
+    },
+    {
+      "claim": "Espresso and maple on bone reads as fall; that association is taste, not evidence.",
+      "evidence": "judgement",
+      "source": "designer"
+    }
+  ],
+  "derived": [
+    {
+      "file": "card.png",
+      "requires": [
+        "logo",
+        "type",
+        "palette"
+      ],
+      "inputs_sha256": "0ee8ee09a86b4df9fab34839543ad3ca564f5128075052935a6d7ef083406e5a"
+    }
+  ],
+  "audit": {
+    "schema": "brand-identity/audit@1",
+    "passed": true,
+    "counts": {
+      "gate": 0,
+      "warn": 3,
+      "info": 10
+    },
+    "findings": [
+      {
+        "id": "palette.contrast.light.link-on-text",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 2.75,
+        "threshold": 3.0,
+        "message": "light: link #a93d0b on text #241913 is 2.75:1, below 3.0:1 (links distinguishable from body text without underline (WCAG G183); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.link",
+          "from": "#a93d0b",
+          "to": "#c8501e",
+          "how": "use accent-600 (same scale)",
+          "ratio_after": 3.78
+        },
+        "roles": [
+          "light.link",
+          "light.text"
+        ]
+      },
+      {
+        "id": "palette.structure.mid-lightness.brand-2",
+        "component": "palette",
+        "severity": "warn",
+        "measured": [
+          4.54,
+          4.62
+        ],
+        "threshold": 5.0,
+        "message": "#c8501e is a mid-lightness trap: white 4.54:1, black 4.62:1; body text on it needs a darker or lighter derivative",
+        "suggested_fix": {
+          "change": "brand-2",
+          "how": "keep the brand colour for large areas/logo; put text on a derivative step of its scale"
+        },
+        "roles": [
+          "brand-2"
+        ]
+      },
+      {
+        "id": "palette.contrast.light.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 1.37,
+        "threshold": 3.0,
+        "message": "light: border #d5cec2 on background #f4efe7 is 1.37:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.border",
+          "from": "#d5cec2",
+          "to": "#90897e",
+          "how": "darken by OKLCH L -0.22, same hue",
+          "ratio_after": 3.02
+        },
+        "roles": [
+          "light.border",
+          "light.background"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.link-on-text",
+        "component": "palette",
+        "severity": "info",
+        "measured": 2.8,
+        "threshold": 3.0,
+        "message": "dark: link #f06833 on text #f5f2f1 is 2.80:1, below 3.0:1 (underline links in dark mode (WCAG G183: without underline a link needs 3:1 against body text); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.link",
+          "from": "#f06833",
+          "to": "#c8501e",
+          "how": "use accent-600 (same scale)",
+          "ratio_after": 4.08
+        },
+        "roles": [
+          "dark.link",
+          "dark.text"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 2.39,
+        "threshold": 3.0,
+        "message": "dark: border #5f524c on background #1f1510 is 2.39:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.border",
+          "from": "#5f524c",
+          "to": "#7c706a",
+          "how": "use neutral-500 (same scale)",
+          "ratio_after": 3.74
+        },
+        "roles": [
+          "dark.border",
+          "dark.background"
+        ]
+      },
+      {
+        "id": "palette.gamut.brand-2",
+        "component": "palette",
+        "severity": "info",
+        "measured": 0.91,
+        "threshold": 0.9,
+        "message": "#c8501e sits at the sRGB gamut edge (91% of max chroma); vivid colours like this often fall outside CMYK process gamut: specify Lab D50 + tolerance, check with the printer, consider a spot colour",
+        "suggested_fix": null,
+        "roles": [
+          "brand-2"
+        ]
+      },
+      {
+        "id": "palette.harmony.primary-accent",
+        "component": "palette",
+        "severity": "info",
+        "measured": -0.73,
+        "threshold": -0.3,
+        "message": "Ou-Luo two-colour model scores #2b1d16 + #c8501e at -0.73 (negative = less harmonious on a grey CRT test, no context): model signal only; the pairing table in references/pairing.md takes precedence",
+        "suggested_fix": null,
+        "roles": [
+          "light.primary",
+          "light.accent"
+        ]
+      },
+      {
+        "id": "type.display.coverage.en_Latn.extended",
+        "component": "type",
+        "severity": "info",
+        "measured": "101/102",
+        "threshold": "100% auxiliary + punctuation",
+        "message": "Bodoni Moda lacks English auxiliary/punctuation characters: ʻ",
+        "suggested_fix": "fine if the brand never writes them (loanwords, names); else another family"
+      },
+      {
+        "id": "type.display.confusables",
+        "component": "type",
+        "severity": "info",
+        "measured": 0.904,
+        "threshold": "0.9 (heuristic, uncalibrated)",
+        "message": "Bodoni Moda: I/l look alike at small sizes (IoU 0.90 at 48 px)",
+        "suggested_fix": "try ss01 'Alternate J', ss02 'Alternate R', ss03 'Alternate 4'"
+      },
+      {
+        "id": "type.display.web-weight",
+        "component": "type",
+        "severity": "info",
+        "measured": 46,
+        "threshold": null,
+        "message": "Bodoni Moda: ~46 KB WOFF2 for the brief's characters (one variable file, all weights; estimate)",
+        "suggested_fix": null
+      },
+      {
+        "id": "type.text.coverage.en_Latn.extended",
+        "component": "type",
+        "severity": "info",
+        "measured": "101/102",
+        "threshold": "100% auxiliary + punctuation",
+        "message": "Archivo lacks English auxiliary/punctuation characters: ʻ",
+        "suggested_fix": "fine if the brand never writes them (loanwords, names); else another family"
+      },
+      {
+        "id": "type.text.web-weight",
+        "component": "type",
+        "severity": "info",
+        "measured": 76,
+        "threshold": null,
+        "message": "Archivo: ~76 KB WOFF2 for the brief's characters (one variable file, all weights; estimate)",
+        "suggested_fix": null
+      },
+      {
+        "id": "logo.small-size",
+        "component": "logo",
+        "severity": "warn",
+        "measured": {
+          "stroke_px2": 1.15,
+          "gap_px2": 0.51
+        },
+        "threshold": "1 px (raster erosion test, heuristic, uncalibrated)",
+        "message": "symbol-small at 16 px: features narrower than 1 px (lost 1.15 px², clogged 0.51 px²)",
+        "suggested_fix": "add or simplify symbol-small.svg: fewer, bolder parts"
+      }
+    ],
+    "defaults": {
+      "matched": [
+        "cream-ground",
+        "terracotta-clay"
+      ]
+    }
+  },
+  "palette_build": {
+    "strategy": null,
+    "accent": null,
+    "light_bg": "#f4efe7",
+    "dark_bg": "#1f1510",
+    "neutral_tint": null,
+    "neutral_chroma": null,
+    "extra": []
+  }
+}

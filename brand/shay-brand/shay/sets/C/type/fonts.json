@@ -1,0 +1,25 @@
+{
+  "display": {
+    "family": "Schibsted Grotesk",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/SchibstedGrotesk-17f3461cf8ad3d31.ttf",
+    "location": {
+      "wght": 600
+    },
+    "weights": [
+      600
+    ],
+    "features": []
+  },
+  "text": {
+    "family": "Schibsted Grotesk",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/SchibstedGrotesk-f1a9a8bae41cc5f4.ttf",
+    "location": {
+      "wght": 400
+    },
+    "weights": [
+      400,
+      600
+    ],
+    "features": []
+  }
+}

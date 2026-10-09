@@ -2,11 +2,13 @@ import "server-only";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { toDateOnly } from "@/lib/date";
+import { settleInBatches } from "@/lib/api/cron";
 
 // NOTE: Hevy's exact response field names are implemented best-effort against
 // their commonly-documented v1 shape — verify against a real API key on first
 // sync and adjust field names below if they differ.
 
+const PAGE_SIZE = 10;
 const WORKOUTS_URL = "https://api.hevyapp.com/v1/workouts";
 
 export class HevyNotConnectedError extends Error {
@@ -66,7 +68,7 @@ interface HevyWorkoutsResponse {
 }
 
 async function fetchRecentWorkouts(userId: string): Promise<HevyWorkout[]> {
-  const res = await hevyFetch(userId, "?page=1&pageSize=10");
+  const res = await hevyFetch(userId, `?page=1&pageSize=${PAGE_SIZE}`);
   if (!res.ok) throw new Error(`Hevy API error: ${res.status} ${await res.text()}`);
   const data = (await res.json()) as HevyWorkoutsResponse;
   return data.workouts ?? [];
@@ -134,6 +136,9 @@ export async function syncHevyMetrics(userId: string): Promise<number> {
     });
   }
 
+  // A full page means the window may cut the oldest day in half — don't overwrite it with a partial total.
+  if (workouts.length >= PAGE_SIZE && byDate.size > 1) byDate.delete([...byDate.keys()].sort()[0]);
+
   let written = 0;
   for (const [dateKey, agg] of byDate.entries()) {
     const date = new Date(dateKey);
@@ -153,12 +158,7 @@ export async function syncHevyMetrics(userId: string): Promise<number> {
   return written;
 }
 
-export async function syncAllHevyConnections(): Promise<{ total: number; succeeded: number; failed: number }> {
+export async function syncAllHevyConnections() {
   const connections = await prisma.hevyConnection.findMany({ select: { userId: true } });
-  const results = await Promise.allSettled(connections.map((c) => syncHevyMetrics(c.userId)));
-  return {
-    total: connections.length,
-    succeeded: results.filter((r) => r.status === "fulfilled").length,
-    failed: results.filter((r) => r.status === "rejected").length,
-  };
+  return settleInBatches(connections, (c) => syncHevyMetrics(c.userId), 5);
 }

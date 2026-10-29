@@ -25,6 +25,10 @@ const nextAuth = NextAuth({
     async signIn({ user, account }) {
       if (!user.email) return false;
 
+      // Optional invite list: when set, only these emails may sign in (comma-separated).
+      const allowed = process.env.ALLOWED_EMAILS?.split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+      if (allowed?.length && !allowed.includes(user.email.toLowerCase())) return false;
+
       const dbUser = await prisma.user.upsert({
         where: { email: user.email },
         update: { name: user.name, image: user.image },

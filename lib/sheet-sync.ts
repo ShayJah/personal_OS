@@ -101,8 +101,22 @@ export async function createBusinessTemplateSheet(userId: string, businessId: st
   return syncBusinessSheet(userId, businessId);
 }
 
+/** One sync per business at a time (cron + a button click would otherwise both create the same new rows). */
 export async function syncBusinessSheet(userId: string, businessId: string): Promise<SheetSyncResult> {
   const business = await getOwnedBusiness(userId, businessId);
+  // Raw SQL so the lock never bumps updatedAt, which the app-wins rule compares against. A lock older than 5 min is stale.
+  const claimed = await prisma.$executeRaw`UPDATE "Business" SET "sheetSyncLockedAt" = NOW()
+    WHERE id = ${businessId} AND ("sheetSyncLockedAt" IS NULL OR "sheetSyncLockedAt" < NOW() - interval '5 minutes')`;
+  if (!claimed) throw new Error("A sync is already running for this business. Try again in a minute.");
+  try {
+    return await runSheetSync(userId, business);
+  } finally {
+    await prisma.$executeRaw`UPDATE "Business" SET "sheetSyncLockedAt" = NULL WHERE id = ${businessId}`;
+  }
+}
+
+async function runSheetSync(userId: string, business: Awaited<ReturnType<typeof getOwnedBusiness>>): Promise<SheetSyncResult> {
+  const businessId = business.id;
   if (!business.crmSheetId) throw new Error("This business has no linked Google Sheet yet.");
   const sheetId = business.crmSheetId;
   const tab = business.crmSheetTab ?? DEFAULT_CRM_TAB;
@@ -114,6 +128,8 @@ export async function syncBusinessSheet(userId: string, businessId: string): Pro
   const grid: string[][] = rows.length ? rows.map((r) => [...r]) : [COLUMNS.map((c) => c.header)];
   const index = indexHeaders(grid[0]);
 
+  // Columns the sheet really had: an empty cell there means "cleared", but a column we just appended means "never provided".
+  const present = new Set(Object.keys(index));
   // Make sure every template column exists so pushes have somewhere to write (extra columns are kept).
   for (const col of COLUMNS) {
     if (index[col.key] === undefined) {
@@ -122,6 +138,8 @@ export async function syncBusinessSheet(userId: string, businessId: string): Pro
     }
   }
   const cell = (row: string[], key: string) => row[index[key]]?.trim() || undefined;
+  // Empty cell in a real column => null, so clearing a cell clears the app value instead of being pushed back.
+  const clearable = (row: string[], key: string) => cell(row, key) ?? (present.has(key) ? null : undefined);
   const setCell = (row: string[], key: string, value: string) => {
     while (row.length <= index[key]) row.push("");
     row[index[key]] = value;
@@ -169,14 +187,14 @@ export async function syncBusinessSheet(userId: string, businessId: string): Pro
 
     const contactData = {
       name,
-      email,
-      company,
-      role: cell(row, "role"),
-      linkedin: cell(row, "linkedin"),
-      notes: cell(row, "notes"),
+      email: clearable(row, "email"),
+      company: clearable(row, "company"),
+      role: clearable(row, "role"),
+      linkedin: clearable(row, "linkedin"),
+      notes: clearable(row, "notes"),
     };
     const recordData = {
-      source: cell(row, "source"),
+      source: clearable(row, "source"),
       lastTouchAt: parseSheetDate(cell(row, "lastContacted")) ?? reachOutDate ?? undefined,
       nextAction: meetingDate ? "Meeting" : nextFollowUp ? "Follow up" : undefined,
       nextActionAt: meetingDate ?? nextFollowUp ?? undefined,

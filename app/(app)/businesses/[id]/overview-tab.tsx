@@ -3,6 +3,7 @@ import type { BusinessSnapshot } from "@/lib/business-stats";
 import { StatCell, signed } from "../businesses-view";
 import { OutreachPanel } from "../outreach-panel";
 import { BusinessShareDialog } from "./business-share-dialog";
+import { removeCollaboratorAction } from "./actions";
 
 export type PendingDraft = {
   id: string;
@@ -17,10 +18,13 @@ export function OverviewTab({
   businessId,
   snapshot: s,
   drafts,
+  collaborators,
 }: {
   businessId: string;
   snapshot: BusinessSnapshot;
   drafts: PendingDraft[];
+  /** Non-owner members; empty for collaborators viewing the page, so the list only shows for the owner. */
+  collaborators: { id: string; name: string | null; email: string }[];
 }) {
   const sentDelta = s.sent30 - s.sentPrev30;
   const funnelMax = Math.max(1, s.funnel[0]?.count ?? 1);
@@ -121,6 +125,20 @@ export function OverviewTab({
             label="Create share link"
             className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-foreground px-5 text-sm font-medium text-background transition hover:bg-foreground/85 active:scale-[0.98]"
           />
+          {collaborators.length > 0 && (
+            <ul className="mt-5 divide-y divide-border border-t border-border">
+              {collaborators.map((c) => (
+                <li key={c.id} className="flex items-center gap-3 py-2.5">
+                  <span className="min-w-0 flex-1 truncate text-sm">{c.name ?? c.email}</span>
+                  <form action={removeCollaboratorAction.bind(null, businessId, c.id)}>
+                    <button type="submit" className="text-xs text-muted hover:text-foreground">
+                      Remove access
+                    </button>
+                  </form>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </div>

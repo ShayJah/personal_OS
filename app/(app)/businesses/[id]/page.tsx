@@ -42,7 +42,7 @@ export default async function BusinessDetailPage({
   const [[snapshot], records, members, stats, drafts] = await Promise.all([
     getBusinessSnapshots([business]),
     needsRecords ? listCrmRecords(userId, id) : Promise.resolve([]),
-    tab === "pipeline" || tab === "contacts" ? listBusinessMembers(userId, id) : Promise.resolve([]),
+    tab === "pipeline" || tab === "contacts" || (tab === "overview" && business.userId === userId) ? listBusinessMembers(userId, id) : Promise.resolve([]),
     tab === "pipeline" ? getBusinessOutreachStats(userId, id) : Promise.resolve(null),
     tab === "overview" || tab === "drafts" ? listBusinessDrafts(id) : Promise.resolve([]),
   ]);
@@ -71,7 +71,12 @@ export default async function BusinessDetailPage({
   let content: React.ReactNode;
 
   if (tab === "overview") {
-    content = <OverviewTab businessId={business.id} snapshot={snapshot} drafts={pendingDrafts} />;
+    content = <OverviewTab
+        businessId={business.id}
+        snapshot={snapshot}
+        drafts={pendingDrafts}
+        collaborators={members.filter((m) => m.id !== business.userId)}
+      />;
   } else if (tab === "pipeline") {
     const now = new Date();
     const overdue = records.filter(

@@ -61,6 +61,6 @@ export async function runDailyBrief(userId: string) {
 }
 
 export async function runDailyBriefForAllUsers() {
-  const users = await prisma.user.findMany({ select: { id: true } });
+  const users = await prisma.user.findMany({ where: { profile: { onboardingDone: true } }, select: { id: true } });
   return settleInBatches(users, (u) => runDailyBrief(u.id));
 }

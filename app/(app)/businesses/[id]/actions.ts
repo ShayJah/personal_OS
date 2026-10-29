@@ -19,6 +19,8 @@ import {
   assignCrmRecordOwner,
   updateBusinessSharedCalendar,
   updateBusinessIcon,
+  removeBusinessCollaborator,
+  assertBusinessOwner,
 } from "@/lib/crm";
 import { createBusinessTemplateSheet, syncBusinessSheet, type SheetSyncResult } from "@/lib/sheet-sync";
 
@@ -74,6 +76,12 @@ export async function updateSharedCalendarAction(businessId: string, formData: F
   revalidatePath(`/businesses/${businessId}`);
 }
 
+export async function removeCollaboratorAction(businessId: string, collaboratorId: string) {
+  const session = await requireSession();
+  await removeBusinessCollaborator(session.user.id, businessId, collaboratorId);
+  revalidatePath(`/businesses/${businessId}`);
+}
+
 async function runSheetAction(
   businessId: string,
   run: (userId: string) => Promise<SheetSyncResult>
@@ -93,11 +101,18 @@ async function runSheetAction(
 }
 
 export async function syncSheetAction(businessId: string) {
-  return runSheetAction(businessId, (userId) => syncBusinessSheet(userId, businessId));
+  return runSheetAction(businessId, async (userId) => {
+    // Owner-only: the sheet lives in the owner's Drive and the sync reads and writes with their token and contacts.
+    await assertBusinessOwner(userId, businessId);
+    return syncBusinessSheet(userId, businessId);
+  });
 }
 
 export async function createTemplateSheetAction(businessId: string) {
-  return runSheetAction(businessId, (userId) => createBusinessTemplateSheet(userId, businessId));
+  return runSheetAction(businessId, async (userId) => {
+    await assertBusinessOwner(userId, businessId);
+    return createBusinessTemplateSheet(userId, businessId);
+  });
 }
 
 export async function updateBusinessIconAction(

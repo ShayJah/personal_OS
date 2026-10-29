@@ -135,6 +135,15 @@ export async function grantBusinessCollaborator(businessId: string, userId: stri
   });
 }
 
+/** Owner-only. Also unassigns their leads, since they can no longer see them. */
+export async function removeBusinessCollaborator(ownerId: string, businessId: string, collaboratorId: string) {
+  await assertBusinessOwner(ownerId, businessId);
+  await prisma.$transaction([
+    prisma.businessCollaborator.deleteMany({ where: { businessId, userId: collaboratorId } }),
+    prisma.crmRecord.updateMany({ where: { businessId, assignedToUserId: collaboratorId }, data: { assignedToUserId: null } }),
+  ]);
+}
+
 export async function listCrmRecords(userId: string, businessId: string) {
   await getOwnedBusiness(userId, businessId);
   return prisma.crmRecord.findMany({

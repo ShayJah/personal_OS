@@ -60,16 +60,20 @@ export async function fetchSheetRows(userId: string, spreadsheetId: string, tabN
   return data.values ?? [];
 }
 
-/** Replaces a tab's contents with `rows` (clears first so shrinking data leaves no stale cells). */
+/**
+ * Replaces a tab's contents with `rows`. Writes first, then clears only the rows below, so a failed
+ * write never leaves the tab empty (clear-then-write would wipe people's extra columns).
+ */
 export async function writeSheetRows(userId: string, spreadsheetId: string, tabName: string, rows: string[][]) {
   const range = encodeURIComponent(tabName);
-  await sheetsFetch(userId, `/${spreadsheetId}/values/${range}:clear`, { method: "POST", body: "{}" }, "Failed to clear Sheet");
   await sheetsFetch(
     userId,
     `/${spreadsheetId}/values/${range}?valueInputOption=RAW`,
     { method: "PUT", body: JSON.stringify({ values: rows }) },
     "Failed to write Google Sheet"
   );
+  const below = encodeURIComponent(`'${tabName.replace(/'/g, "''")}'!A${rows.length + 1}:ZZZ`);
+  await sheetsFetch(userId, `/${spreadsheetId}/values/${below}:clear`, { method: "POST", body: "{}" }, "Failed to clear old Sheet rows");
 }
 
 /** Creates a new spreadsheet in the user's Drive with the given tabs; returns its ID. */

@@ -400,6 +400,7 @@ model Business {
   crmSheetId  String?
   crmSheetTab String?  @default("CRM")
   sheetSyncedAt DateTime?
+  sheetSyncLockedAt DateTime?
   sharedCalendarId String?
   icon        String?
   iconImage   String?

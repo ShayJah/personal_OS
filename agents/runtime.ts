@@ -31,11 +31,10 @@ export async function runAgenticTurn(input: AgentTurnInput): Promise<AgentTurnRe
   const { userId, agent, trigger, model, systemPrompt, toolNames, extraTools, messages, maxTokens = 1024 } =
     input;
 
-  if (trigger !== "schedule") await enforceDailyAiLimit(userId);
-
   const run = await prisma.agentRun.create({
     data: { userId, agent, trigger, status: "running" },
   });
+  if (trigger !== "schedule") await enforceDailyAiLimit(userId, run.id);
 
   const client = getAnthropicClient();
   const tools: Anthropic.ToolUnion[] = [...toolDefinitions(toolNames), ...(extraTools ?? [])];

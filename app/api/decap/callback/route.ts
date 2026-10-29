@@ -7,6 +7,8 @@ function page(status: "success" | "error", payload: object) {
 (function () {
   var msg = ${JSON.stringify(msg)};
   window.addEventListener("message", function (e) {
+    // Only the CMS on this site may receive the token, never another site that opened this popup.
+    if (e.origin !== location.origin) return;
     window.opener.postMessage(msg, e.origin);
     window.close();
   });

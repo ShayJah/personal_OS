@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { userToday } from "@/lib/user/preferences";
 import { addDays, startOfWeek } from "@/lib/calendar";
 
-export type ShareType = "progress" | "report" | "summary" | "business";
+export type ShareType = "progress" | "report" | "business";
 export type BusinessDetailLevel = "overview" | "pipeline" | "full";
 
 /**
@@ -46,7 +46,7 @@ export async function createShareLink(
 export async function getShareLinkByToken(token: string) {
   const link = await prisma.sharedLink.findUnique({
     where: { token },
-    include: { user: { include: { profile: true } } },
+    include: { user: { select: { name: true, email: true } } },
   });
 
   if (!link) return null;

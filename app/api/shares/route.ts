@@ -5,13 +5,11 @@ import {
   revokeShareLink,
   updateShareSettings,
   getShareSettings,
-  type BusinessDetailLevel,
 } from "@/lib/sharing";
 import { assertBusinessOwner } from "@/lib/crm";
-import { shareSettingsSchema } from "@/lib/validation/share";
+import { shareSettingsSchema, createShareSchema } from "@/lib/validation/share";
+import { ZodError } from "zod";
 import { NextResponse } from "next/server";
-
-const BUSINESS_DETAIL_LEVELS: BusinessDetailLevel[] = ["overview", "pipeline", "full"];
 
 export async function GET(request: Request) {
   try {
@@ -32,44 +30,28 @@ export async function POST(request: Request) {
     const session = await requireSession();
     const body = await request.json();
 
-    const { type, target, expiresIn, action, settings } = body;
-
-    if (action === "updateSettings") {
-      const updated = await updateShareSettings(session.user.id, shareSettingsSchema.parse(settings));
+    if (body.action === "updateSettings") {
+      const updated = await updateShareSettings(session.user.id, shareSettingsSchema.parse(body.settings));
       return NextResponse.json(updated);
     }
 
-    if (type === "business") {
-      const businessId = body.businessId;
-      const detailLevel = body.detailLevel;
-      const allowEdit = Boolean(body.allowEdit);
+    const input = createShareSchema.parse(body);
 
-      if (!businessId || !BUSINESS_DETAIL_LEVELS.includes(detailLevel)) {
-        return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-      }
-
-      await assertBusinessOwner(session.user.id, businessId);
-
-      const link = await createShareLink(
-        session.user.id,
-        "business",
-        businessId,
-        expiresIn,
-        { detailLevel, allowEdit }
-      );
+    if (input.type === "business") {
+      await assertBusinessOwner(session.user.id, input.businessId);
+      const link = await createShareLink(session.user.id, "business", input.businessId, input.expiresIn, {
+        detailLevel: input.detailLevel,
+        allowEdit: Boolean(input.allowEdit),
+      });
       return NextResponse.json(link);
     }
 
-    if (type && (type === "progress" || type === "report" || type === "summary")) {
-      const link = await createShareLink(session.user.id, type, target, expiresIn);
-      return NextResponse.json(link);
-    }
-
-    return NextResponse.json(
-      { error: "Invalid request" },
-      { status: 400 }
-    );
+    const link = await createShareLink(session.user.id, input.type, input.target, input.expiresIn);
+    return NextResponse.json(link);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
     console.error("Error creating share link:", error);
     return NextResponse.json(
       { error: "Failed to create share link" },

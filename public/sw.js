@@ -1,4 +1,4 @@
-const CACHE_NAME = "personalos-static-v1";
+const CACHE_NAME = "personalos-static-v2";
 const OFFLINE_URL = "/offline";
 const PRECACHE_URLS = [
   OFFLINE_URL,

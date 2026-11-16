@@ -80,3 +80,15 @@ describe("shareSettingsSchema", () => {
     expect(shareSettingsSchema.safeParse({ shareTasks: true }).success).toBe(true);
   });
 });
+
+import { parseDigest } from "@/lib/agents/home-digest";
+
+describe("parseDigest", () => {
+  it("parses fenced JSON and drops malformed items", () => {
+    const out = parseDigest('```json\n{"items":[{"title":"A","line":"did a"},{"title":3}]}\n```');
+    expect(out).toEqual([{ title: "A", line: "did a" }]);
+  });
+  it("returns [] for garbage", () => {
+    expect(parseDigest("nope")).toEqual([]);
+  });
+});

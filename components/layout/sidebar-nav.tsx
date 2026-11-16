@@ -7,6 +7,7 @@ import { LogoMark } from "@/components/brand/logo-mark";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Today" },
+  { href: "/home", label: "Home base" },
   { href: "/tasks", label: "Tasks" },
   { href: "/projects", label: "Projects" },
   { href: "/businesses", label: "Businesses" },

@@ -80,3 +80,39 @@ describe("shareSettingsSchema", () => {
     expect(shareSettingsSchema.safeParse({ shareTasks: true }).success).toBe(true);
   });
 });
+
+import { parseDigest } from "@/lib/agents/home-digest";
+
+describe("parseDigest", () => {
+  it("parses fenced JSON and drops malformed items", () => {
+    const out = parseDigest('```json\n{"items":[{"title":"A","line":"did a"},{"title":3}]}\n```');
+    expect(out).toEqual([{ title: "A", line: "did a" }]);
+  });
+  it("returns [] for garbage", () => {
+    expect(parseDigest("nope")).toEqual([]);
+  });
+});
+
+import { applyQuad } from "@/lib/homography";
+import { parseCommand } from "@/app/api/tv/command/route";
+
+describe("homography", () => {
+  it("maps the box corners and centre onto the quad", () => {
+    const q: [{ x: number; y: number }, { x: number; y: number }, { x: number; y: number }, { x: number; y: number }] = [
+      { x: 10, y: 20 }, { x: 110, y: 30 }, { x: 100, y: 130 }, { x: 5, y: 110 },
+    ];
+    const tl = applyQuad(700, 500, q, { x: 0, y: 0 });
+    const br = applyQuad(700, 500, q, { x: 700, y: 500 });
+    expect(tl.x).toBeCloseTo(10); expect(tl.y).toBeCloseTo(20);
+    expect(br.x).toBeCloseTo(100); expect(br.y).toBeCloseTo(130);
+  });
+});
+
+describe("parseCommand", () => {
+  it("keeps valid dates and pin, drops junk", () => {
+    const o = parseCommand('{"answer":"Thu","highlight":["2026-11-19","bad"],"pin":{"text":"Demo","date":"2026-11-19"}}');
+    expect(o.highlight).toEqual(["2026-11-19"]);
+    expect(o.pin).toEqual({ text: "Demo", date: "2026-11-19" });
+    expect(parseCommand("nope").pin).toBeNull();
+  });
+});

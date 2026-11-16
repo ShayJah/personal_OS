@@ -41,5 +41,18 @@ export async function GET(request: Request) {
   if (!data.access_token) {
     return page("error", { message: data.error_description ?? "Token exchange failed" });
   }
+
+  // Allow-list: only the listed GitHub logins may get a token. Unset list = nobody (fail closed).
+  const allowed = (process.env.DECAP_ALLOWED_GITHUB_LOGINS ?? "")
+    .split(",")
+    .map((l) => l.trim().toLowerCase())
+    .filter(Boolean);
+  const me = await fetch("https://api.github.com/user", {
+    headers: { Authorization: `Bearer ${data.access_token}`, Accept: "application/vnd.github+json" },
+  });
+  const login = me.ok ? ((await me.json()).login as string | undefined)?.toLowerCase() : undefined;
+  if (!login || !allowed.includes(login)) {
+    return page("error", { message: "This GitHub account is not allowed to use the CMS" });
+  }
   return page("success", { token: data.access_token, provider: "github" });
 }

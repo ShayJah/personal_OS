@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/auth";
 
 const PROTECTED_PREFIXES = [
   "/dashboard",
+  "/home",
   "/tasks",
   "/projects",
   "/calendar",

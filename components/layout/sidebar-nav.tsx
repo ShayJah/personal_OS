@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/capture", label: "Capture" },
   { href: "/goals", label: "Goals" },
   { href: "/reports", label: "Reports" },
+  { href: "/study", label: "Study" },
   { href: "/share-links", label: "Share" },
 ];
 

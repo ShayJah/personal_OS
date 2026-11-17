@@ -3,19 +3,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress as Gauge } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { DEMO_PACK } from "@/lib/study/demo-pack";
 import type { ConcreteQuestion } from "@/lib/study/generators";
 import type { Grade } from "@/lib/study/grade";
 import { emptyPack, parsePackText, type Exam, type Pack } from "@/lib/study/pack";
-import { buildDailyPlan, examCountdown, readinessBand, type Band, type PlanItem } from "@/lib/study/plan";
+import { buildDailyPlan, examCountdown, readinessBand, type PlanItem } from "@/lib/study/plan";
 import {
   PACK_KEY, dayKey, emptyProgress, exportProgress, importProgress, isDue, isWeak, loadProgress, markPlanDone,
   recordAttempt, resetProgress, saveProgress, topicMastery, type Mode, type Progress, type StorageLike,
 } from "@/lib/study/progress";
 import { buildSession, nextLabItem } from "@/lib/study/session";
 import { Runner, safeHref } from "./study-runner";
+import { DayRing, ExamTimeline, MapLegend, MasteryMap, Ring, scoreStroke, shortDate } from "./study-visuals";
 
 type Tab = "overview" | "exams" | "plan" | "practice" | "mastery" | "data";
 const TABS: Array<[Tab, string]> = [["overview", "Courses"], ["exams", "Exams"], ["plan", "Plan"], ["practice", "Practice"], ["mastery", "Mastery"], ["data", "Data & backup"]];
@@ -37,8 +37,6 @@ const freshSeed = () => Date.now() >>> 0;
 const Pill = ({ children, tone = "muted" }: { children: React.ReactNode; tone?: "muted" | "ok" | "warn" }) => (
   <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", tone === "ok" && "bg-success-soft text-success", tone === "warn" && "bg-danger-soft text-danger", tone === "muted" && "bg-foreground/5 text-muted")}>{children}</span>
 );
-
-const BAND_TONE: Record<Band, "ok" | "warn" | "muted"> = { red: "warn", amber: "warn", green: "ok", strong: "ok" };
 
 export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }) {
   const storage = useMemo<StorageLike>(() => ({
@@ -138,14 +136,9 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
         <section className="space-y-3" aria-label="Courses">
           <p className="text-sm text-muted">Official facts are shown exactly as supplied in your pack. Blank means not supplied yet, not unknown to the app.</p>
           {pack.exams.some((e) => e.date) && (
-            <Card className="space-y-2" aria-label="Exam countdown">
-              <h2 className="font-medium">Countdown</h2>
-              <ul className="space-y-1.5 text-sm">
-                {pack.exams.filter((e) => e.date).sort((a, b) => a.date.localeCompare(b.date)).map((e) => {
-                  const cd = examCountdown(e, today);
-                  return <li key={e.id} className="flex items-center justify-between gap-3"><span>{e.title || e.id} <span className="text-muted">· {courseTitle(e.courseId)}</span></span><span className="whitespace-nowrap font-medium">{cd.days !== null && cd.days < 0 ? "passed" : `${cd.days} d`}{cd.dateVerified ? "" : " (unverified)"}</span></li>;
-                })}
-              </ul>
+            <Card aria-label="Exam timeline" className="space-y-1">
+              <h2 className="font-medium">Next {Math.max(0, ...pack.exams.filter((e) => e.date).map((e) => examCountdown(e, today).days ?? 0))} days</h2>
+              <ExamTimeline items={pack.exams.filter((e) => e.date).map((e) => ({ id: e.id, label: pack.courses.find((c) => c.id === e.courseId)?.code || e.title || e.id, date: e.date, days: examCountdown(e, today).days ?? -1, verified: e.status === "verified" }))} />
             </Card>
           )}
           <div className="grid gap-3 sm:grid-cols-2">
@@ -159,22 +152,17 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
               const avg = auto.length ? auto.reduce((s, a) => s + a.score, 0) / auto.length : null;
               const band = readinessBand(avg, auto.length);
               return (
-                <Card key={c.id} className="space-y-2">
-                  <div className="flex items-center justify-between"><span className="text-xs text-muted">Slot {idx + 1}</span><Pill tone={c.status === "verified" ? "ok" : "warn"}>{c.status}{c.verifiedAt ? ` · ${c.verifiedAt}` : ""}</Pill></div>
-                  <h2 className="text-lg font-medium">{empty ? "Empty slot" : courseTitle(c.id)}</h2>
-                  {empty && <p className="text-sm text-muted">Supply this course in a private pack.</p>}
-                  {href && <a className="text-sm underline" href={href} target="_blank" rel="noopener noreferrer">Course page</a>}
-                  <p className="text-xs text-muted">{pack.topics.filter((t) => t.courseId === c.id).length} topics · {pack.questions.filter((q) => q.courseId === c.id).length} questions · {pack.exams.filter((e) => e.courseId === c.id).length} exams</p>
+                <Card key={c.id} className="study-rise space-y-3">
+                  <div className="flex items-start justify-between gap-2"><h2 className="text-lg font-medium">{empty ? "Empty slot" : courseTitle(c.id)}</h2><Pill tone={c.status === "verified" ? "ok" : "warn"}>{c.status}</Pill></div>
+                  {empty && <p className="text-sm text-muted">Slot {idx + 1}: supply this course in a private pack.</p>}
                   {qTotal > 0 && (
-                    <div className="space-y-1" aria-label="Course gauges">
-                      <div className="flex justify-between text-xs text-muted"><span>Coverage: {seen}/{qTotal} questions tried</span><span>{Math.round((100 * seen) / qTotal)}%</span></div>
-                      <Gauge value={(100 * seen) / qTotal} />
-                      <div className="flex justify-between text-xs text-muted"><span>Auto-marked score</span>{band ? <Pill tone={BAND_TONE[band]}>{band} · {Math.round(100 * (avg ?? 0))}%</Pill> : <span>needs 5 auto-marked attempts</span>}</div>
-                      {avg !== null && <Gauge value={100 * avg} />}
+                    <div className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Course gauges">
+                      <Ring value={(100 * seen) / qTotal} label="Tried" sub={`${seen}/${qTotal} questions`} />
+                      <Ring value={avg === null ? null : 100 * avg} label={band ?? "Score"} sub={band ? `${auto.length} auto-marked` : `${auto.length}/5 auto-marked`} stroke={scoreStroke(band)} />
                     </div>
                   )}
-                  <p className="text-xs text-muted">Practised: {att.length} attempts{auto.length ? ` · auto-marked average ${Math.round((100 * auto.reduce((s, a) => s + a.score, 0)) / auto.length)}% (n=${auto.length})` : ""}</p>
-                  {c.notes && <p className="whitespace-pre-wrap text-sm">{c.notes}</p>}
+                  <p className="text-xs text-muted">{pack.topics.filter((t) => t.courseId === c.id).length} topics · {pack.exams.filter((e) => e.courseId === c.id).length} exams · {att.length} attempts{href && <> · <a className="underline" href={href} target="_blank" rel="noopener noreferrer">Course page</a></>}</p>
+                  {c.notes && <details className="text-sm"><summary className="cursor-pointer text-muted">Notes</summary><p className="mt-1 whitespace-pre-wrap">{c.notes}</p></details>}
                 </Card>
               );
             })}
@@ -190,16 +178,24 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
             const cd = examCountdown(e, today);
             const href = safeHref(e.sourceUrl);
             return (
-              <Card key={e.id} className="space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-medium">{e.title || "Untitled exam"} <span className="text-sm font-normal text-muted">· {courseTitle(e.courseId)}</span></h2><Pill tone={e.status === "verified" ? "ok" : "warn"}>{e.status}</Pill></div>
-                <dl className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
-                  <div><dt className="inline text-muted">Date: </dt><dd className="inline">{e.date ? `${e.date}${e.time ? ` ${e.time}` : ""}${e.timezone ? ` (${e.timezone})` : " (timezone not supplied)"}` : "not supplied"}</dd></div>
-                  <div><dt className="inline text-muted">Countdown: </dt><dd className="inline">{cd.days === null ? "n/a" : `${cd.days} day${cd.days === 1 ? "" : "s"}${cd.dateVerified ? "" : " (date unverified)"}`}</dd></div>
-                  <div><dt className="inline text-muted">Verified at: </dt><dd className="inline">{e.verifiedAt || "never"}</dd></div>
-                  <div><dt className="inline text-muted">Source: </dt><dd className="inline">{href ? <a className="underline" href={href} target="_blank" rel="noopener noreferrer">link</a> : "none supplied"}</dd></div>
-                  <div className="sm:col-span-2"><dt className="inline text-muted">Coverage: </dt><dd className="inline">{e.coverage.length ? e.coverage.map(topicTitle).join(", ") : "not supplied"}</dd></div>
-                </dl>
-                {e.notes && <p className="text-sm text-muted whitespace-pre-wrap">{e.notes}</p>}
+              <Card key={e.id} className="study-rise space-y-3">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 shrink-0 text-center"><p className="text-3xl font-semibold leading-none">{cd.days === null ? "–" : cd.days < 0 ? "done" : cd.days}</p><p className="text-[11px] text-muted">{cd.days !== null && cd.days >= 0 ? "days" : ""}</p></div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate text-lg font-medium" title={e.title}>{courseTitle(e.courseId)}</h2>
+                    <p className="text-sm text-muted">{e.date ? `${shortDate(e.date, true)}${e.time ? ` · ${e.time}` : ""}` : "date not supplied"}{e.durationMin ? ` · ${e.durationMin} min` : ""}</p>
+                  </div>
+                  <Pill tone={e.status === "verified" ? "ok" : "warn"}>{e.status}</Pill>
+                </div>
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  {e.coverage.length ? e.coverage.map((t) => <span key={t} className="rounded-full bg-foreground/5 px-2 py-0.5">{topicTitle(t)}</span>) : <span className="rounded-full border border-dashed border-border-strong px-2 py-0.5 text-muted">coverage not supplied</span>}
+                  {href && <a className="rounded-full border border-border px-2 py-0.5 underline" href={href} target="_blank" rel="noopener noreferrer">source</a>}
+                </div>
+                <details className="text-sm text-muted"><summary className="cursor-pointer">Details</summary>
+                  <p className="mt-1">{e.title}</p>
+                  <p>Verified at {e.verifiedAt || "never"}{e.timezone ? ` · ${e.timezone}` : " · timezone not supplied"}{cd.dateVerified ? "" : " · date unverified"}</p>
+                  {e.notes && <p className="whitespace-pre-wrap">{e.notes}</p>}
+                </details>
                 <p className="text-xs text-muted">Practice uses only the loaded questions for this course. It is not a full-length or complete-coverage exam.</p>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" onClick={() => start("mock", { exam: e, length: 20, examMode: true, durationMin: e.durationMin })}>Timed practice{e.durationMin ? ` (${e.durationMin} min)` : ""}</Button>
@@ -218,11 +214,18 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
       {tab === "mastery" && (
         <section className="space-y-3" aria-label="Mastery">
           <p className="text-sm text-muted">Auto-marked means the app compared your answer with a stored one. Self-marked means you graded yourself. They are never averaged together, and a level needs at least 5 auto-marked attempts.</p>
-          <Card className="overflow-x-auto">
-            <table className="w-full text-sm"><thead><tr className="text-left text-muted"><th className="py-1">Topic</th><th>Auto-marked</th><th>Self-marked</th><th>Level</th></tr></thead>
-              <tbody>{pack.topics.map((t) => { const m = topicMastery(progress, t.id); const f = (x: { n: number; avg: number | null }) => (x.avg === null ? "none" : `${Math.round(x.avg * 100)}% (n=${x.n})`); return <tr key={t.id} className="border-t border-border"><td className="py-1.5">{t.title} <span className="text-xs text-muted">{t.official ? "official outline" : "your grouping"}</span></td><td>{f(m.auto)}</td><td>{f(m.self)}</td><td>{m.level}</td></tr>; })}</tbody></table>
-            {pack.topics.length === 0 && <p className="text-sm text-muted">No topics loaded.</p>}
-          </Card>
+          <MapLegend />
+          {pack.topics.length === 0 && <Card><p className="text-sm text-muted">No topics loaded.</p></Card>}
+          {pack.courses.map((c) => {
+            const ts = pack.topics.filter((t) => t.courseId === c.id);
+            if (!ts.length) return null;
+            return (
+              <Card key={c.id} className="space-y-2">
+                <h2 className="text-sm font-medium">{courseTitle(c.id)}</h2>
+                <MasteryMap tiles={ts.map((t) => { const m = topicMastery(progress, t.id); return { id: t.id, title: t.title, autoAvg: m.auto.avg, autoN: m.auto.n, selfAvg: m.self.avg, selfN: m.self.n }; })} />
+              </Card>
+            );
+          })}
         </section>
       )}
 
@@ -242,15 +245,19 @@ function PlanTab({ pack, progress, now, today, start, onDone }: { pack: Pack; pr
         <select id="focus" className="rounded-lg border border-border-strong bg-background px-2 py-1" value={examId} onChange={(e) => setExamId(e.target.value)}>
           <option value="">everything in the pack</option>{pack.exams.map((e) => <option key={e.id} value={e.id}>{e.title || e.id}</option>)}</select>
         <span className="text-muted">{today}</span></div>
-      {plan.map((it) => (
-        <Card key={it.kind} className="space-y-2">
-          <div className="flex items-center justify-between"><h2 className="font-medium">{it.title} <span className="text-sm font-normal text-muted">· ~{it.minutes} min · {it.qids.length} question{it.qids.length === 1 ? "" : "s"}</span></h2>{it.done && <Pill tone="ok">done today</Pill>}</div>
-          <p className="text-sm text-muted">{it.note}</p>
+      <Card className="study-rise flex items-center gap-4">
+        <DayRing blocks={plan.map((it) => ({ title: it.title, done: it.done }))} />
+        <div><p className="font-medium">Today</p><p className="text-sm text-muted">{plan.filter((it) => !it.done).reduce((m, it) => m + it.minutes, 0)} min left · {plan.reduce((n, it) => n + it.qids.length, 0)} questions queued</p></div>
+      </Card>
+      {plan.map((it, i) => (
+        <Card key={it.kind} className="study-rise space-y-2" style={{ "--d": `${0.1 + i * 0.07}s` } as React.CSSProperties}>
+          <div className="flex items-center justify-between"><h2 className="font-medium">{it.title} <span className="text-sm font-normal text-muted">· ~{it.minutes} min · {it.qids.length} q</span></h2>{it.done && <Pill tone="ok">done</Pill>}</div>
+          <p className="text-xs text-muted">{it.note}</p>
           <div className="flex gap-2">
             <Button size="sm" disabled={!it.qids.length} onClick={() => start("plan", { qids: it.qids, examMode: it.kind === "timed", durationMin: it.kind === "timed" ? it.minutes : undefined })}>{it.kind === "timed" ? `Start timed (${it.minutes} min)` : "Start"}</Button>
             <Button size="sm" variant="outline" disabled={it.done} onClick={() => onDone(it.kind)}>Mark block done</Button>
           </div>
-          {it.qids.length === 0 && <p className="text-xs text-muted">Nothing to do here yet: import a pack or practise first.</p>}
+          {it.qids.length === 0 && <p className="text-xs text-muted">Nothing queued yet.</p>}
         </Card>
       ))}
       <p className="text-xs text-muted">The plan is built from your own results. It does not know your real exam dates unless your pack supplies them, and it never assumes any.</p>

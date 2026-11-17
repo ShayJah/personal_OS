@@ -1,0 +1,55 @@
+{
+  "schema": "study-pack/1",
+  "packId": "my-private-pack",
+  "title": "My private pack",
+  "courses": [
+    {
+      "id": "slot-1",
+      "code": "",
+      "title": "",
+      "canvasUrl": "",
+      "status": "unverified",
+      "verifiedAt": "",
+      "notes": ""
+    },
+    {
+      "id": "slot-2",
+      "code": "",
+      "title": "",
+      "canvasUrl": "",
+      "status": "unverified",
+      "verifiedAt": "",
+      "notes": ""
+    },
+    {
+      "id": "slot-3",
+      "code": "",
+      "title": "",
+      "canvasUrl": "",
+      "status": "unverified",
+      "verifiedAt": "",
+      "notes": ""
+    },
+    {
+      "id": "slot-4",
+      "code": "",
+      "title": "",
+      "canvasUrl": "",
+      "status": "unverified",
+      "verifiedAt": "",
+      "notes": ""
+    },
+    {
+      "id": "slot-5",
+      "code": "",
+      "title": "",
+      "canvasUrl": "",
+      "status": "unverified",
+      "verifiedAt": "",
+      "notes": ""
+    }
+  ],
+  "topics": [],
+  "exams": [],
+  "questions": []
+}

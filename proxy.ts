@@ -18,6 +18,7 @@ const PROTECTED_PREFIXES = [
   "/fitness",
   "/share-links",
   "/reports",
+  "/study",
   "/settings",
   "/onboarding",
 ];

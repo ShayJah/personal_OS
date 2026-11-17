@@ -79,3 +79,10 @@ export function buildDailyPlan(pack: Pack, progress: Progress, now: Date, exam?:
     mk("spaced", "Spaced revisit", 5, spacedIds, "Older material coming back due."),
   ];
 }
+
+export type Band = "red" | "amber" | "green" | "strong";
+/** Proposed self-check thresholds (not instructor standards). Needs auto-marked n>=5, else no band. */
+export function readinessBand(avg: number | null, n: number): Band | null {
+  if (avg === null || n < 5) return null;
+  return avg < 0.5 ? "red" : avg < 0.7 ? "amber" : avg < 0.85 ? "green" : "strong";
+}

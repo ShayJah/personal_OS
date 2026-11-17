@@ -127,3 +127,12 @@ describe("sessions", () => {
     expect(retry.every((q) => !results.find((r) => r.q === q)!.grade.correct)).toBe(true);
   });
 });
+
+import { readinessBand } from "@/lib/study/plan";
+describe("readinessBand", () => {
+  it("needs 5 auto-marked attempts, then bands at 50/70/85", () => {
+    expect(readinessBand(0.9, 4)).toBeNull();
+    expect(readinessBand(null, 9)).toBeNull();
+    expect([0.49, 0.5, 0.7, 0.85].map((a) => readinessBand(a, 5))).toEqual(["red", "amber", "green", "strong"]);
+  });
+});

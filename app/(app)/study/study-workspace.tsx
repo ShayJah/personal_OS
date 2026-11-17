@@ -3,12 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Progress as Gauge } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { DEMO_PACK } from "@/lib/study/demo-pack";
 import type { ConcreteQuestion } from "@/lib/study/generators";
 import type { Grade } from "@/lib/study/grade";
 import { emptyPack, parsePackText, type Exam, type Pack } from "@/lib/study/pack";
-import { buildDailyPlan, examCountdown, type PlanItem } from "@/lib/study/plan";
+import { buildDailyPlan, examCountdown, readinessBand, type Band, type PlanItem } from "@/lib/study/plan";
 import {
   PACK_KEY, dayKey, emptyProgress, exportProgress, importProgress, isDue, isWeak, loadProgress, markPlanDone,
   recordAttempt, resetProgress, saveProgress, topicMastery, type Mode, type Progress, type StorageLike,
@@ -36,6 +37,8 @@ const freshSeed = () => Date.now() >>> 0;
 const Pill = ({ children, tone = "muted" }: { children: React.ReactNode; tone?: "muted" | "ok" | "warn" }) => (
   <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", tone === "ok" && "bg-success-soft text-success", tone === "warn" && "bg-danger-soft text-danger", tone === "muted" && "bg-foreground/5 text-muted")}>{children}</span>
 );
+
+const BAND_TONE: Record<Band, "ok" | "warn" | "muted"> = { red: "warn", amber: "warn", green: "ok", strong: "ok" };
 
 export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }) {
   const storage = useMemo<StorageLike>(() => ({
@@ -134,12 +137,27 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
       {tab === "overview" && (
         <section className="space-y-3" aria-label="Courses">
           <p className="text-sm text-muted">Official facts are shown exactly as supplied in your pack. Blank means not supplied yet, not unknown to the app.</p>
+          {pack.exams.some((e) => e.date) && (
+            <Card className="space-y-2" aria-label="Exam countdown">
+              <h2 className="font-medium">Countdown</h2>
+              <ul className="space-y-1.5 text-sm">
+                {pack.exams.filter((e) => e.date).sort((a, b) => a.date.localeCompare(b.date)).map((e) => {
+                  const cd = examCountdown(e, today);
+                  return <li key={e.id} className="flex items-center justify-between gap-3"><span>{e.title || e.id} <span className="text-muted">· {courseTitle(e.courseId)}</span></span><span className="whitespace-nowrap font-medium">{cd.days !== null && cd.days < 0 ? "passed" : `${cd.days} d`}{cd.dateVerified ? "" : " (unverified)"}</span></li>;
+                })}
+              </ul>
+            </Card>
+          )}
           <div className="grid gap-3 sm:grid-cols-2">
             {pack.courses.map((c, idx) => {
               const att = progress.attempts.filter((a) => a.courseId === c.id);
               const auto = att.filter((a) => a.marking === "auto");
               const href = safeHref(c.canvasUrl);
               const empty = !c.code && !c.title;
+              const qTotal = pack.questions.filter((q) => q.courseId === c.id).length;
+              const seen = new Set(att.map((a) => a.qid)).size;
+              const avg = auto.length ? auto.reduce((s, a) => s + a.score, 0) / auto.length : null;
+              const band = readinessBand(avg, auto.length);
               return (
                 <Card key={c.id} className="space-y-2">
                   <div className="flex items-center justify-between"><span className="text-xs text-muted">Slot {idx + 1}</span><Pill tone={c.status === "verified" ? "ok" : "warn"}>{c.status}{c.verifiedAt ? ` · ${c.verifiedAt}` : ""}</Pill></div>
@@ -147,6 +165,14 @@ export function StudyWorkspace({ userId = "local-preview" }: { userId?: string }
                   {empty && <p className="text-sm text-muted">Supply this course in a private pack.</p>}
                   {href && <a className="text-sm underline" href={href} target="_blank" rel="noopener noreferrer">Course page</a>}
                   <p className="text-xs text-muted">{pack.topics.filter((t) => t.courseId === c.id).length} topics · {pack.questions.filter((q) => q.courseId === c.id).length} questions · {pack.exams.filter((e) => e.courseId === c.id).length} exams</p>
+                  {qTotal > 0 && (
+                    <div className="space-y-1" aria-label="Course gauges">
+                      <div className="flex justify-between text-xs text-muted"><span>Coverage: {seen}/{qTotal} questions tried</span><span>{Math.round((100 * seen) / qTotal)}%</span></div>
+                      <Gauge value={(100 * seen) / qTotal} />
+                      <div className="flex justify-between text-xs text-muted"><span>Auto-marked score</span>{band ? <Pill tone={BAND_TONE[band]}>{band} · {Math.round(100 * (avg ?? 0))}%</Pill> : <span>needs 5 auto-marked attempts</span>}</div>
+                      {avg !== null && <Gauge value={100 * avg} />}
+                    </div>
+                  )}
                   <p className="text-xs text-muted">Practised: {att.length} attempts{auto.length ? ` · auto-marked average ${Math.round((100 * auto.reduce((s, a) => s + a.score, 0)) / auto.length)}% (n=${auto.length})` : ""}</p>
                   {c.notes && <p className="whitespace-pre-wrap text-sm">{c.notes}</p>}
                 </Card>

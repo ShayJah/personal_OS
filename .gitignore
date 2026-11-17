@@ -40,3 +40,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# study workspace: private packs and progress exports must never be committed
+/study-private/
+*.private.json
+study-pack.*.json
+!docs/study-pack.template.json
+study-progress-*.json

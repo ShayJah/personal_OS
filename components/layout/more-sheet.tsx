@@ -9,6 +9,7 @@ const MORE_ITEMS = [
   { href: "/outreach", label: "Outreach" },
   { href: "/goals", label: "Goals" },
   { href: "/reports", label: "Reports" },
+  { href: "/agents", label: "Agents" },
   { href: "/study", label: "Study" },
   { href: "/share-links", label: "Share" },
   { href: "/settings", label: "Settings" },

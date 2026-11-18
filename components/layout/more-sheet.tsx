@@ -5,9 +5,12 @@ import { useState } from "react";
 
 const MORE_ITEMS = [
   { href: "/projects", label: "Projects" },
-  { href: "/coach", label: "Coach" },
+  { href: "/businesses", label: "Businesses" },
+  { href: "/outreach", label: "Outreach" },
+  { href: "/goals", label: "Goals" },
   { href: "/reports", label: "Reports" },
   { href: "/agents", label: "Agents" },
+  { href: "/study", label: "Study" },
   { href: "/share-links", label: "Share" },
   { href: "/settings", label: "Settings" },
 ];

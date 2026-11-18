@@ -12,6 +12,7 @@ export type TaskFormValues = {
   priority?: number | null;
   projectId?: string | null;
   tags?: string[];
+  section?: string | null;
 };
 
 function toDateInputValue(value?: Date | string | null) {
@@ -26,6 +27,7 @@ export function TaskForm({
   projects,
   initial,
   defaultProjectId,
+  sections,
   onDone,
   submitLabel = "Save task",
 }: {
@@ -33,6 +35,8 @@ export function TaskForm({
   projects: ProjectOption[];
   initial?: TaskFormValues;
   defaultProjectId?: string;
+  /** When set (project pages), shows a Section field suggesting these names. */
+  sections?: string[];
   onDone?: () => void;
   submitLabel?: string;
 }) {
@@ -90,8 +94,11 @@ export function TaskForm({
           <option value="3">Low</option>
         </select>
 
+        {defaultProjectId && (
+          <input type="hidden" name="projectId" value={defaultProjectId} />
+        )}
         <select
-          name="projectId"
+          name={defaultProjectId ? undefined : "projectId"}
           aria-label="Project"
           defaultValue={initial?.projectId ?? defaultProjectId ?? ""}
           disabled={Boolean(defaultProjectId)}
@@ -104,6 +111,25 @@ export function TaskForm({
             </option>
           ))}
         </select>
+
+        {sections && (
+          <>
+            <input
+              name="section"
+              list="task-form-sections"
+              aria-label="Section"
+              placeholder="Section"
+              maxLength={60}
+              defaultValue={initial?.section ?? ""}
+              className="rounded-lg border border-border-strong px-2 py-2 text-sm"
+            />
+            <datalist id="task-form-sections">
+              {sections.map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+          </>
+        )}
 
         <input
           name="tags"

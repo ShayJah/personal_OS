@@ -21,7 +21,7 @@ export function GoogleCalendarSettings({
   const [isConnected, setIsConnected] = useState(connected);
 
   const handleDisconnect = async () => {
-    if (!confirm("Disconnect Google Calendar? Synced events stay in PersonalOS but stop updating.")) {
+    if (!confirm("Disconnect Google Calendar? Synced events stay in Amahoro but stop updating.")) {
       return;
     }
     try {

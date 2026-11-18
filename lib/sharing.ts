@@ -1,10 +1,11 @@
 import "server-only";
 import crypto from "crypto";
 import { prisma } from "@/lib/db";
-import { toDateOnly } from "@/lib/date";
+import { userToday } from "@/lib/user/preferences";
 import { addDays, startOfWeek } from "@/lib/calendar";
 
-export type ShareType = "progress" | "report" | "summary";
+export type ShareType = "progress" | "report" | "business";
+export type BusinessDetailLevel = "overview" | "pipeline" | "full";
 
 /**
  * Generate a unique shareable token
@@ -20,7 +21,8 @@ export async function createShareLink(
   userId: string,
   type: ShareType,
   target?: string,
-  expiresIn?: number // milliseconds; null = never expires
+  expiresIn?: number, // milliseconds; null = never expires
+  options?: { detailLevel?: BusinessDetailLevel; allowEdit?: boolean }
 ) {
   const token = generateShareToken();
   const expiresAt = expiresIn ? new Date(Date.now() + expiresIn) : null;
@@ -32,6 +34,8 @@ export async function createShareLink(
       type,
       target,
       expiresAt,
+      detailLevel: options?.detailLevel,
+      allowEdit: options?.allowEdit ?? false,
     },
   });
 }
@@ -42,7 +46,7 @@ export async function createShareLink(
 export async function getShareLinkByToken(token: string) {
   const link = await prisma.sharedLink.findUnique({
     where: { token },
-    include: { user: { include: { profile: true } } },
+    include: { user: { select: { name: true, email: true } } },
   });
 
   if (!link) return null;
@@ -103,7 +107,7 @@ export async function updateShareSettings(
  * Get progress summary for sharing
  */
 export async function getProgressSummary(userId: string) {
-  const today = toDateOnly(new Date());
+  const today = await userToday(userId);
   const weekStart = startOfWeek(today);
   const weekEnd = addDays(weekStart, 6);
 
@@ -116,17 +120,14 @@ export async function getProgressSummary(userId: string) {
       prisma.task.findMany({
         where: {
           userId,
-          createdAt: {
-            gte: new Date(today),
-            lt: new Date(addDays(today, 1)),
-          },
+          dueDate: { gte: today, lt: addDays(today, 1) },
         },
         select: { title: true, completed: true },
       }),
       prisma.task.findMany({
         where: {
           userId,
-          createdAt: { gte: weekStart, lt: addDays(weekEnd, 1) },
+          dueDate: { gte: weekStart, lt: addDays(weekEnd, 1) },
         },
         select: { title: true, completed: true },
       }),
@@ -149,7 +150,7 @@ export async function getProgressSummary(userId: string) {
 
   const todayCompleted = todayTasks.filter((t) => t.completed).length;
   const weekCompleted = weekTasks.filter((t) => t.completed).length;
-  const habitStreak = habits.filter((h) =>
+  const habitsDoneToday = habits.filter((h) =>
     h.logs.some((l) => l.completed)
   ).length;
 
@@ -172,7 +173,7 @@ export async function getProgressSummary(userId: string) {
           ? Math.round((weekCompleted / weekTasks.length) * 100)
           : 0,
       habitLogsCompleted: weekHabits.length,
-      habitStreak,
+      habitsDoneToday,
     },
     habits: habits.map((h) => ({
       name: h.name,
@@ -191,12 +192,65 @@ export async function getSharedReport(userId: string, reportId: string) {
 }
 
 /**
+ * Get a business owned by ownerId for sharing, shaped by detail level
+ */
+export async function getBusinessShareData(
+  ownerId: string,
+  businessId: string,
+  detailLevel: BusinessDetailLevel
+) {
+  const business = await prisma.business.findFirst({
+    where: { id: businessId, userId: ownerId },
+  });
+  if (!business) return null;
+
+  const overview = {
+    name: business.name,
+    description: business.description,
+    contextDoc: business.contextDoc,
+  };
+
+  if (detailLevel === "overview") {
+    return { business: overview };
+  }
+
+  const records = await prisma.crmRecord.findMany({
+    where: { businessId },
+    include: { contact: true },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  if (detailLevel === "pipeline") {
+    const stageCounts: Record<string, number> = {};
+    for (const record of records) {
+      stageCounts[record.stage] = (stageCounts[record.stage] || 0) + 1;
+    }
+    return { business: overview, pipeline: { total: records.length, stageCounts } };
+  }
+
+  return {
+    business: overview,
+    records: records.map((record) => ({
+      id: record.id,
+      stage: record.stage,
+      value: record.value ? Number(record.value) : null,
+      source: record.source,
+      nextAction: record.nextAction,
+      nextActionAt: record.nextActionAt,
+      contact: {
+        name: record.contact.name,
+        email: record.contact.email,
+        company: record.contact.company,
+      },
+    })),
+  };
+}
+
+/**
  * Revoke a share link
  */
-export async function revokeShareLink(token: string) {
-  return prisma.sharedLink.delete({
-    where: { token },
-  });
+export async function revokeShareLink(userId: string, token: string) {
+  return prisma.sharedLink.deleteMany({ where: { token, userId } });
 }
 
 /**

@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
+import { toDateOnly } from "@/lib/date";
 import type { Theme, UserPreferences } from "@/types/user";
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -45,4 +46,14 @@ export async function setUserPreferences(
     theme: profile.theme as Theme,
     onboardingComplete: profile.onboardingDone,
   };
+}
+
+/** "Today" as a date-only value in the user's own timezone (falls back to UTC if the zone is invalid). */
+export async function userToday(userId: string, now: Date = new Date()): Promise<Date> {
+  const { timezone } = await getUserPreferences(userId);
+  try {
+    return toDateOnly(now, timezone);
+  } catch {
+    return toDateOnly(now);
+  }
 }

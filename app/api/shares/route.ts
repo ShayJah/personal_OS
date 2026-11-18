@@ -6,6 +6,9 @@ import {
   updateShareSettings,
   getShareSettings,
 } from "@/lib/sharing";
+import { assertBusinessOwner } from "@/lib/crm";
+import { shareSettingsSchema, createShareSchema } from "@/lib/validation/share";
+import { ZodError } from "zod";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -27,23 +30,28 @@ export async function POST(request: Request) {
     const session = await requireSession();
     const body = await request.json();
 
-    const { type, target, expiresIn, action, settings } = body;
-
-    if (action === "updateSettings") {
-      const updated = await updateShareSettings(session.user.id, settings);
+    if (body.action === "updateSettings") {
+      const updated = await updateShareSettings(session.user.id, shareSettingsSchema.parse(body.settings));
       return NextResponse.json(updated);
     }
 
-    if (type && (type === "progress" || type === "report" || type === "summary")) {
-      const link = await createShareLink(session.user.id, type, target, expiresIn);
+    const input = createShareSchema.parse(body);
+
+    if (input.type === "business") {
+      await assertBusinessOwner(session.user.id, input.businessId);
+      const link = await createShareLink(session.user.id, "business", input.businessId, input.expiresIn, {
+        detailLevel: input.detailLevel,
+        allowEdit: Boolean(input.allowEdit),
+      });
       return NextResponse.json(link);
     }
 
-    return NextResponse.json(
-      { error: "Invalid request" },
-      { status: 400 }
-    );
+    const link = await createShareLink(session.user.id, input.type, input.target, input.expiresIn);
+    return NextResponse.json(link);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
     console.error("Error creating share link:", error);
     return NextResponse.json(
       { error: "Failed to create share link" },
@@ -65,7 +73,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await revokeShareLink(token);
+    await revokeShareLink(session.user.id, token);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error revoking share link:", error);

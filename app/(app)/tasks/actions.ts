@@ -1,7 +1,9 @@
 "use server";
 
+import { userToday } from "@/lib/user/preferences";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/dal";
+import { prisma } from "@/lib/db";
 import { createTaskSchema, updateTaskSchema } from "@/lib/validation/task";
 import { createTask, deleteTask, updateTask } from "@/lib/tasks";
 
@@ -17,6 +19,8 @@ function readTaskFields(formData: FormData) {
     dueDate: dueDateRaw ? String(dueDateRaw) : undefined,
     priority: priorityRaw ? Number(priorityRaw) : undefined,
     projectIdRaw: projectIdRaw ? String(projectIdRaw) : "",
+    section: formData.get("section") ? String(formData.get("section")) : undefined,
+    hasSectionField: formData.has("section"),
     tags: tagsRaw
       ? String(tagsRaw)
           .split(",")
@@ -29,15 +33,17 @@ function readTaskFields(formData: FormData) {
 function revalidateTaskPaths(projectId?: string | null) {
   revalidatePath("/tasks");
   revalidatePath("/dashboard");
+  revalidatePath("/projects");
   if (projectId) revalidatePath(`/projects/${projectId}`);
 }
 
 export async function createTaskAction(formData: FormData) {
   const session = await requireSession();
-  const { projectIdRaw, ...fields } = readTaskFields(formData);
+  const { projectIdRaw, section, ...fields } = readTaskFields(formData);
 
   const body = createTaskSchema.parse({
     ...fields,
+    section,
     projectId: projectIdRaw || undefined,
   });
 
@@ -47,11 +53,13 @@ export async function createTaskAction(formData: FormData) {
 
 export async function updateTaskAction(taskId: string, formData: FormData) {
   const session = await requireSession();
-  const { projectIdRaw, ...fields } = readTaskFields(formData);
+  const { projectIdRaw, hasSectionField, section, ...fields } = readTaskFields(formData);
 
   const body = updateTaskSchema.parse({
     ...fields,
     projectId: projectIdRaw === "" ? null : projectIdRaw,
+    // Only touch the section when the form actually had that field; an empty one clears it.
+    section: hasSectionField ? (section ?? null) : undefined,
   });
 
   const task = await updateTask(session.user.id, taskId, body);
@@ -68,4 +76,20 @@ export async function deleteTaskAction(taskId: string, projectId?: string | null
   const session = await requireSession();
   await deleteTask(session.user.id, taskId);
   revalidateTaskPaths(projectId);
+}
+
+export async function moveTaskToTodayAction(taskId: string) {
+  const session = await requireSession();
+  const task = await updateTask(session.user.id, taskId, { dueDate: await userToday(session.user.id) });
+  revalidateTaskPaths(task.projectId);
+}
+
+export async function rescheduleOverdueAction() {
+  const session = await requireSession();
+  const today = await userToday(session.user.id);
+  await prisma.task.updateMany({
+    where: { userId: session.user.id, completed: false, dueDate: { lt: today } },
+    data: { dueDate: today },
+  });
+  revalidateTaskPaths();
 }

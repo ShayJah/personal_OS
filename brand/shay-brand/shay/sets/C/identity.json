@@ -1,0 +1,290 @@
+{
+  "schema": "brand-identity/identity@1",
+  "brand": {
+    "name": "Shay",
+    "tagline": "Building in public, between Western and the Okanagan.",
+    "languages": [
+      "en"
+    ],
+    "doc_lang": "en",
+    "sector": "Personal brand: builder, CS student and founder of Cobuu Ventures; training and health lifestyle",
+    "numbers": false,
+    "copy": {
+      "sentence": {
+        "en": "Most days I write code, lift something heavy and ship one small thing."
+      },
+      "nav": [
+        "Work",
+        "Journal",
+        "Training",
+        "About"
+      ],
+      "cta": "Say hi"
+    }
+  },
+  "set": {
+    "id": "C",
+    "name": "Low Light",
+    "recommended": false,
+    "mechanism": "The shot after training, when the light drops: a quiet lowercase name in near-white on bark brown, split once along a low horizon, with Okanagan sage kept for the one highlight per screen.",
+    "expression_move": "The horizon cut through the wordmark; everything else stays dark and still.",
+    "differs_by": "The training creators Shay likes are moody and cool grey; this keeps the low-light mood but warms it to bark brown and adds a sage only Shay uses, with no loud captions at all."
+  },
+  "axes": {
+    "quiet_loud": -2,
+    "playful_serious": 1,
+    "classic_contemporary": 2
+  },
+  "components": {
+    "logo": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "type": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    },
+    "palette": {
+      "mode": "new",
+      "status": "proposed",
+      "source": null,
+      "sha256": null
+    }
+  },
+  "type": {
+    "pairing_mode": "single-family",
+    "display": {
+      "family": "Schibsted Grotesk",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        600
+      ],
+      "location": {
+        "wght": 600
+      },
+      "features": [],
+      "case": "lower",
+      "tracking": -30,
+      "fallback": "'Helvetica Neue', Arial, sans-serif",
+      "file": null
+    },
+    "text": {
+      "family": "Schibsted Grotesk",
+      "source": "google",
+      "license": "OFL-1.1",
+      "weights": [
+        400,
+        600
+      ],
+      "location": {
+        "wght": 400
+      },
+      "features": [],
+      "case": "as-is",
+      "tracking": 0,
+      "fallback": "'Helvetica Neue', Arial, sans-serif",
+      "file": null
+    },
+    "mono": null
+  },
+  "logo": {
+    "type": "wordmark",
+    "concept": "A lowercase 'shay' split low along a horizon, like the last light across a dark frame.",
+    "symbol": null,
+    "wordmark": {
+      "text": "shay",
+      "role": "display",
+      "location": null,
+      "tracking": -30,
+      "case": "lower"
+    },
+    "monogram": null,
+    "lockups": [
+      "horizontal"
+    ],
+    "colors": {
+      "wordmark": "text"
+    },
+    "tags": [],
+    "clear_space": {
+      "unit": "cap-height",
+      "multiple": 1,
+      "inferred": true
+    },
+    "min_size": {
+      "px": 32,
+      "mm": 10
+    },
+    "defect": "Round 3: the sage line through the middle read as a strikethrough (crossed-out name); now a clean horizon cut low in the x-height, no line in the gap. Sage moves to UI highlights."
+  },
+  "palette": "palette.json",
+  "defaults_used": [],
+  "rationale": [
+    {
+      "claim": "The fourth reference feed is dark, low-saturation and cinematic; this set is built dark-first for that content.",
+      "evidence": "measured",
+      "source": "user reference screenshot (training creator)"
+    },
+    {
+      "claim": "One family keeps the voice quiet and the web load small; hierarchy comes from weight only.",
+      "evidence": "practice",
+      "source": "references/type.md"
+    },
+    {
+      "claim": "A light warm figure on a dark ground is a well-rated pairing direction.",
+      "evidence": "strong",
+      "source": "references/color.md (Schloss & Palmer 2011)"
+    },
+    {
+      "claim": "Sage for the Okanagan's late-season hills is taste and a private nod.",
+      "evidence": "judgement",
+      "source": "designer"
+    }
+  ],
+  "derived": [
+    {
+      "file": "card.png",
+      "requires": [
+        "logo",
+        "type",
+        "palette"
+      ],
+      "inputs_sha256": "a31967d3886663d51318bc97633b37b02fa38539788ea799b336c6fc9045954f"
+    }
+  ],
+  "audit": {
+    "schema": "brand-identity/audit@1",
+    "passed": true,
+    "counts": {
+      "gate": 0,
+      "warn": 2,
+      "info": 4
+    },
+    "findings": [
+      {
+        "id": "palette.contrast.light.accent-on-background",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 2.14,
+        "threshold": 3.0,
+        "message": "light: accent #9fb08e on background #f7f6f3 is 2.14:1, below 3.0:1 (accent fill against the page (needs a label or border if lower); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.accent",
+          "from": "#9fb08e",
+          "to": "#738165",
+          "how": "use accent-600 (same scale)",
+          "ratio_after": 3.84
+        },
+        "roles": [
+          "light.accent",
+          "light.background"
+        ]
+      },
+      {
+        "id": "palette.contrast.light.link-on-text",
+        "component": "palette",
+        "severity": "warn",
+        "measured": 2.99,
+        "threshold": 3.0,
+        "message": "light: link #5e6a52 on text #241912 is 2.99:1, below 3.0:1 (links distinguishable from body text without underline (WCAG G183); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.link",
+          "from": "#5e6a52",
+          "to": "#738165",
+          "how": "use accent-600 (same scale)",
+          "ratio_after": 4.14
+        },
+        "roles": [
+          "light.link",
+          "light.text"
+        ]
+      },
+      {
+        "id": "palette.contrast.light.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 1.36,
+        "threshold": 3.0,
+        "message": "light: border #d7d5cf on background #f7f6f3 is 1.36:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.light.border",
+          "from": "#d7d5cf",
+          "to": "#908e89",
+          "how": "darken by OKLCH L -0.22, same hue",
+          "ratio_after": 3.03
+        },
+        "roles": [
+          "light.border",
+          "light.background"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.link-on-text",
+        "component": "palette",
+        "severity": "info",
+        "measured": 2.08,
+        "threshold": 3.0,
+        "message": "dark: link #9fb08e on text #f5f2f1 is 2.08:1, below 3.0:1 (underline links in dark mode (WCAG G183: without underline a link needs 3:1 against body text); WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.link",
+          "from": "#9fb08e",
+          "to": "#738165",
+          "how": "use accent-600 (same scale)",
+          "ratio_after": 3.73
+        },
+        "roles": [
+          "dark.link",
+          "dark.text"
+        ]
+      },
+      {
+        "id": "palette.contrast.dark.border-on-background",
+        "component": "palette",
+        "severity": "info",
+        "measured": 1.81,
+        "threshold": 3.0,
+        "message": "dark: border #4b3e36 on background #17120f is 1.81:1, below 3.0:1 (borders: dividers are exempt, input outlines need 3:1; WCAG 2, no rounding)",
+        "suggested_fix": {
+          "change": "modes.dark.border",
+          "from": "#4b3e36",
+          "to": "#7c706a",
+          "how": "use neutral-500 (same scale)",
+          "ratio_after": 3.88
+        },
+        "roles": [
+          "dark.border",
+          "dark.background"
+        ]
+      },
+      {
+        "id": "type.display+text.web-weight",
+        "component": "type",
+        "severity": "info",
+        "measured": 39,
+        "threshold": null,
+        "message": "Schibsted Grotesk: ~39 KB WOFF2 for the brief's characters (one variable file, all weights; estimate)",
+        "suggested_fix": null
+      }
+    ],
+    "defaults": {
+      "matched": []
+    }
+  },
+  "card": {
+    "ground": "dark"
+  },
+  "palette_build": {
+    "strategy": null,
+    "accent": null,
+    "light_bg": "#f7f6f3",
+    "dark_bg": "#17120f",
+    "neutral_tint": null,
+    "neutral_chroma": null,
+    "extra": []
+  }
+}

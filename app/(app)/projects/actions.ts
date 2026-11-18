@@ -12,6 +12,8 @@ export async function createProjectAction(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     color: formData.get("color") || undefined,
+    dueDate: formData.get("dueDate") || undefined,
+    businessId: formData.get("businessId") || undefined,
   });
 
   await createProject(session.user.id, body);
@@ -27,6 +29,9 @@ export async function updateProjectAction(
     name: formData.get("name"),
     description: formData.get("description") || undefined,
     color: formData.get("color") || undefined,
+    // Empty means "clear it" on edit.
+    dueDate: formData.get("dueDate") || null,
+    businessId: formData.get("businessId") || null,
   });
 
   await updateProject(session.user.id, projectId, body);

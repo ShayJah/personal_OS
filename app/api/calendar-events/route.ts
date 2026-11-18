@@ -13,6 +13,9 @@ export async function GET(request: NextRequest) {
 
     const start = startParam ? new Date(startParam) : startOfWeek(new Date());
     const end = endParam ? new Date(endParam) : addDays(start, 7);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      return NextResponse.json({ error: "Invalid start or end date" }, { status: 400 });
+    }
 
     const events = await listEventsForRange(userId, start, end);
     return NextResponse.json({ events });

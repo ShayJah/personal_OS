@@ -3,17 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { LogoMark } from "@/components/brand/logo-mark";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Today" },
+  { href: "/home", label: "Home base" },
   { href: "/tasks", label: "Tasks" },
   { href: "/projects", label: "Projects" },
+  { href: "/businesses", label: "Businesses" },
+  { href: "/outreach", label: "Outreach" },
   { href: "/calendar", label: "Calendar" },
-  { href: "/habits", label: "Habits" },
   { href: "/capture", label: "Capture" },
-  { href: "/coach", label: "Coach" },
+  { href: "/goals", label: "Goals" },
   { href: "/reports", label: "Reports" },
   { href: "/agents", label: "Agents" },
+  { href: "/study", label: "Study" },
   { href: "/share-links", label: "Share" },
 ];
 
@@ -31,9 +35,12 @@ export function SidebarNav({
       className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface/60 px-6 pb-6 pt-8 md:flex"
       style={{ paddingTop: "max(2rem, env(safe-area-inset-top))" }}
     >
-      <Link href="/dashboard" className="block">
-        <span className="font-serif text-2xl leading-none">PersonalOS</span>
-        <span className="eyebrow mt-1 block">daily operations</span>
+      <Link href="/dashboard" className="flex items-center gap-3">
+        <LogoMark className="size-9 shrink-0" />
+        <span>
+          <span className="block font-serif text-3xl font-extrabold uppercase leading-none tracking-wide">Amahoro</span>
+          <span className="eyebrow mt-1 block">operations</span>
+        </span>
       </Link>
 
       <nav aria-label="Primary" className="mt-10 flex flex-1 flex-col gap-0.5">

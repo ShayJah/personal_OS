@@ -1,0 +1,19 @@
+backend:
+  name: github
+  repo: ShayJah/personal_OS
+  branch: main
+  auth_endpoint: api/decap/auth
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: progress
+    label: Progress
+    folder: progress
+    extension: md
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}"
+    summary: "{{slug}}"
+    fields:
+      - { label: Entry, name: body, widget: markdown }

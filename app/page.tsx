@@ -7,10 +7,10 @@ export default async function LandingPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
       <div className="max-w-md space-y-6">
-        <h1 className="font-serif text-4xl">PersonalOS</h1>
+        <h1 className="font-serif text-4xl">Amahoro</h1>
         <p className="text-muted">
-          A calm, minimal operating system for your priorities, tasks,
-          projects, calendar, and habits.
+          A calm, minimal operations system for your priorities, projects,
+          calendar, and business/CRM workflows.
         </p>
         <Link
           href={session?.user ? "/dashboard" : "/login"}

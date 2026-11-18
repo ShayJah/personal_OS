@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { UnauthorizedError } from "@/lib/api/auth";
 import { AiNotConfiguredError } from "@/lib/ai";
+import { AiLimitError } from "@/lib/ai-limit";
 import { TranscriptionNotConfiguredError } from "@/lib/transcription";
 
 export function handleApiError(error: unknown) {
@@ -23,6 +24,10 @@ export function handleApiError(error: unknown) {
   }
   if (error instanceof TranscriptionNotConfiguredError) {
     return NextResponse.json({ error: error.message }, { status: 503 });
+  }
+
+  if (error instanceof AiLimitError) {
+    return NextResponse.json({ error: error.message }, { status: 429 });
   }
 
   console.error(error);

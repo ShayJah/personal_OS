@@ -1,0 +1,29 @@
+{
+  "display": {
+    "family": "Bodoni Moda",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/BodoniModa-Italic-fe13796475e557a4.ttf",
+    "location": {
+      "ital": 1,
+      "wght": 500,
+      "opsz": 96
+    },
+    "weights": [
+      500
+    ],
+    "features": []
+  },
+  "text": {
+    "family": "Archivo",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/Archivo-e064a79a7c6d5d28.ttf",
+    "location": {
+      "wght": 400,
+      "wdth": 100
+    },
+    "weights": [
+      400,
+      600,
+      900
+    ],
+    "features": []
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { createCaptureAction } from "@/app/(app)/capture/actions";
+import { createCaptureAction } from "@/app/(app)/(narrow)/capture/actions";
 
 type Phase = "idle" | "recording" | "transcribing";
 

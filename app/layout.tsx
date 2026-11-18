@@ -1,13 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Fraunces } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ServiceWorkerRegistration } from "@/components/layout/service-worker-registration";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const hanken = localFont({
+  src: "./fonts/HankenGrotesk.ttf",
+  variable: "--font-hanken",
+  weight: "100 900",
+});
+
+const bigShoulders = localFont({
+  src: "./fonts/BigShoulders.ttf",
+  variable: "--font-display",
+  weight: "100 900",
 });
 
 const geistMono = Geist_Mono({
@@ -15,33 +23,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
-  style: ["normal", "italic"],
-});
-
 export const metadata: Metadata = {
-  title: "PersonalOS",
+  title: "Amahoro",
   description:
-    "A calm, minimal personal operating system for priorities, tasks, and habits.",
+    "A calm, minimal operations system for priorities, projects, and business/CRM workflows.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "PersonalOS",
+    title: "Amahoro",
   },
   icons: {
-    icon: [
-      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F6ECE1",
+  themeColor: "#EBE3D3",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -55,7 +53,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${hanken.variable} ${bigShoulders.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

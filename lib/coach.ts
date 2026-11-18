@@ -1,9 +1,10 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import { getAnthropicClient, COACH_MODEL } from "@/lib/ai";
 import { buildUserContext } from "@/lib/user-context";
+import { runAgenticTurn } from "@/agents/runtime";
+import { AGENTS } from "@/agents/definitions";
 
-const SYSTEM_PROMPT = `You are a calm, encouraging personal productivity coach inside an app called PersonalOS. Help the user plan their day, reflect on progress, and stay accountable to their priorities. Keep responses concise (a few sentences, or a short list) and grounded in the specific context provided below — reference actual task and project names when relevant rather than speaking generically. Do not invent tasks, priorities, or habits that aren't in the context.`;
+const HISTORY_LIMIT = 20;
 
 export async function getOrCreateThread(userId: string) {
   let thread = await prisma.coachThread.findFirst({
@@ -26,22 +27,25 @@ export async function listThreadMessages(userId: string) {
 
 export async function sendCoachMessage(userId: string, content: string) {
   const thread = await getOrCreateThread(userId);
-  const history = await prisma.coachMessage.findMany({
-    where: { threadId: thread.id },
-    orderBy: { createdAt: "asc" },
-  });
-
-  await prisma.coachMessage.create({
-    data: { threadId: thread.id, role: "user", content },
-  });
+  // Only the recent tail goes to the model — full history grows cost forever and eventually overflows the context window.
+  const history = (
+    await prisma.coachMessage.findMany({
+      where: { threadId: thread.id },
+      orderBy: { createdAt: "desc" },
+      take: HISTORY_LIMIT,
+    })
+  ).reverse();
 
   const context = await buildUserContext(userId);
-  const client = getAnthropicClient();
+  const coach = AGENTS.coach;
 
-  const response = await client.messages.create({
-    model: COACH_MODEL,
-    max_tokens: 1024,
-    system: `${SYSTEM_PROMPT}\n\nCurrent user context:\n${context}`,
+  const { text: replyText } = await runAgenticTurn({
+    userId,
+    agent: coach.name,
+    trigger: "chat",
+    model: coach.model,
+    systemPrompt: coach.systemPrompt(context),
+    toolNames: coach.toolNames,
     messages: [
       ...history.map((m) => ({
         role: m.role as "user" | "assistant",
@@ -51,13 +55,10 @@ export async function sendCoachMessage(userId: string, content: string) {
     ],
   });
 
-  const textBlock = response.content.find((b) => b.type === "text");
-  const replyText =
-    textBlock && textBlock.type === "text"
-      ? textBlock.text
-      : "Sorry, I couldn't generate a response just now.";
-
-  return prisma.coachMessage.create({
-    data: { threadId: thread.id, role: "assistant", content: replyText },
-  });
+  // Saved together after the reply so a failed AI call doesn't leave an unanswered message behind.
+  const [, reply] = await prisma.$transaction([
+    prisma.coachMessage.create({ data: { threadId: thread.id, role: "user", content } }),
+    prisma.coachMessage.create({ data: { threadId: thread.id, role: "assistant", content: replyText } }),
+  ]);
+  return reply;
 }

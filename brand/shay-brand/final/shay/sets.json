@@ -1,0 +1,191 @@
+{
+  "schema": "brand-identity/sets@1",
+  "sets": [
+    {
+      "identity": {
+        "set": {
+          "id": "A",
+          "name": "Shay",
+          "recommended": true,
+          "mechanism": "Imigongo, the Rwandan relief art of nested black, white and ochre bands: the mark is an Amatana diamond drawn in the same bands, the captions are tall caps set as calmly as those bands, and the palette is chocolate, caramel, olive and oat.",
+          "expression_move": "One Imigongo motif per post, cropped at an edge; type and colour stay quiet.",
+          "differs_by": "The reference creators rely on caption type alone; this adds a pattern language with Shay's own roots, which none of them can borrow."
+        },
+        "axes": {
+          "quiet_loud": -1,
+          "playful_serious": 0,
+          "friend_authority": -1
+        },
+        "type": {
+          "pairing_mode": "contrast",
+          "display": {
+            "family": "Big Shoulders",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              800
+            ],
+            "location": {
+              "wght": 800,
+              "opsz": 72
+            },
+            "features": [],
+            "case": "upper",
+            "tracking": 40,
+            "fallback": "'Arial Narrow', sans-serif",
+            "file": null
+          },
+          "text": {
+            "family": "Hanken Grotesk",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              500,
+              600
+            ],
+            "location": {
+              "wght": 400
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "symbol+wordmark",
+          "concept": "An Amatana diamond from Imigongo: two nested bands around a caramel core, next to SHAY in calm tall caps.",
+          "symbol": "logo/symbol.svg",
+          "wordmark": {
+            "text": "SHAY",
+            "role": "display",
+            "location": null,
+            "tracking": 40,
+            "case": "upper"
+          },
+          "monogram": null,
+          "lockups": [
+            "horizontal",
+            "stacked"
+          ],
+          "colors": {
+            "ring-outer": "primary",
+            "ring-inner": "primary",
+            "core": "brand-2",
+            "wordmark": "primary"
+          },
+          "tags": [
+            "abstract-geometric"
+          ],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 20,
+            "mm": 7
+          },
+          "misuse": [
+            {
+              "do": "stretch"
+            },
+            {
+              "do": "recolour"
+            },
+            {
+              "do": "effects"
+            },
+            {
+              "do": "crowd"
+            },
+            {
+              "svg": "logo/misuse-1.svg",
+              "label": "Don't fill in the bands"
+            },
+            {
+              "svg": "logo/misuse-2.svg",
+              "label": "Don't turn the diamond into a square"
+            }
+          ]
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#ebe3d3",
+          "dark_bg": "#1d1612",
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": [
+            "#6f7347:Olive:second surfaces, training content"
+          ]
+        },
+        "defaults_used": [
+          {
+            "id": "cream-ground",
+            "why": "Shay picked olive and oat in the vibe round; oat is that choice."
+          },
+          {
+            "id": "gold-brass-accent",
+            "why": "Shay picked chocolate and caramel in the vibe round; caramel also stands in for Imigongo's red ochre."
+          }
+        ],
+        "rationale": [
+          {
+            "claim": "Shay chose the Imigongo zigzag border and the Amatana, Ngondo and Itweka motifs from a reference of Rwandan Imigongo panels.",
+            "evidence": "measured",
+            "source": "user vibe round 2"
+          },
+          {
+            "claim": "Shay chose warm-clean and moody-warm feeds, chocolate/caramel and olive/oat, tall sporty caps and a chill energy level (2 of 5).",
+            "evidence": "measured",
+            "source": "user vibe form"
+          },
+          {
+            "claim": "Nested bands with equal stroke and gap stay readable at avatar size when reduced to one ring and the core.",
+            "evidence": "practice",
+            "source": "references/logo.md"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Shay",
+        "direction": "Chocolate and caramel on oat, olive for second surfaces, night for moody photos.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "name": "Chocolate",
+            "hex": "#3b2418",
+            "source": "chosen",
+            "locked": true,
+            "usage": "logo, captions, text, buttons"
+          },
+          {
+            "id": "brand-2",
+            "name": "Caramel",
+            "hex": "#b9814a",
+            "source": "chosen",
+            "locked": true,
+            "usage": "the diamond core, borders, one highlight per post"
+          }
+        ],
+        "feels": [
+          "honest",
+          "warm",
+          "chill"
+        ]
+      },
+      "symbol_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path id=\"ring-outer\" fill-rule=\"evenodd\" d=\"M50 2 L98 50 L50 98 L2 50Z M50 11 L89 50 L50 89 L11 50Z\" data-color=\"primary\"/><path id=\"ring-inner\" fill-rule=\"evenodd\" d=\"M50 19 L81 50 L50 81 L19 50Z M50 28 L72 50 L50 72 L28 50Z\" data-color=\"primary\"/><path id=\"core\" d=\"M50 36 L64 50 L50 64 L36 50Z\" data-color=\"brand-2\"/></svg>",
+      "symbol_small_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path id=\"ring\" fill-rule=\"evenodd\" d=\"M50 2 L98 50 L50 98 L2 50Z M50 16 L84 50 L50 84 L16 50Z\" data-color=\"primary\"/><path id=\"core\" d=\"M50 27 L73 50 L50 73 L27 50Z\" data-color=\"brand-2\"/></svg>",
+      "wordmark_detail_svg": null,
+      "misuse_svgs": {
+        "misuse-1": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path data-color=\"primary\" d=\"M50 2L98 50L50 98L2 50Z\"/><path data-color=\"brand-2\" d=\"M50 36L64 50L50 64L36 50Z\"/></svg>",
+        "misuse-2": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path data-color=\"primary\" fill-rule=\"evenodd\" d=\"M16 16H84V84H16ZM22.4 22.4H77.6V77.6H22.4ZM28 28H72V72H28ZM34.4 34.4H65.6V65.6H34.4Z\"/><path data-color=\"brand-2\" d=\"M40 40H60V60H40Z\"/></svg>"
+      }
+    }
+  ]
+}

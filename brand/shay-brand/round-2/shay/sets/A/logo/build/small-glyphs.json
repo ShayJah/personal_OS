@@ -1,0 +1,115 @@
+{
+ "units": "symbol grid 0..100; index = position in data-glyphs (1-based)",
+ "symbol": [
+  {
+   "id": "name",
+   "text": "SHAY",
+   "location": {
+    "wght": 700,
+    "opsz": 72
+   },
+   "glyphs": [
+    {
+     "index": 1,
+     "char": "S",
+     "x0": 19.16,
+     "x1": 33.27,
+     "cap_top": 35.0,
+     "baseline": 65.0,
+     "stems": [
+      [
+       28.25,
+       33.13
+      ]
+     ],
+     "pen_x": 18.07,
+     "advance": 16.27
+    },
+    {
+     "index": 2,
+     "char": "H",
+     "x0": 35.99,
+     "x1": 49.55,
+     "cap_top": 35.0,
+     "baseline": 65.0,
+     "stems": [
+      [
+       35.99,
+       40.66
+      ],
+      [
+       44.86,
+       49.55
+      ]
+     ],
+     "pen_x": 34.34,
+     "advance": 16.84
+    },
+    {
+     "index": 3,
+     "char": "A",
+     "x0": 51.68,
+     "x1": 67.02,
+     "cap_top": 35.0,
+     "baseline": 65.0,
+     "stems": [
+      [
+       53.14,
+       57.62
+      ],
+      [
+       61.09,
+       65.57
+      ]
+     ],
+     "pen_x": 51.18,
+     "advance": 14.21
+    },
+    {
+     "index": 4,
+     "char": "Y",
+     "x0": 65.82,
+     "x1": 80.84,
+     "cap_top": 35.0,
+     "baseline": 65.0,
+     "stems": [
+      [
+       70.1,
+       76.55
+      ]
+     ],
+     "pen_x": 65.39,
+     "advance": 15.86
+    }
+   ]
+  }
+ ],
+ "symbol-small": [
+  {
+   "id": "initial-s",
+   "text": "S",
+   "location": {
+    "wght": 700,
+    "opsz": 72
+   },
+   "glyphs": [
+    {
+     "index": 1,
+     "char": "S",
+     "x0": 39.18,
+     "x1": 60.82,
+     "cap_top": 27.0,
+     "baseline": 73.0,
+     "stems": [
+      [
+       53.11,
+       60.61
+      ]
+     ],
+     "pen_x": 37.5,
+     "advance": 24.96
+    }
+   ]
+  }
+ ]
+}

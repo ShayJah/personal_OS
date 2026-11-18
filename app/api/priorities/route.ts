@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { userToday } from "@/lib/user/preferences";
 import type { NextRequest } from "next/server";
 import { requireUserId } from "@/lib/api/auth";
 import { handleApiError } from "@/lib/api/response";
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await requireUserId();
     const dateParam = request.nextUrl.searchParams.get("date");
-    const date = toDateOnly(dateParam ? new Date(dateParam) : new Date());
+    const date = dateParam ? toDateOnly(new Date(dateParam)) : await userToday(userId);
 
     const priorities = await getPrioritiesForDate(userId, date);
     return NextResponse.json({ priorities });
@@ -23,7 +24,7 @@ export async function PUT(request: NextRequest) {
   try {
     const userId = await requireUserId();
     const { items } = setPrioritiesSchema.parse(await request.json());
-    const date = toDateOnly();
+    const date = await userToday(userId);
 
     const priorities = await setPrioritiesForDate(userId, date, items);
     return NextResponse.json({ priorities });

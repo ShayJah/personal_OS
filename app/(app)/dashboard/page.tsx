@@ -1,107 +1,68 @@
 import { requireSession } from "@/lib/auth/dal";
+import { userToday } from "@/lib/user/preferences";
 import { getPrioritiesForDate } from "@/lib/priorities";
+import { listHabitsWithHistory } from "@/lib/habits";
+import { listEventsForRange } from "@/lib/calendar";
+import { listDueFollowUps } from "@/lib/today";
 import { prisma } from "@/lib/db";
 import { toDateOnly } from "@/lib/date";
-import { Card } from "@/components/ui/card";
-import { PrioritiesCard } from "./priorities-card";
-import { QuickActionsCard } from "./quick-actions-card";
+import { TodayView } from "./today-view";
+
+const DAY_MS = 86_400_000;
 
 export default async function DashboardPage() {
   const session = await requireSession();
   const userId = session.user.id;
-  const today = toDateOnly();
-  const tomorrow = new Date(today);
-  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  const today = await userToday(userId);
+  const tomorrow = new Date(today.getTime() + DAY_MS);
 
-  const [priorities, tasksDueToday, overdueCount, openTaskCount, habits] =
+  const [priorities, tasks, dueTodayCount, overdueCount, openTaskCount, habits, notifications, events, followUps] =
     await Promise.all([
       getPrioritiesForDate(userId, today),
       prisma.task.findMany({
-        where: {
-          userId,
-          completed: false,
-          dueDate: { gte: today, lt: tomorrow },
-        },
-        orderBy: { createdAt: "asc" },
-        take: 5,
+        where: { userId, completed: false, dueDate: { lt: tomorrow } },
+        orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }],
+        take: 8,
+        select: { id: true, title: true, dueDate: true },
       }),
       prisma.task.count({
-        where: { userId, completed: false, dueDate: { lt: today } },
+        where: { userId, completed: false, dueDate: { gte: today, lt: tomorrow } },
       }),
+      prisma.task.count({ where: { userId, completed: false, dueDate: { lt: today } } }),
       prisma.task.count({ where: { userId, completed: false } }),
-      prisma.habit.findMany({
-        where: { userId },
-        include: { logs: { where: { date: today } } },
+      listHabitsWithHistory(userId),
+      prisma.notification.findMany({
+        where: { userId, readAt: null },
+        orderBy: { createdAt: "desc" },
+        take: 3,
       }),
+      listEventsForRange(userId, today, tomorrow),
+      listDueFollowUps(userId, tomorrow),
     ]);
 
-  const habitsCheckedIn = habits.filter((h) =>
-    h.logs.some((log) => log.completed)
-  ).length;
-
-  const now = new Date();
-  const weekday = now.toLocaleDateString(undefined, { weekday: "long" });
-  const monthDay = now.toLocaleDateString(undefined, {
-    month: "long",
-    day: "numeric",
-  });
-
   return (
-    <div className="space-y-8">
-      <div className="flex items-baseline justify-between gap-3">
-        <div>
-          <p className="eyebrow">{weekday}</p>
-          <h1 className="mt-1 font-serif text-4xl sm:text-5xl">{monthDay}</h1>
-        </div>
-        <p className="hidden text-sm text-muted sm:block">
-          Welcome back, {session.user.name?.split(" ")[0] ?? "there"}
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <PrioritiesCard initial={priorities.map((p) => p.content)} />
-
-        <Card>
-          <p className="eyebrow">Today&apos;s summary</p>
-          <div className="mt-3 space-y-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-muted">Open tasks</span>
-              <span className="font-medium">{openTaskCount}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted">Overdue</span>
-              <span
-                className={
-                  overdueCount > 0 ? "font-medium text-danger" : "font-medium"
-                }
-              >
-                {overdueCount}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted">Habits checked in</span>
-              <span className="font-medium">
-                {habitsCheckedIn}/{habits.length}
-              </span>
-            </div>
-
-            {tasksDueToday.length > 0 && (
-              <div className="border-t border-border pt-3">
-                <p className="text-muted">Due today</p>
-                <ul className="mt-1.5 space-y-1">
-                  {tasksDueToday.map((task) => (
-                    <li key={task.id} className="truncate">
-                      {task.title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </Card>
-
-        <QuickActionsCard />
-      </div>
-    </div>
+    <TodayView
+      firstName={session.user.name?.split(" ")[0]}
+      now={new Date()}
+      priorities={priorities.map((p) => p.content)}
+      tasks={tasks.map((t) => ({
+        id: t.id,
+        title: t.title,
+        daysOverdue: t.dueDate
+          ? Math.max(0, Math.floor((today.getTime() - toDateOnly(t.dueDate).getTime()) / DAY_MS))
+          : 0,
+      }))}
+      dueTodayCount={dueTodayCount}
+      overdueCount={overdueCount}
+      openTaskCount={openTaskCount}
+      habits={habits.map((h) => ({ id: h.id, name: h.name, done: h.completedToday, streak: h.streak }))}
+      notifications={notifications.map((n) => ({
+        id: n.id,
+        title: n.title,
+        payload: n.payload as { priorities?: { title: string; why: string }[] } | null,
+      }))}
+      events={events}
+      followUps={followUps}
+    />
   );
 }

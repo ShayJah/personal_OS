@@ -1,70 +1,71 @@
-import Link from "next/link";
 import { requireSession } from "@/lib/auth/dal";
 import { listProjectsWithProgress } from "@/lib/projects";
-import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { NewProjectForm } from "./new-project-form";
+import { listBusinesses } from "@/lib/crm";
+import {
+  colorForKey,
+  computeProjectHealth,
+  formatDay,
+  pickNextTask,
+  STATUS_ORDER,
+  type ProjectStatus,
+} from "@/lib/project-health";
+import { ProjectsView, type ProjectCardData } from "./projects-view";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   const session = await requireSession();
-  const projects = await listProjectsWithProgress(session.user.id);
+  const { status } = await searchParams;
+  const filter: ProjectStatus | "all" = STATUS_ORDER.includes(status as ProjectStatus)
+    ? (status as ProjectStatus)
+    : "all";
+
+  const [projects, businesses] = await Promise.all([
+    listProjectsWithProgress(session.user.id),
+    listBusinesses(session.user.id),
+  ]);
+
+  const now = new Date();
+  const cards: ProjectCardData[] = projects.map((p) => {
+    const { status, pct } = computeProjectHealth({
+      total: p.taskCount,
+      completed: p.completedCount,
+      createdAt: p.createdAt,
+      dueDate: p.dueDate,
+      now,
+    });
+    return {
+      id: p.id,
+      name: p.name,
+      business: p.business
+        ? { id: p.business.id, name: p.business.name, color: colorForKey(p.business.id) }
+        : null,
+      status,
+      completed: p.completedCount,
+      total: p.taskCount,
+      pct,
+      next: pickNextTask(p.tasks)?.title ?? null,
+      dueLabel: p.dueDate ? formatDay(p.dueDate) : null,
+    };
+  });
+
+  const counts = Object.fromEntries(
+    STATUS_ORDER.map((s) => [s, cards.filter((c) => c.status === s).length])
+  ) as Record<ProjectStatus, number>;
+
+  const visible = cards
+    .filter((c) => filter === "all" || c.status === filter)
+    .sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status));
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="eyebrow">Organize</p>
-          <h1 className="mt-1 font-serif text-3xl">Projects</h1>
-          <p className="mt-1 text-sm text-muted">
-            Group related tasks together.
-          </p>
-        </div>
-        <NewProjectForm />
-      </div>
-
-      {projects.length === 0 ? (
-        <EmptyState
-          title="No projects yet"
-          description="Create one to start grouping related tasks."
-        />
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
-            const pct =
-              project.taskCount === 0
-                ? 0
-                : Math.round(
-                    (project.completedCount / project.taskCount) * 100
-                  );
-            return (
-              <Link key={project.id} href={`/projects/${project.id}`}>
-                <Card className="h-full transition hover:border-foreground/30">
-                  <h2 className="truncate font-serif text-lg">{project.name}</h2>
-                  {project.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-muted">
-                      {project.description}
-                    </p>
-                  )}
-                  <div className="mt-4 space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-muted">
-                      <span>
-                        {project.completedCount}/{project.taskCount} tasks
-                      </span>
-                      <span>{pct}%</span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
-                      <div
-                        className="h-full rounded-full bg-accent"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <ProjectsView
+      projects={visible}
+      counts={counts}
+      total={cards.length}
+      filter={filter}
+      businesses={businesses.map((b) => ({ id: b.id, name: b.name }))}
+    />
   );
 }

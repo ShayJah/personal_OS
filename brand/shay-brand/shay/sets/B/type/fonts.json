@@ -1,0 +1,26 @@
+{
+  "display": {
+    "family": "Big Shoulders",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/BigShoulders-2b412454a4746380.ttf",
+    "location": {
+      "wght": 800,
+      "opsz": 72
+    },
+    "weights": [
+      800
+    ],
+    "features": []
+  },
+  "text": {
+    "family": "Hanken Grotesk",
+    "file": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/HankenGrotesk-cb05c3745ddd267d.ttf",
+    "location": {
+      "wght": 400
+    },
+    "weights": [
+      400,
+      600
+    ],
+    "features": []
+  }
+}

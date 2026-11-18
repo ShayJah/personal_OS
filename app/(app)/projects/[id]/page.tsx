@@ -1,10 +1,10 @@
 import { requireSession } from "@/lib/auth/dal";
+import { userToday } from "@/lib/user/preferences";
 import { getProjectDetail } from "@/lib/projects";
-import { listProjectsWithProgress } from "@/lib/projects";
-import { Card } from "@/components/ui/card";
-import { TaskList } from "../../tasks/task-list";
-import { NewTaskForm } from "../../tasks/new-task-form";
-import { ProjectHeader } from "./project-header";
+import { listBusinesses } from "@/lib/crm";
+import { describeDue, type TaskItemData } from "@/lib/task-groups";
+import { colorForKey, computeProjectHealth, formatDay } from "@/lib/project-health";
+import { ProjectView, type ProjectSection } from "./project-view";
 
 export default async function ProjectDetailPage({
   params,
@@ -14,48 +14,83 @@ export default async function ProjectDetailPage({
   const session = await requireSession();
   const { id } = await params;
 
-  const [project, projects] = await Promise.all([
+  const [project, businesses] = await Promise.all([
     getProjectDetail(session.user.id, id),
-    listProjectsWithProgress(session.user.id),
+    listBusinesses(session.user.id),
   ]);
 
-  const completedCount = project.tasks.filter((t) => t.completed).length;
-  const pct =
-    project.tasks.length === 0
-      ? 0
-      : Math.round((completedCount / project.tasks.length) * 100);
+  const today = await userToday(session.user.id);
+  const completed = project.tasks.filter((t) => t.completed).length;
+  const { status, pct, pace } = computeProjectHealth({
+    total: project.tasks.length,
+    completed,
+    createdAt: project.createdAt,
+    dueDate: project.dueDate,
+  });
 
-  const tasksWithProject = project.tasks.map((task) => ({
-    ...task,
-    project: { id: project.id, name: project.name },
-  }));
+  const items: TaskItemData[] = project.tasks.map((t) => {
+    const { label, tone } = describeDue(t.dueDate, today);
+    return {
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      completed: t.completed,
+      dueDate: t.dueDate?.toISOString() ?? null,
+      priority: t.priority,
+      tags: t.tags,
+      section: t.section,
+      projectId: t.projectId,
+      project: null,
+      dueLabel: label,
+      tone,
+    };
+  });
+
+  // Sections keep the order their first task was created; unsectioned tasks
+  // go last (or stand alone as "Tasks" when nothing is sectioned).
+  const named = new Map<string, TaskItemData[]>();
+  const loose: TaskItemData[] = [];
+  for (const task of items) {
+    if (!task.section) loose.push(task);
+    else named.set(task.section, [...(named.get(task.section) ?? []), task]);
+  }
+  const firstCreated = (name: string) =>
+    Math.min(...project.tasks.filter((t) => t.section === name).map((t) => t.createdAt.getTime()));
+  const sectionNames = [...named.keys()].sort((a, b) => firstCreated(a) - firstCreated(b));
+
+  const toSection = (key: string, title: string, tasks: TaskItemData[]): ProjectSection => ({
+    key,
+    title,
+    tasks,
+    total: tasks.length,
+    done: tasks.filter((t) => t.completed).length,
+  });
+  const sections: ProjectSection[] = [
+    ...sectionNames.map((name) => toSection(name, name, named.get(name)!)),
+    ...(loose.length ? [toSection("__loose", sectionNames.length ? "Other" : "Tasks", loose)] : []),
+  ];
 
   return (
-    <div className="space-y-6">
-      <ProjectHeader project={project} />
-
-      <Card>
-        <div className="flex items-center justify-between text-sm text-muted">
-          <span>
-            {completedCount}/{project.tasks.length} tasks complete
-          </span>
-          <span>{pct}%</span>
-        </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
-          <div
-            className="h-full rounded-full bg-accent"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      </Card>
-
-      <NewTaskForm projects={projects} defaultProjectId={project.id} />
-
-      <TaskList
-        tasks={tasksWithProject}
-        projects={projects}
-        emptyMessage="No tasks in this project yet."
-      />
-    </div>
+    <ProjectView
+      project={{
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        dueDateInput: project.dueDate?.toISOString().slice(0, 10) ?? null,
+        dueLabel: project.dueDate ? formatDay(project.dueDate) : null,
+        startedLabel: formatDay(project.createdAt),
+        business: project.business
+          ? { id: project.business.id, name: project.business.name, color: colorForKey(project.business.id) }
+          : null,
+      }}
+      status={status}
+      pct={pct}
+      pace={pace}
+      completed={completed}
+      total={project.tasks.length}
+      sections={sections}
+      sectionNames={sectionNames}
+      businesses={businesses.map((b) => ({ id: b.id, name: b.name }))}
+    />
   );
 }

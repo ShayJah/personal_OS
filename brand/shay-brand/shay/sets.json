@@ -1,0 +1,458 @@
+{
+  "schema": "brand-identity/sets@1",
+  "sets": [
+    {
+      "identity": {
+        "set": {
+          "id": "A",
+          "name": "Two Voices",
+          "recommended": true,
+          "mechanism": "Builder and creative in one line: heavy wide capitals say the fact, an italic serif word says the feeling, so the caption system, the italic wordmark and the espresso-and-maple palette all come from the same two-voice sentence.",
+          "expression_move": "The italic serif word inside a line of heavy capitals: the only loud thing, used once per post.",
+          "differs_by": "zerotoui uses one heavy sans in white and Asterisk Create pairs a serif with red-orange on grass green and mustard; this keeps the two-voice caption but sets it on espresso and bone white with one maple orange, so the feed reads as fall rather than studio or field."
+        },
+        "axes": {
+          "quiet_loud": 1,
+          "playful_serious": 0,
+          "classic_contemporary": -1
+        },
+        "type": {
+          "pairing_mode": "contrast",
+          "display": {
+            "family": "Bodoni Moda",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              500
+            ],
+            "location": {
+              "ital": 1,
+              "wght": 500,
+              "opsz": 96
+            },
+            "features": [],
+            "case": "lower",
+            "tracking": -10,
+            "fallback": "Didot, 'Bodoni 72', Georgia, serif",
+            "file": null
+          },
+          "text": {
+            "family": "Archivo",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600,
+              900
+            ],
+            "location": {
+              "wght": 400,
+              "wdth": 100
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "wordmark",
+          "concept": "The name in the creative voice, ended by the builder's voice: a lowercase italic 'shay' with one heavy square full stop in maple.",
+          "symbol": null,
+          "wordmark": {
+            "text": "shay",
+            "role": "display",
+            "location": null,
+            "tracking": -10,
+            "case": "lower"
+          },
+          "monogram": null,
+          "lockups": [
+            "horizontal"
+          ],
+          "colors": {
+            "wordmark": "primary",
+            "builder-stop": "accent"
+          },
+          "tags": [],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 32,
+            "mm": 10
+          },
+          "defect": "Plain italic name had nothing ownable; added the square maple full stop that carries the heavy-caption voice into the mark."
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#f4efe7",
+          "dark_bg": "#1f1510",
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [
+          {
+            "id": "cream-ground",
+            "why": "Shay asked for whites and browns with a fall feel; the bone ground is the white of that request, kept close to white rather than yellow cream."
+          },
+          {
+            "id": "terracotta-clay",
+            "why": "Shay asked for a fall palette and pointed at Asterisk Create's red-orange captions; maple is pushed redder and more saturated than clay, and there is no gold accent with it."
+          }
+        ],
+        "rationale": [
+          {
+            "claim": "Heavy capitals plus an italic serif word is the caption style Shay pointed at in both reference feeds.",
+            "evidence": "measured",
+            "source": "user reference screenshots (zerotoui, Asterisk Create)"
+          },
+          {
+            "claim": "Archivo's width axis gives wide black capitals for captions and a normal-width 400 for reading from one family, so the second face is only the italic.",
+            "evidence": "measured",
+            "source": "fonts search: Archivo wght 100-900 +wdth"
+          },
+          {
+            "claim": "Bodoni italic at large optical size has the drama of the reference captions; it is kept to display sizes because hairlines thin out when small.",
+            "evidence": "practice",
+            "source": "references/type.md"
+          },
+          {
+            "claim": "Espresso and maple on bone reads as fall; that association is taste, not evidence.",
+            "evidence": "judgement",
+            "source": "designer"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Two Voices",
+        "direction": "Espresso ink on bone white, with one maple orange for the feeling word.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "name": "Espresso",
+            "hex": "#2b1d16",
+            "source": "chosen",
+            "locked": true,
+            "usage": "wordmark, text, dark grounds"
+          },
+          {
+            "id": "brand-2",
+            "name": "Maple",
+            "hex": "#c8501e",
+            "source": "chosen",
+            "locked": true,
+            "usage": "the italic feeling word in captions; one per screen"
+          }
+        ],
+        "feels": [
+          "grounded",
+          "creative",
+          "fall"
+        ]
+      },
+      "symbol_svg": null,
+      "symbol_small_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path id=\"initial-s\" data-glyphs=\"s\" data-x=\"42\" data-baseline=\"80\" data-cap=\"100\" data-anchor=\"middle\" data-color=\"primary\"/><rect id=\"builder-stop\" x=\"70\" y=\"65\" width=\"15\" height=\"15\" data-color=\"accent\"/></svg>",
+      "wordmark_detail_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect id=\"builder-stop\" x=\"273\" y=\"86\" width=\"14\" height=\"14\" data-color=\"accent\"/></svg>"
+    },
+    {
+      "identity": {
+        "set": {
+          "id": "B",
+          "name": "Race Bib",
+          "recommended": false,
+          "mechanism": "A race bib pinned at four corners: the mark is the bib with SHAY punched through it, the type is a condensed athletic grotesk like a printed start number, and the palette is bib white, trail brown and Forest City pine.",
+          "expression_move": "The bib shape itself, pinned on everything from the profile picture to the end card.",
+          "differs_by": "None of the reference creators has a mark at all, only captions; this gives Shay an object people can recognise in a 16 px avatar and that belongs to training and building alike (you pin a bib on before you start)."
+        },
+        "axes": {
+          "quiet_loud": 2,
+          "playful_serious": -2,
+          "classic_contemporary": 1
+        },
+        "type": {
+          "pairing_mode": "contrast",
+          "display": {
+            "family": "Big Shoulders",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              800
+            ],
+            "location": {
+              "wght": 800,
+              "opsz": 72
+            },
+            "features": [],
+            "case": "upper",
+            "tracking": 20,
+            "fallback": "'Arial Narrow', 'Helvetica Neue Condensed', sans-serif",
+            "file": null
+          },
+          "text": {
+            "family": "Hanken Grotesk",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600
+            ],
+            "location": {
+              "wght": 400
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "symbol",
+          "concept": "A start bib with four pin holes and the name punched through: you pin it on before you build or race.",
+          "symbol": "logo/symbol.svg",
+          "wordmark": {
+            "text": "SHAY",
+            "role": "display",
+            "location": null,
+            "tracking": 20,
+            "case": "upper"
+          },
+          "monogram": null,
+          "lockups": [],
+          "colors": {
+            "bib": "primary"
+          },
+          "tags": [
+            "letterform"
+          ],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 24,
+            "mm": 8
+          }
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#fbfaf7",
+          "dark_bg": null,
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [],
+        "rationale": [
+          {
+            "claim": "Shay wants the brand to work for a training and health lifestyle as well as building; a race bib belongs to both starts.",
+            "evidence": "judgement",
+            "source": "brief"
+          },
+          {
+            "claim": "Pine green names London, Ontario's Forest City, where Shay studied at Western; the local meaning is a private nod, not a requirement to read the mark.",
+            "evidence": "judgement",
+            "source": "brief"
+          },
+          {
+            "claim": "A condensed grotesk at 800 holds four capitals inside a small bib and stays legible at avatar size.",
+            "evidence": "practice",
+            "source": "references/logo.md"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Race Bib",
+        "direction": "Trail brown on bib white, with Forest City pine for second surfaces.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "name": "Trail Brown",
+            "hex": "#5a3a26",
+            "source": "chosen",
+            "locked": true,
+            "usage": "bib mark, headings, buttons"
+          },
+          {
+            "id": "brand-2",
+            "name": "Forest City Pine",
+            "hex": "#2f5e46",
+            "source": "chosen",
+            "locked": true,
+            "usage": "second surfaces, training content, tags"
+          }
+        ],
+        "feels": [
+          "fun",
+          "sporty",
+          "grounded"
+        ]
+      },
+      "symbol_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"bib\" x=\"4\" y=\"16\" width=\"92\" height=\"68\" rx=\"5\" data-color=\"primary\"/><circle id=\"pin-tl\" cx=\"12.5\" cy=\"24.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-tr\" cx=\"87.5\" cy=\"24.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-bl\" cx=\"12.5\" cy=\"75.5\" r=\"3\" data-op=\"subtract\"/><circle id=\"pin-br\" cx=\"87.5\" cy=\"75.5\" r=\"3\" data-op=\"subtract\"/><path id=\"name\" data-glyphs=\"SHAY\" data-x=\"50\" data-baseline=\"67\" data-cap=\"34\" data-anchor=\"middle\" data-op=\"subtract\"/></svg>",
+      "symbol_small_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect id=\"bib\" x=\"4\" y=\"16\" width=\"92\" height=\"68\" rx=\"5\" data-color=\"primary\"/><circle id=\"pin-tl\" cx=\"13\" cy=\"25\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-tr\" cx=\"87\" cy=\"25\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-bl\" cx=\"13\" cy=\"75\" r=\"4\" data-op=\"subtract\"/><circle id=\"pin-br\" cx=\"87\" cy=\"75\" r=\"4\" data-op=\"subtract\"/><path id=\"initial-s\" data-glyphs=\"S\" data-x=\"50\" data-baseline=\"73\" data-cap=\"46\" data-anchor=\"middle\" data-op=\"subtract\"/></svg>",
+      "wordmark_detail_svg": null
+    },
+    {
+      "identity": {
+        "set": {
+          "id": "C",
+          "name": "Low Light",
+          "recommended": false,
+          "mechanism": "The shot after training, when the light drops: a quiet lowercase name in near-white on bark brown, split once along a low horizon, with Okanagan sage kept for the one highlight per screen.",
+          "expression_move": "The horizon cut through the wordmark; everything else stays dark and still.",
+          "differs_by": "The training creators Shay likes are moody and cool grey; this keeps the low-light mood but warms it to bark brown and adds a sage only Shay uses, with no loud captions at all."
+        },
+        "axes": {
+          "quiet_loud": -2,
+          "playful_serious": 1,
+          "classic_contemporary": 2
+        },
+        "type": {
+          "pairing_mode": "single-family",
+          "display": {
+            "family": "Schibsted Grotesk",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              600
+            ],
+            "location": {
+              "wght": 600
+            },
+            "features": [],
+            "case": "lower",
+            "tracking": -30,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "text": {
+            "family": "Schibsted Grotesk",
+            "source": "google",
+            "license": "OFL-1.1",
+            "weights": [
+              400,
+              600
+            ],
+            "location": {
+              "wght": 400
+            },
+            "features": [],
+            "case": "as-is",
+            "tracking": 0,
+            "fallback": "'Helvetica Neue', Arial, sans-serif",
+            "file": null
+          },
+          "mono": null
+        },
+        "logo": {
+          "type": "wordmark",
+          "concept": "A lowercase 'shay' split low along a horizon, like the last light across a dark frame.",
+          "symbol": null,
+          "wordmark": {
+            "text": "shay",
+            "role": "display",
+            "location": null,
+            "tracking": -30,
+            "case": "lower"
+          },
+          "monogram": null,
+          "lockups": [
+            "horizontal"
+          ],
+          "colors": {
+            "wordmark": "text"
+          },
+          "tags": [],
+          "clear_space": {
+            "unit": "cap-height",
+            "multiple": 1,
+            "inferred": true
+          },
+          "min_size": {
+            "px": 32,
+            "mm": 10
+          },
+          "defect": "Round 3: the sage line through the middle read as a strikethrough (crossed-out name); now a clean horizon cut low in the x-height, no line in the gap. Sage moves to UI highlights."
+        },
+        "card": {
+          "ground": "dark"
+        },
+        "palette_build": {
+          "strategy": null,
+          "accent": null,
+          "light_bg": "#f7f6f3",
+          "dark_bg": "#17120f",
+          "neutral_tint": null,
+          "neutral_chroma": null,
+          "extra": []
+        },
+        "defaults_used": [],
+        "rationale": [
+          {
+            "claim": "The fourth reference feed is dark, low-saturation and cinematic; this set is built dark-first for that content.",
+            "evidence": "measured",
+            "source": "user reference screenshot (training creator)"
+          },
+          {
+            "claim": "One family keeps the voice quiet and the web load small; hierarchy comes from weight only.",
+            "evidence": "practice",
+            "source": "references/type.md"
+          },
+          {
+            "claim": "A light warm figure on a dark ground is a well-rated pairing direction.",
+            "evidence": "strong",
+            "source": "references/color.md (Schloss & Palmer 2011)"
+          },
+          {
+            "claim": "Sage for the Okanagan's late-season hills is taste and a private nod.",
+            "evidence": "judgement",
+            "source": "designer"
+          }
+        ]
+      },
+      "palette": {
+        "schema": "brand-identity/palette@1",
+        "name": "Low Light",
+        "direction": "Bark brown night ground, near-white type, one Okanagan sage.",
+        "brand": [
+          {
+            "id": "brand-1",
+            "name": "Night Bark",
+            "hex": "#1c1613",
+            "source": "chosen",
+            "locked": true,
+            "usage": "ground, dark surfaces"
+          },
+          {
+            "id": "brand-2",
+            "name": "Okanagan Sage",
+            "hex": "#9fb08e",
+            "source": "chosen",
+            "locked": true,
+            "usage": "the horizon line, links, one highlight per screen"
+          }
+        ],
+        "feels": [
+          "calm",
+          "grounded",
+          "cinematic"
+        ]
+      },
+      "symbol_svg": null,
+      "symbol_small_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path id=\"initial-s\" data-glyphs=\"s\" data-x=\"50\" data-baseline=\"84\" data-cap=\"90\" data-anchor=\"middle\" data-color=\"text\"/><rect id=\"horizon\" x=\"0\" y=\"62\" width=\"100\" height=\"6\" data-op=\"subtract\"/></svg>",
+      "wordmark_detail_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect id=\"horizon-cut\" x=\"-8\" y=\"72\" width=\"324\" height=\"7\" data-op=\"subtract\"/></svg>"
+    }
+  ]
+}

@@ -3,7 +3,11 @@ import {
   getProgressSummary,
   getSharedReport,
   getShareSettings,
+  getBusinessShareData,
+  type BusinessDetailLevel,
 } from "@/lib/sharing";
+import { grantBusinessCollaborator, isBusinessMember } from "@/lib/crm";
+import { auth } from "@/lib/auth/auth";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -46,7 +50,7 @@ export async function GET(
             tasksTotal: settings.shareTasks ? summary.week.tasksTotal : 0,
             completionRate: settings.shareTasks ? summary.week.completionRate : 0,
             habitLogsCompleted: settings.shareHabits ? summary.week.habitLogsCompleted : 0,
-            habitStreak: settings.shareHabits ? summary.week.habitStreak : 0,
+            habitsDoneToday: settings.shareHabits ? summary.week.habitsDoneToday : 0,
           },
           habits: settings.shareHabits ? summary.habits : [],
         },
@@ -83,6 +87,37 @@ export async function GET(
       });
     }
 
+    if (share.type === "business") {
+      if (!share.target) {
+        return NextResponse.json(
+          { error: "This business plan is no longer shared" },
+          { status: 403 }
+        );
+      }
+
+      const detailLevel = (share.detailLevel as BusinessDetailLevel) || "overview";
+      const data = await getBusinessShareData(share.userId, share.target, detailLevel);
+      if (!data) {
+        return NextResponse.json({ error: "Business not found" }, { status: 404 });
+      }
+
+      // Viewing never changes access; joining is an explicit POST below.
+      const viewerId = share.allowEdit ? (await auth())?.user?.id : undefined;
+      const canEdit = Boolean(viewerId) && (await isBusinessMember(viewerId!, share.target));
+      const canJoin = Boolean(share.allowEdit && viewerId && !canEdit);
+
+      return NextResponse.json({
+        ...data,
+        businessId: share.target,
+        detailLevel,
+        userName,
+        canEdit,
+        canJoin,
+        signedIn: Boolean(viewerId),
+        type: "business",
+      });
+    }
+
     return NextResponse.json(
       { error: "Share type not supported yet" },
       { status: 400 }
@@ -94,4 +129,20 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+export async function POST(
+  _request: Request,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  const { token } = await params;
+  const share = await getShareLinkByToken(token);
+  if (!share || share.type !== "business" || !share.target || !share.allowEdit) {
+    return NextResponse.json({ error: "This link does not grant edit access" }, { status: 403 });
+  }
+  const viewerId = (await auth())?.user?.id;
+  if (!viewerId) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+
+  await grantBusinessCollaborator(share.target, viewerId);
+  return NextResponse.json({ ok: true });
 }

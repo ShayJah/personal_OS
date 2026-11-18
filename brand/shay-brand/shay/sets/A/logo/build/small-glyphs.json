@@ -1,0 +1,32 @@
+{
+ "units": "symbol grid 0..100; index = position in data-glyphs (1-based)",
+ "symbol-small": [
+  {
+   "id": "initial-s",
+   "text": "s",
+   "location": {
+    "ital": 1,
+    "wght": 500,
+    "opsz": 96
+   },
+   "glyphs": [
+    {
+     "index": 1,
+     "char": "s",
+     "x0": 16.6,
+     "x1": 67.4,
+     "cap_top": -20.0,
+     "baseline": 80.0,
+     "stems": [
+      [
+       34.29,
+       56.74
+      ]
+     ],
+     "pen_x": 14.87,
+     "advance": 55.73
+    }
+   ]
+  }
+ ]
+}

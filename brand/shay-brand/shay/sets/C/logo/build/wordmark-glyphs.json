@@ -1,0 +1,68 @@
+{
+ "units": "wordmark: cap height 100, cap top y=0, baseline y=100, x from the pen origin; index = data-glyph",
+ "text": "shay",
+ "glyphs": [
+  {
+   "index": 1,
+   "char": "s",
+   "x0": 4.51,
+   "x1": 70.0,
+   "pen_x": 0.0,
+   "advance": 75.49,
+   "cap_top": 0,
+   "baseline": 100,
+   "stems": []
+  },
+  {
+   "index": 2,
+   "char": "h",
+   "x0": 81.71,
+   "x1": 148.09,
+   "pen_x": 71.22,
+   "advance": 85.83,
+   "cap_top": 0,
+   "baseline": 100,
+   "stems": [
+    [
+     81.71,
+     98.86
+    ],
+    [
+     130.87,
+     148.09
+    ]
+   ]
+  },
+  {
+   "index": 3,
+   "char": "a",
+   "x0": 157.86,
+   "x1": 230.77,
+   "pen_x": 152.79,
+   "advance": 77.43,
+   "cap_top": 0,
+   "baseline": 100,
+   "stems": []
+  },
+  {
+   "index": 4,
+   "char": "y",
+   "x0": 228.38,
+   "x1": 306.71,
+   "pen_x": 225.95,
+   "advance": 83.26,
+   "cap_top": 0,
+   "baseline": 100,
+   "stems": [
+    [
+     243.19,
+     260.09
+    ],
+    [
+     275.15,
+     292.24
+    ]
+   ]
+  }
+ ]
+}

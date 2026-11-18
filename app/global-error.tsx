@@ -19,7 +19,7 @@ export default function GlobalError({
         <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
           <div style={{ maxWidth: "24rem", textAlign: "center" }}>
             <h1 style={{ fontSize: "1.25rem", fontWeight: 600 }}>
-              PersonalOS hit an unexpected error
+              Amahoro hit an unexpected error
             </h1>
             <p style={{ marginTop: "0.5rem", fontSize: "0.875rem", opacity: 0.6, fontFamily: "sans-serif" }}>
               Please try again.

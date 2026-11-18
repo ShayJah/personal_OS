@@ -1,0 +1,689 @@
+{
+  "schema": "brand-identity/logo-build@1",
+  "set": "A",
+  "type": "symbol+wordmark",
+  "font": {
+    "path": "/Users/shejarubayi/.cache/brand-identity/fonts/instances/BigShoulders-2b412454a4746380.ttf",
+    "role": "display",
+    "location": {
+      "wght": 800,
+      "opsz": 72
+    },
+    "license": "OFL-1.1",
+    "family": "Big Shoulders"
+  },
+  "masters": {
+    "symbol": "master-symbol.svg",
+    "symbol-small": "master-symbol-small.svg",
+    "wordmark": "master-wordmark.svg",
+    "lockup-horizontal": "master-lockup-horizontal.svg",
+    "lockup-stacked": "master-lockup-stacked.svg",
+    "primary": "master-primary.svg"
+  },
+  "versions": {
+    "full-color": {
+      "svg": "full-color.svg",
+      "png": "full-color.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#3b2418",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#3b2418",
+          "area": 13048.04
+        }
+      ]
+    },
+    "full-color-dark": {
+      "svg": "full-color-dark.svg",
+      "png": "full-color-dark.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "dark",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#b49382",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#b49382",
+          "area": 13048.04
+        }
+      ]
+    },
+    "one-color-dark": {
+      "svg": "one-color-dark.svg",
+      "png": "one-color-dark.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#241912",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#241912",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#241912",
+          "area": 13048.04
+        }
+      ]
+    },
+    "one-color-light": {
+      "svg": "one-color-light.svg",
+      "png": "one-color-light.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "dark",
+      "ground": null,
+      "ground_role": null,
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#f5f2f1",
+          "area": 3739.58
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#f5f2f1",
+          "area": 622.18
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#f5f2f1",
+          "area": 13048.04
+        }
+      ]
+    },
+    "on-light-background": {
+      "svg": "on-light-background.svg",
+      "png": "on-light-background.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "light",
+      "ground": "#ebe3d3",
+      "ground_role": "background",
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#3b2418",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#3b2418",
+          "area": 13048.04
+        }
+      ]
+    },
+    "on-dark-background": {
+      "svg": "on-dark-background.svg",
+      "png": "on-dark-background.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "dark",
+      "ground": "#1d1612",
+      "ground_role": "background",
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#b49382",
+          "area": 3739.58
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 622.18
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#b49382",
+          "area": 13048.04
+        }
+      ]
+    },
+    "on-light-primary": {
+      "svg": "on-light-primary.svg",
+      "png": "on-light-primary.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "light",
+      "ground": "#3b2418",
+      "ground_role": "primary",
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#ffffff",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#ffffff",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#ffffff",
+          "area": 13048.04
+        }
+      ]
+    },
+    "on-light-accent": {
+      "svg": "on-light-accent.svg",
+      "png": "on-light-accent.png",
+      "size": [
+        1024,
+        540
+      ],
+      "mode": "light",
+      "ground": "#9c6936",
+      "ground_role": "accent",
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#ffffff",
+          "area": 4436.74
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#ffffff",
+          "area": 690.14
+        },
+        {
+          "role": "primary",
+          "ids": [
+            "wordmark"
+          ],
+          "hex": "#ffffff",
+          "area": 13048.04
+        }
+      ]
+    },
+    "symbol-only": {
+      "svg": "symbol-only.svg",
+      "png": "symbol-only.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#3b2418",
+          "area": 2520.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 392.0
+        }
+      ]
+    },
+    "favicon-16": {
+      "svg": "favicon-16.svg",
+      "png": "favicon-16.png",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#3b2418",
+          "area": 2296.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 1058.0
+        }
+      ]
+    },
+    "favicon-32": {
+      "svg": "favicon-32.svg",
+      "png": "favicon-32.png",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#3b2418",
+          "area": 2296.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 1058.0
+        }
+      ]
+    },
+    "favicon-48": {
+      "svg": "favicon-48.svg",
+      "png": "favicon-48.png",
+      "size": [
+        48,
+        48
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": false,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#3b2418",
+          "area": 2296.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#b9814a",
+          "area": 1058.0
+        }
+      ]
+    },
+    "small-16-one-color-dark": {
+      "svg": "small-16-one-color-dark.svg",
+      "png": "small-16-one-color-dark.png",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#241912",
+          "area": 2296.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#241912",
+          "area": 1058.0
+        }
+      ]
+    },
+    "small-16-one-color-light": {
+      "svg": "small-16-one-color-light.svg",
+      "png": "small-16-one-color-light.png",
+      "size": [
+        16,
+        16
+      ],
+      "mode": "dark",
+      "ground": "#1d1612",
+      "ground_role": "background",
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#f5f2f1",
+          "area": 2041.54
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#f5f2f1",
+          "area": 987.83
+        }
+      ]
+    },
+    "small-32-one-color-dark": {
+      "svg": "small-32-one-color-dark.svg",
+      "png": "small-32-one-color-dark.png",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "light",
+      "ground": null,
+      "ground_role": null,
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#241912",
+          "area": 2296.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#241912",
+          "area": 1058.0
+        }
+      ]
+    },
+    "small-32-one-color-light": {
+      "svg": "small-32-one-color-light.svg",
+      "png": "small-32-one-color-light.png",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "dark",
+      "ground": "#1d1612",
+      "ground_role": "background",
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring"
+          ],
+          "hex": "#f5f2f1",
+          "area": 2041.54
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#f5f2f1",
+          "area": 987.83
+        }
+      ]
+    },
+    "app-icon-512": {
+      "svg": "app-icon-512.svg",
+      "png": "app-icon-512.png",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "light",
+      "ground": "#3b2418",
+      "ground_role": "primary",
+      "one_color": true,
+      "device": null,
+      "parts": [
+        {
+          "role": "primary",
+          "ids": [
+            "ring-outer",
+            "ring-inner"
+          ],
+          "hex": "#ffffff",
+          "area": 2520.0
+        },
+        {
+          "role": "brand-2",
+          "ids": [
+            "core"
+          ],
+          "hex": "#ffffff",
+          "area": 392.0
+        }
+      ]
+    }
+  },
+  "small": {},
+  "sources": {
+    "symbol": {
+      "sha256": "1a0a28dfa0c3cfb99260751bc1f426d1d2a319768be2fd03aa7ab3af770bf361"
+    },
+    "symbol_small": {
+      "sha256": "df36262e3af0022606eff2f1e861ff577f6f8747833c14437164536f6d79a54c"
+    }
+  },
+  "optics": {
+    "cap_height": 1600.0,
+    "x_height": 1200.0,
+    "upm": 2000,
+    "overshoot_top": 0.0119,
+    "overshoot_bottom": 0.0119,
+    "x_overshoot_top": 0.0158,
+    "stem": 17.125,
+    "crossbar": 15.125,
+    "crossbar_stem_ratio": 0.883
+  },
+  "glyphs": {
+    "wordmark": "wordmark-glyphs.json"
+  },
+  "primary": "lockup-horizontal",
+  "anchors": {
+    "symbol": 20,
+    "symbol-small": 12
+  },
+  "clear_space": {
+    "unit": "cap-height",
+    "multiple": 1.0,
+    "units": 100.0
+  },
+  "grounds": [
+    {
+      "mode": "light",
+      "ground": "background",
+      "on": "full colour"
+    },
+    {
+      "mode": "dark",
+      "ground": "background",
+      "on": "full colour"
+    },
+    {
+      "mode": "light",
+      "ground": "primary",
+      "on": "onPrimary"
+    },
+    {
+      "mode": "light",
+      "ground": "accent",
+      "on": "onAccent"
+    }
+  ],
+  "favicon_source": "symbol-small.svg",
+  "app_icon": {
+    "tile": "primary",
+    "mark": "onPrimary",
+    "content": 0.58,
+    "optical_lift": 0.015,
+    "source": "default"
+  }
+}

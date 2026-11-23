@@ -276,75 +276,118 @@ function Segmented<T extends string | number>({ label, value, options, onChange 
   );
 }
 
+function Crumb({ items }: { items: Array<[string, (() => void) | null]> }) {
+  return (
+    <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-sm">
+      {items.map(([t, f], i) => <span key={t} className="flex items-center gap-1.5">{i > 0 && <span className="text-muted-soft">/</span>}{f ? <button className="font-semibold text-accent hover:underline" onClick={f}>{t}</button> : <span className="font-semibold">{t}</span>}</span>)}
+    </nav>
+  );
+}
+
+
+type Step = { page: "courses" } | { page: "topics"; courseId: string } | { page: "setup"; courseId: string };
+
+/** Practice is three pages: pick a course, pick topics, set up the test. Each page has a back link. */
 function PracticeTab({ pack, progress, dueN, weakN, topicTitle, start }: { pack: Pack; progress: Progress; dueN: number; weakN: number; topicTitle: (id: string) => string; start: (m: Mode, o?: { topicIds?: string[]; length?: number; examMode?: boolean }) => void }) {
+  const [step, setStep] = useState<Step>({ page: "courses" });
   const [len, setLen] = useState(10);
   const [held, setHeld] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
-  const length = len === 0 ? Math.max(1, pack.questions.length) : len; // 0 = everything
-  const has = pack.questions.length > 0;
-  const toggle = (id: string) => setPicked((x) => (x.includes(id) ? x.filter((y) => y !== id) : [...x, id]));
-  const modes: Array<{ title: string; text: string; cta: string; go: () => void; ok: boolean }> = [
-    { title: "Mock quiz", text: "A mix of every topic, including code to write.", cta: "Start", go: () => start("mock", { length, examMode: held }), ok: has },
-    { title: "Topic drill", text: picked.length ? `${picked.length} topic${picked.length === 1 ? "" : "s"} picked below.` : "Only the topics you pick below.", cta: "Start drill", go: () => start("drill", { topicIds: picked, length, examMode: held }), ok: picked.length > 0 },
-    { title: "Code lab", text: "Endless write-the-code and trace-the-code practice.", cta: "Open lab", go: () => start("lab"), ok: has },
-  ];
+  const go = (st: Step) => { setStep(st); window.scrollTo({ top: 0 }); };
+  const course = step.page === "courses" ? null : pack.courses.find((c) => c.id === step.courseId) ?? null;
+  const name = (id: string) => { const c = pack.courses.find((x) => x.id === id); return c?.code || c?.title || id; };
   const stats = (id: string) => {
     const at = progress.attempts.filter((a) => a.topicId === id);
     const auto = at.filter((a) => a.marking === "auto");
     return { n: at.length, autoN: auto.length, pct: auto.length ? Math.round((100 * auto.reduce((s, a) => s + a.score, 0)) / auto.length) : null };
   };
+  /* ---------- page 1: courses ---------- */
+  if (step.page === "courses" || !course) {
+    return (
+      <section className="space-y-4" aria-label="Practice: choose a course">
+        <Crumb items={[["Practice", null]]} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          {pack.courses.filter((c) => pack.topics.some((t) => t.courseId === c.id)).map((c, i) => {
+            const qs = pack.questions.filter((q) => q.courseId === c.id);
+            const att = progress.attempts.filter((a) => a.courseId === c.id);
+            const seen = new Set(att.map((a) => a.qid)).size;
+            const auto = att.filter((a) => a.marking === "auto");
+            const avg = auto.length ? auto.reduce((s, a) => s + a.score, 0) / auto.length : null;
+            const band = readinessBand(avg, auto.length);
+            return (
+              <button key={c.id} onClick={() => { setPicked([]); go({ page: "topics", courseId: c.id }); }} className="study-rise rounded-2xl border border-border bg-surface p-4 text-left transition-colors hover:bg-accent-soft/50" style={{ "--d": `${i * 0.06}s` } as React.CSSProperties}>
+                <p className="font-serif text-lg font-bold">{c.code || c.title}</p>
+                <p className="text-sm text-muted">{c.code ? c.title : ""}</p>
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+                  <Ring value={qs.length ? (100 * seen) / qs.length : null} label="Tried" sub={`${seen}/${qs.length}`} />
+                  <Ring value={avg === null ? null : 100 * avg} label={band ?? "Score"} sub={band ? `${auto.length} auto-marked` : `${auto.length}/5 auto-marked`} stroke={scoreStroke(band)} />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-accent">{pack.topics.filter((t) => t.courseId === c.id).length} topics →</p>
+              </button>
+            );
+          })}
+        </div>
+        <Card className="flex flex-wrap items-center gap-2 text-sm"><span className="text-muted">Across all courses</span>
+          <Button size="sm" variant="outline" disabled={dueN === 0} onClick={() => start("due", { length: 15 })}>Due now · {dueN}</Button>
+          <Button size="sm" variant="outline" disabled={weakN === 0} onClick={() => start("weak", { length: 15 })}>Weak spots · {weakN}</Button>
+          <Button size="sm" variant="outline" disabled={!pack.questions.length} onClick={() => start("lab")}>Code lab</Button>
+        </Card>
+      </section>
+    );
+  }
+
+  const ts = pack.topics.filter((t) => t.courseId === course.id);
+  const exams = pack.exams.filter((e) => e.courseId === course.id && e.coverage.length);
+  const toggle = (id: string) => setPicked((x) => (x.includes(id) ? x.filter((y) => y !== id) : [...x, id]));
+
+  /* ---------- page 2: topics ---------- */
+  if (step.page === "topics") {
+    const allOn = ts.every((t) => picked.includes(t.id));
+    return (
+      <section className="space-y-4" aria-label="Practice: choose topics">
+        <Crumb items={[["Practice", () => go({ page: "courses" })], [name(course.id), null]]} />
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          {exams.map((e) => <button key={e.id} onClick={() => setPicked(e.coverage)} className="rounded-full border border-border-strong px-3 py-1 hover:bg-accent-soft">{e.title.split(/ [-(]/)[0] || e.id} <span className="text-muted">· {e.coverage.length} topics</span></button>)}
+          <button className="ml-auto text-xs font-semibold text-accent" onClick={() => setPicked(allOn ? [] : ts.map((t) => t.id))}>{allOn ? "Clear" : "Select all"}</button>
+        </div>
+        <Card className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
+          {ts.map((t) => {
+            const st = stats(t.id), on = picked.includes(t.id), qn = pack.questions.filter((q) => q.topicId === t.id).length;
+            return (
+              <label key={t.id} className={cn("study-rise flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 transition-colors", on ? "bg-surface-sunken" : "hover:bg-foreground/5")}>
+                <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--accent)]" checked={on} onChange={() => toggle(t.id)} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex justify-between gap-2"><span className="text-sm font-semibold">{topicTitle(t.id)}</span><span className="text-xs text-muted">{qn} q</span></span>
+                  <span className="mt-1.5 flex items-center gap-2"><span className="h-1.5 flex-1 rounded-full bg-border"><span className="block h-full rounded-full bg-foreground transition-[width] duration-700" style={{ width: `${st.pct ?? 0}%` }} /></span>
+                    <span className="w-24 shrink-0 text-right text-xs text-muted">{st.pct !== null ? `${st.pct}% of ${st.autoN}` : st.n ? "self-marked only" : "not tried"}</span></span>
+                </span>
+              </label>
+            );
+          })}
+        </Card>
+        <div className="sticky bottom-3 flex items-center justify-between gap-3 rounded-xl border border-border-strong bg-surface p-3">
+          <span className="text-sm">{picked.length ? `${picked.length} topic${picked.length === 1 ? "" : "s"} selected` : "Pick one or more topics"}</span>
+          <span className="flex gap-2"><Button size="sm" variant="outline" onClick={() => start("mock", { topicIds: ts.map((t) => t.id), length: 10 })}>Quick 10, whole course</Button><Button size="sm" disabled={!picked.length} onClick={() => go({ page: "setup", courseId: course.id })}>Continue →</Button></span>
+        </div>
+      </section>
+    );
+  }
+
+  /* ---------- page 3: set up the test ---------- */
+  const avail = pack.questions.filter((q) => picked.includes(q.topicId)).length;
+  const length = len === 0 ? Math.max(1, avail) : len;
   return (
-    <section className="space-y-4" aria-label="Practice">
-      <div className="grid gap-3 sm:grid-cols-3">
-        {modes.map((m, i) => (
-          <button key={m.title} disabled={!m.ok} onClick={m.go} className={cn("study-rise rounded-2xl border p-4 text-left transition-colors disabled:opacity-50", i === 0 ? "border-transparent bg-accent-soft hover:brightness-95" : "border-border bg-surface hover:bg-accent-soft/50")} style={{ "--d": `${i * 0.06}s` } as React.CSSProperties}>
-            <p className="font-serif text-lg font-bold">{m.title}</p>
-            <p className="mt-1 text-sm text-muted">{m.text}</p>
-            <p className="mt-3 text-sm font-semibold text-accent">{m.cta} →</p>
-          </button>
-        ))}
-      </div>
+    <section className="space-y-4" aria-label="Practice: set up the test">
+      <Crumb items={[["Practice", () => go({ page: "courses" })], [name(course.id), () => go({ page: "topics", courseId: course.id })], ["Set up", null]]} />
+      <Card className="space-y-2">
+        <p className="text-sm text-muted">Testing {picked.length} topic{picked.length === 1 ? "" : "s"} · {avail} questions available</p>
+        <div className="flex flex-wrap gap-1.5">{picked.map((id) => <span key={id} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium">{topicTitle(id)}</span>)}</div>
+      </Card>
       <Card className="space-y-3">
         <Segmented label="Length" value={len} options={[[10, "10"], [25, "25"], [40, "40"], [0, "Everything"]]} onChange={setLen} />
         <Segmented label="Feedback" value={held ? "end" : "each"} options={[["each", "After each question"], ["end", "At the end (exam)"]]} onChange={(v) => setHeld(v === "end")} />
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Button size="sm" variant="outline" disabled={dueN === 0} onClick={() => start("due", { length })}>Due now · {dueN}</Button>
-          <Button size="sm" variant="outline" disabled={weakN === 0} onClick={() => start("weak", { length })}>Weak spots · {weakN}</Button>
-        </div>
       </Card>
-      {pack.exams.some((e) => e.coverage.length) && (
-        <div className="flex flex-wrap items-center gap-2 text-sm"><span className="text-muted">Quick sets</span>
-          {pack.exams.filter((e) => e.coverage.length).map((e) => <button key={e.id} onClick={() => setPicked(e.coverage)} className="rounded-full border border-border-strong px-3 py-1 hover:bg-accent-soft">{e.title.split(/ [-(]/)[0] || e.id} <span className="text-muted">· {e.coverage.length}</span></button>)}
-        </div>
-      )}
-      {pack.topics.length === 0 && <Card><p className="text-sm text-muted">No topics loaded.</p></Card>}
-      {pack.courses.map((c) => {
-        const ts = pack.topics.filter((t) => t.courseId === c.id);
-        if (!ts.length) return null;
-        const allOn = ts.every((t) => picked.includes(t.id));
-        return (
-          <Card key={c.id} className="space-y-3">
-            <div className="flex items-center justify-between"><h3 className="font-serif text-sm font-bold uppercase tracking-wide">{c.code || c.title || c.id}</h3>
-              <button className="text-xs font-semibold text-accent" onClick={() => setPicked((x) => (allOn ? x.filter((id) => !ts.some((t) => t.id === id)) : [...new Set([...x, ...ts.map((t) => t.id)])]))}>{allOn ? "Clear" : "Select all"}</button></div>
-            <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
-              {ts.map((t) => {
-                const st = stats(t.id), on = picked.includes(t.id);
-                return (
-                  <label key={t.id} className={cn("flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 transition-colors", on ? "bg-surface-sunken" : "hover:bg-foreground/5")}>
-                    <input type="checkbox" className="mt-1 h-4 w-4 accent-[var(--accent)]" checked={on} onChange={() => toggle(t.id)} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-sm font-semibold">{topicTitle(t.id)}</span>
-                      <span className="mt-1.5 flex items-center gap-2"><span className="h-1.5 flex-1 rounded-full bg-border"><span className="block h-full rounded-full bg-foreground transition-[width] duration-700" style={{ width: `${st.pct ?? 0}%` }} /></span>
-                        <span className="w-24 shrink-0 text-right text-xs text-muted">{st.pct !== null ? `${st.pct}% of ${st.autoN}` : st.n ? "self-marked only" : "not tried"}</span></span>
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </Card>
-        );
-      })}
-      {picked.length > 0 && <div className="sticky bottom-3 flex items-center justify-between gap-3 rounded-xl border border-border-strong bg-surface p-3"><span className="text-sm">{picked.length} topic{picked.length === 1 ? "" : "s"} selected</span><span className="flex gap-2"><Button size="sm" variant="ghost" onClick={() => setPicked([])}>Clear</Button><Button size="sm" onClick={() => start("drill", { topicIds: picked, length, examMode: held })}>Start drill →</Button></span></div>}
+      <div className="flex items-center gap-3"><Button disabled={!avail} onClick={() => start("drill", { topicIds: picked, length, examMode: held })}>Start test →</Button><span className="text-sm text-muted">{Math.min(length, avail)} questions{held ? ", timed exam mode" : ""}</span></div>
     </section>
   );
 }

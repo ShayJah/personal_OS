@@ -47,3 +47,11 @@ next-env.d.ts
 study-pack.*.json
 !docs/study-pack.template.json
 study-progress-*.json
+
+# Capy
+.env
+!/.capy/
+/.capy/*
+!/.capy/deploy.json
+.env.pre-capy.old
+.env.*.decrypted

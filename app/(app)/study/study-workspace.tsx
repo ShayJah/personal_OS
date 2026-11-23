@@ -285,10 +285,26 @@ function PracticeTab({ pack, dueN, weakN, topicTitle, start }: { pack: Pack; due
       <div className="grid gap-3 sm:grid-cols-2">
         {modes.map(([t, d, go, ok]) => <Card key={t} className="space-y-2"><h2 className="font-medium">{t}</h2><p className="text-sm text-muted">{d}</p><Button size="sm" disabled={!ok} onClick={go}>Start</Button></Card>)}
       </div>
-      <Card className="space-y-2"><h3 className="text-sm font-medium">Topics for the drill</h3>
-        {pack.topics.length === 0 && <p className="text-sm text-muted">No topics loaded.</p>}
-        <div className="flex flex-wrap gap-2">{pack.topics.map((t) => <button key={t.id} aria-pressed={picked.includes(t.id)} onClick={() => setPicked((x) => (x.includes(t.id) ? x.filter((y) => y !== t.id) : [...x, t.id]))} className={cn("rounded-full border px-3 py-1 text-sm", picked.includes(t.id) ? "border-foreground bg-accent-soft" : "border-border")}>{topicTitle(t.id)}</button>)}</div>
-      </Card>
+      {pack.exams.some((e) => e.coverage.length) && (
+        <Card className="space-y-2"><h3 className="text-sm font-medium">Quick sets</h3>
+          <div className="flex flex-wrap gap-2">{pack.exams.filter((e) => e.coverage.length).map((e) => <button key={e.id} onClick={() => setPicked(e.coverage)} className="rounded-full border border-border-strong px-3 py-1 text-sm hover:bg-accent-soft">{e.title.split(/ [-(]/)[0] || e.id} <span className="text-muted">· {e.coverage.length} topics</span></button>)}</div>
+        </Card>
+      )}
+      {pack.topics.length === 0 && <Card><p className="text-sm text-muted">No topics loaded.</p></Card>}
+      {pack.courses.map((c) => {
+        const ts = pack.topics.filter((t) => t.courseId === c.id);
+        if (!ts.length) return null;
+        const allOn = ts.every((t) => picked.includes(t.id));
+        const qn = (id: string) => pack.questions.filter((q) => q.topicId === id).length;
+        return (
+          <Card key={c.id} className="space-y-2">
+            <div className="flex items-center justify-between"><h3 className="text-sm font-medium">{c.code || c.title || c.id}</h3>
+              <button className="text-xs text-muted underline" onClick={() => setPicked((x) => (allOn ? x.filter((id) => !ts.some((t) => t.id === id)) : [...new Set([...x, ...ts.map((t) => t.id)])]))}>{allOn ? "clear" : "select all"}</button></div>
+            <div className="flex flex-wrap gap-2">{ts.map((t) => <button key={t.id} aria-pressed={picked.includes(t.id)} onClick={() => setPicked((x) => (x.includes(t.id) ? x.filter((y) => y !== t.id) : [...x, t.id]))} className={cn("rounded-full border px-3 py-1 text-sm transition-colors", picked.includes(t.id) ? "border-foreground bg-accent-soft" : "border-border")}>{topicTitle(t.id)} <span className="text-muted">{qn(t.id)}</span></button>)}</div>
+          </Card>
+        );
+      })}
+      {picked.length > 0 && <div className="sticky bottom-3 flex items-center justify-between gap-3 rounded-xl border border-border-strong bg-surface p-3"><span className="text-sm">{picked.length} topic{picked.length === 1 ? "" : "s"} selected</span><span className="flex gap-2"><Button size="sm" variant="ghost" onClick={() => setPicked([])}>Clear</Button><Button size="sm" onClick={() => start("drill", { topicIds: picked, length: len, examMode: held })}>Test these topics</Button></span></div>}
     </section>
   );
 }

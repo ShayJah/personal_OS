@@ -23,31 +23,35 @@ export function ExamTimeline({ items }: { items: TimelineItem[] }) {
   const live = items.filter((i) => i.days >= 0).sort((a, b) => a.days - b.days);
   if (!live.length) return null;
   const max = Math.max(...live.map((i) => i.days), 1);
-  const W = 720, L = 28, R = 692, AX = 112;
+  const W = 720, L = 28, R = 620;
   const x = (d: number) => L + ((R - L) * d) / max;
-  const rise = [34, 62, 90];
+  // Right to left: a label must sit above every later stem that falls under its text, so stems never cross labels.
+  const tier: number[] = [];
+  for (let k = live.length - 1; k >= 0; k--) {
+    tier[k] = 0;
+    for (let j = k + 1; j < live.length; j++) if (x(live[j].days) - x(live[k].days) < 96) tier[k] = Math.max(tier[k], tier[j] + 1);
+  }
+  const AX = 30 + 28 * Math.max(...tier) + 36, H = AX + 44;
   return (
     <div className="overflow-x-auto">
-      <svg role="img" aria-labelledby="exam-tl-t" viewBox={`0 0 ${W} 150`} className="h-auto min-w-[560px] w-full">
+      <svg role="img" aria-labelledby="exam-tl-t" viewBox={`0 0 ${W} ${H}`} className="h-auto min-w-[560px] w-full">
         <title id="exam-tl-t">Exam timeline from today to the last exam</title>
         <line x1={L} x2={R} y1={AX} y2={AX} pathLength={1} className="study-draw stroke-border-strong" strokeWidth={2} />
         {live.map((i, k) => {
-          const px = x(i.days), top = AX - rise[k % 3];
-          const anchor = px > R - 50 ? "end" : "start";
-          const tx = anchor === "end" ? px - 6 : px + 6;
+          const px = x(i.days), top = AX - 30 - tier[k] * 28;
           return (
             <g key={i.id} className="study-rise" style={{ "--d": `${0.15 + k * 0.08}s` } as React.CSSProperties}>
               <line x1={px} x2={px} y1={top} y2={AX} className="stroke-border-strong" strokeWidth={1} />
-              <text x={tx} y={top + 4} textAnchor={anchor} className="fill-foreground text-[12px] font-semibold">{i.label}</text>
-              <text x={tx} y={top + 17} textAnchor={anchor} className="fill-muted text-[11px]">{shortDate(i.date)} · {i.days === 0 ? "today" : `${i.days} d`}</text>
+              <text x={px + 6} y={top + 4} className="fill-foreground text-[12px] font-semibold">{i.label}</text>
+              <text x={px + 6} y={top + 17} className="fill-muted text-[11px]">{shortDate(i.date)} · {i.days === 0 ? "today" : `${i.days} d`}</text>
               <circle cx={px} cy={AX} r={6} className={cn("stroke-foreground", i.verified ? "fill-foreground" : "fill-surface")} strokeWidth={2} />
             </g>
           );
         })}
         <circle cx={L} cy={AX} r={5} className="fill-accent" />
         <text x={L} y={AX + 22} className="fill-accent text-[11px] font-semibold">today</text>
-        <circle cx={W - 140} cy={140} r={4} className="fill-foreground" /><text x={W - 132} y={144} className="fill-muted text-[10px]">verified</text>
-        <circle cx={W - 70} cy={140} r={4} className="fill-surface stroke-foreground" strokeWidth={1.5} /><text x={W - 62} y={144} className="fill-muted text-[10px]">unverified</text>
+        <circle cx={W - 140} cy={H - 10} r={4} className="fill-foreground" /><text x={W - 132} y={H - 6} className="fill-muted text-[10px]">verified</text>
+        <circle cx={W - 70} cy={H - 10} r={4} className="fill-surface stroke-foreground" strokeWidth={1.5} /><text x={W - 62} y={H - 6} className="fill-muted text-[10px]">unverified</text>
       </svg>
     </div>
   );
